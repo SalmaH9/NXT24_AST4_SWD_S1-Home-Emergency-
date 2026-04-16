@@ -1,0 +1,55 @@
+<!-- customer-dashboard.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Dashboard - HomeFix</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .dashboard { padding: 100px 24px; max-width: 1200px; margin: 0 auto; }
+        .dashboard-header { margin-bottom: 40px; }
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+        .dashboard-card { background: white; padding: 30px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.07); }
+        .logout-btn { background: #dc3545; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <nav class="navbar scrolled">
+        <div class="nav-container">
+            <a href="index.html" class="logo"><i class="fas fa-home"></i><span>HomeFix</span></a>
+            <button onclick="homefix.logout()" class="logout-btn">Logout</button>
+        </div>
+    </nav>
+    
+    <div class="dashboard">
+        <div class="dashboard-header">
+            <h1>Customer Dashboard</h1>
+            <p>Welcome back! Manage your service requests here.</p>
+        </div>
+        <div class="dashboard-grid">
+            <div class="dashboard-card">
+                <h3><i class="fas fa-plus-circle" style="color: #0A66C2;"></i> New Request</h3>
+                <p>Submit a new service request for your home emergency.</p>
+            </div>
+            <div class="dashboard-card">
+                <h3><i class="fas fa-history" style="color: #0A66C2;"></i> My Requests</h3>
+                <p>View and track your ongoing and past service requests.</p>
+            </div>
+            <div class="dashboard-card">
+                <h3><i class="fas fa-star" style="color: #0A66C2;"></i> Reviews</h3>
+                <p>Rate and review completed services.</p>
+            </div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+    <script>
+        // Check authentication
+        if (!homefix.checkAuth()) {
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>
