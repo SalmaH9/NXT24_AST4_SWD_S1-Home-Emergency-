@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace HomeEmergency.ViewModels
 {
-    internal class RequestDetailsVM
+    public class RequestDetailsVM
     {
         public int RequestId { get; set; }
         public string UserName { get; set; }

@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace HomeEmergency.ViewModels
 {
-    internal class LoginVM
+    public class LoginVM
     {
+        public string Email { get; set; }
+        public string Password { get; set; }
     }
 }

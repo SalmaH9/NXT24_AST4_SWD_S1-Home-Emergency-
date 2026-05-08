@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace HomeEmergency.ViewModels
 {
-    internal class SubscriptionVM
+    public class SubscriptionVM
     {
+        public string Type { get; set; } // Monthly / Yearly
     }
 }

@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace HomeEmergency.ViewModels
 {
-    internal class UserProfileVM
+    public class UserProfileVM
     {
+        public int UserId { get; set; }
+        public string Name { get; set; }
+        public string Email { get; set; }
     }
 }
