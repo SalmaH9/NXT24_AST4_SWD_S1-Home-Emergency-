@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Customer Dashboard - Fixora</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <style>
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .dashboard-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-sm);
+            padding: 28px 24px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            transition: var(--transition);
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .dashboard-card .card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: rgba(102, 126, 234, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            color: var(--accent);
+            margin-bottom: 12px;
+        }
+
+        .dashboard-card h3 {
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            margin-bottom: 4px;
+        }
+
+        .dashboard-card p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+        }
+
+        .dashboard-card .btn-sm {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--gradient-primary);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: var(--transition);
+        }
+
+        .dashboard-card .btn-sm:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.35);
+        }
+
+        .dashboard-card .btn-sm-outline {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: transparent;
+            color: var(--text-primary);
+            padding: 8px 20px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.85rem;
+            border: 1px solid var(--border);
+            transition: var(--transition);
+        }
+
+        .dashboard-card .btn-sm-outline:hover {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .recent-orders {
+            margin-top: 16px;
+        }
+
+        .recent-order-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .recent-order-item:last-child {
+            border-bottom: none;
+        }
+
+        .recent-order-item .order-status {
+            padding: 4px 14px;
+            border-radius: 60px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #b45309;
+        }
+        .status-progress {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        .status-completed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-wrench"></i>
+                <span>Fix<span class="logo-highlight">ora</span></span>
+            </div>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="customer-dashboard.html" class="active"><i class="fas fa-gauge-high"></i> Dashboard</a></li>
+                <li><a href="book-service.html"><i class="fas fa-screwdriver-wrench"></i> Book Service</a></li>
+                <li><a href="my-orders.html"><i class="fas fa-clock-rotate-left"></i> My Orders</a></li>
+                <li><a href="profile.html"><i class="fas fa-user"></i> Profile</a></li>
+                <li id="authLink"><a href="login.html" onclick="handleLogout(event)"><i class="fas fa-right-from-bracket"></i> Logout</a></li>
+            </ul>
+            <div class="nav-actions">
+                <button id="theme-toggle" class="theme-btn">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <div class="hamburger" id="hamburger">
+                    <i class="fas fa-bars"></i>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ===== MAIN ===== -->
+    <main class="main-content">
+        <div class="container">
+            <h1 class="page-title">
+                <i class="fas fa-gauge-high"></i> 
+                Welcome Back, <span id="userName">Customer</span>! 👋
+            </h1>
+
+            <!-- Stats -->
+            <section class="stats">
+                <div class="stat-card">
+                    <i class="fas fa-clipboard-list"></i>
+                    <h3 id="activeOrders">3</h3>
+                    <p>Active Orders</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-check-circle"></i>
+                    <h3 id="completedOrders">12</h3>
+                    <p>Completed</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-clock"></i>
+                    <h3 id="pendingOrders">2</h3>
+                    <p>Pending</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-star"></i>
+                    <h3>4.9</h3>
+                    <p>Your Rating</p>
+                </div>
+            </section>
+
+            <!-- Dashboard Grid -->
+            <div class="dashboard-grid">
+
+                <!-- Quick Actions -->
+                <div class="dashboard-card">
+                    <div class="card-icon"><i class="fas fa-bolt"></i></div>
+                    <h3>Quick Actions</h3>
+                    <p>Book a repair or check your recent activity</p>
+                    <div class="quick-actions">
+                        <a href="services.html" class="btn-sm">
+                            <i class="fas fa-plus"></i> New Repair
+                        </a>
+                        <a href="#" class="btn-sm-outline">
+                            <i class="fas fa-clock-rotate-left"></i> History
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Recent Orders -->
+                <div class="dashboard-card">
+                    <div class="card-icon"><i class="fas fa-clock"></i></div>
+                    <h3>Recent Orders</h3>
+                    <p>Your latest repair requests</p>
+                    <div class="recent-orders">
+                        <div class="recent-order-item">
+                            <div>
+                                <strong style="color: var(--text-primary);">#ORD-001</strong>
+                                <span style="color: var(--text-secondary); font-size: 0.85rem; display: block;">Plumbing - 2 days ago</span>
+                            </div>
+                            <span class="order-status status-progress">In Progress</span>
+                        </div>
+                        <div class="recent-order-item">
+                            <div>
+                                <strong style="color: var(--text-primary);">#ORD-002</strong>
+                                <span style="color: var(--text-secondary); font-size: 0.85rem; display: block;">AC Repair - 5 days ago</span>
+                            </div>
+                            <span class="order-status status-completed">Completed</span>
+                        </div>
+                        <div class="recent-order-item">
+                            <div>
+                                <strong style="color: var(--text-primary);">#ORD-003</strong>
+                                <span style="color: var(--text-secondary); font-size: 0.85rem; display: block;">Electrical - 1 day ago</span>
+                            </div>
+                            <span class="order-status status-pending">Pending</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Book a Service -->
+                <div class="dashboard-card">
+                    <div class="card-icon"><i class="fas fa-screwdriver-wrench"></i></div>
+                    <h3>Need a Repair?</h3>
+                    <p>Choose from our wide range of professional services</p>
+                    <a href="services.html" class="btn-sm">
+                        <i class="fas fa-arrow-right"></i> Browse Services
+                    </a>
+                </div>
+
+                <!-- Contact Support -->
+                <div class="dashboard-card">
+                    <div class="card-icon"><i class="fas fa-headset"></i></div>
+                    <h3>Need Help?</h3>
+                    <p>Our support team is here for you 24/7</p>
+                    <a href="contact.html" class="btn-sm-outline">
+                        <i class="fas fa-envelope"></i> Contact Support
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer">
+        <p>© 2026 <strong>Fixora</strong> — Professional Home Repair Services</p>
+        <p class="footer-update">Last updated: <span id="footer-date"></span></p>
+    </footer>
+
+    <script src="../js/script.js"></script>
+    <script>
+        // Check if customer is logged in
+        document.addEventListener('DOMContentLoaded', function() {
+            const role = localStorage.getItem('userRole');
+            const email = localStorage.getItem('userEmail') || 'Customer';
+            
+            if (role !== 'customer') {
+                window.location.href = 'login.html';
+            }
+            
+            document.getElementById('userName').textContent = email.split('@')[0];
+        });
+
+        function handleLogout(event) {
+            event.preventDefault();
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('userRole');
+            localStorage.removeItem('userEmail');
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>

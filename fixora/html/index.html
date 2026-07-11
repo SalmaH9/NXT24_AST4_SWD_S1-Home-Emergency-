@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fixora - Home Repair Services</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/animations.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+</head>
+<body>
+
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar ">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-wrench"></i>
+                <span>Fix<span class="logo-highlight">ora</span></span>
+            </div>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html" class="active"><i class="fas fa-house"></i> Home</a></li>
+                <li><a href="services.html"><i class="fas fa-screwdriver-wrench"></i> Services</a></li>
+                <li><a href="about.html"><i class="fas fa-circle-info"></i> About</a></li>
+                <li><a href="contact.html"><i class="fas fa-envelope"></i> Contact</a></li>
+                <li id="authLink"><a href="login.html"><i class="fas fa-right-to-bracket"></i> Login</a></li>
+            </ul>
+            <div class="nav-actions">
+                <button id="theme-toggle" class="theme-btn">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <div class="hamburger" id="hamburger">
+                    <i class="fas fa-bars"></i>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ===== MAIN ===== -->
+    <main class="main-content">
+        <div class="container">
+
+            <!-- HERO SECTION -->
+            <section class="hero">
+                <div class="hero-content">
+                    <div class="hero-badge">
+                        <i class="fas fa-circle-check"></i> Professional & Trusted
+                    </div>
+                    <h1>Fix Your Home<br /><span>With Fixora</span></h1>
+                    <p>Professional home repair services at your doorstep. From plumbing to electrical, we've got you covered 24/7.</p>
+                    <div class="hero-buttons">
+                        <a href="services.html" class="btn-primary">
+                            <i class="fas fa-arrow-right"></i> Book a Service
+                        </a>
+                        <a href="tel:+966501234567" class="btn-secondary">
+                            <i class="fas fa-phone"></i> Call Now
+                        </a>
+                    </div>
+                </div>
+                <div class="hero-visual">
+                    <div class="floating-icon">
+                        <i class="fas fa-wrench"></i>
+                    </div>
+                    <div class="floating-icon icon-2">
+                        <i class="fas fa-plug"></i>
+                    </div>
+                    <div class="floating-icon icon-3">
+                        <i class="fas fa-faucet"></i>
+                    </div>
+                    <div class="hero-circle"></div>
+                </div>
+            </section>
+
+            <!-- STATS -->
+            <section class="stats">
+                <div class="stat-card">
+                    <i class="fas fa-user-check"></i>
+                    <h3>1,200+</h3>
+                    <p>Happy Customers</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-tools"></i>
+                    <h3>50+</h3>
+                    <p>Expert Technicians</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-clock"></i>
+                    <h3>24/7</h3>
+                    <p>Emergency Service</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-star"></i>
+                    <h3>4.9</h3>
+                    <p>Average Rating</p>
+                </div>
+            </section>
+
+            <!-- SERVICES PREVIEW -->
+            <section class="quick-tips">
+                <h2><i class="fas fa-screwdriver-wrench"></i> Our Services</h2>
+                <div class="tips-grid">
+                    <div class="tip">
+                        <i class="fas fa-faucet"></i>
+                        <div>
+                            <strong>Plumbing</strong>
+                            <p>Pipe repair, faucet installation</p>
+                        </div>
+                    </div>
+                    <div class="tip">
+                        <i class="fas fa-bolt"></i>
+                        <div>
+                            <strong>Electrical</strong>
+                            <p>Wiring, lighting, switches</p>
+                        </div>
+                    </div>
+                    <div class="tip">
+                        <i class="fas fa-snowflake"></i>
+                        <div>
+                            <strong>AC Repair</strong>
+                            <p>Cooling & heating systems</p>
+                        </div>
+                    </div>
+                    <div class="tip">
+                        <i class="fas fa-hammer"></i>
+                        <div>
+                            <strong>Carpentry</strong>
+                            <p>Furniture, doors, cabinets</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- WHY FIXORA -->
+            <section style="margin-top: 50px; background: var(--bg-card); border-radius: var(--radius); padding: 40px; box-shadow: var(--shadow); border: 1px solid var(--border);">
+                <h2 style="color: var(--text-primary); margin-bottom: 20px; display: flex; align-items: center; gap: 12px;">
+                    <i class="fas fa-star" style="color: var(--accent);"></i>
+                    Why Choose Fixora?
+                </h2>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                    <div style="text-align: center;">
+                        <i class="fas fa-shield-halved" style="font-size: 2rem; color: var(--accent);"></i>
+                        <h4 style="color: var(--text-primary); margin-top: 8px;">Licensed Pros</h4>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem;">All technicians are certified</p>
+                    </div>
+                    <div style="text-align: center;">
+                        <i class="fas fa-clock" style="font-size: 2rem; color: var(--accent);"></i>
+                        <h4 style="color: var(--text-primary); margin-top: 8px;">On-Time Service</h4>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem;">Punctual & reliable</p>
+                    </div>
+                    <div style="text-align: center;">
+                        <i class="fas fa-hand-holding-dollar" style="font-size: 2rem; color: var(--accent);"></i>
+                        <h4 style="color: var(--text-primary); margin-top: 8px;">Fair Pricing</h4>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem;">Transparent & affordable</p>
+                    </div>
+                    <div style="text-align: center;">
+                        <i class="fas fa-headset" style="font-size: 2rem; color: var(--accent);"></i>
+                        <h4 style="color: var(--text-primary); margin-top: 8px;">24/7 Support</h4>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem;">We're always here to help</p>
+                    </div>
+                </div>
+            </section>
+     
+<section class="cta-section">
+    <div class="cta-container">
+        <h2>Ready to Get Started?</h2>
+        <p>Join thousands of satisfied customers and service providers today</p>
+        <div class="cta-buttons">
+            <a href="login.html" class="cta-btn-primary">
+                <i class="fas fa-arrow-right"></i> Request Service Now
+            </a>
+            <a href="login.html" class="cta-btn-secondary">
+                <i class="fas fa-user-plus"></i> Become a Provider
+            </a>
+        </div>
+    </div>
+</section>
+
+        </div>
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    <!-- ===== FOOTER ===== -->
+<footer class="footer">
+    <div class="footer-container">
+        <div class="footer-grid">
+
+            <!-- العمود 1: الشعار والوصف -->
+            <div class="footer-col">
+                <div class="footer-logo">
+                    <i class="fas fa-wrench"></i>
+                    <span>Fix<span class="logo-highlight">ora</span></span>
+                </div>
+                <p class="footer-desc">
+                    Connecting homeowners with trusted service providers for fast, reliable emergency repairs and maintenance.
+                </p>
+                <div class="footer-social">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+
+            <!-- العمود 2: روابط سريعة -->
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="services.html">Services</a></li>
+                    <li><a href="about.html">How it Works</a></li>
+                    <li><a href="contact.html">Contact Us</a></li>
+                    <li><a href="#">Testimonials</a></li>
+                </ul>
+            </div>
+
+            <!-- العمود 3: الخدمات -->
+            <div class="footer-col">
+                <h4>Services</h4>
+                <ul>
+                    <li><a href="services.html">Plumbing</a></li>
+                    <li><a href="services.html">Electrical</a></li>
+                    <li><a href="services.html">HVAC Repair</a></li>
+                    <li><a href="services.html">General Maintenance</a></li>
+                </ul>
+            </div>
+
+            <!-- العمود 4: معلومات الاتصال -->
+            <div class="footer-col">
+                <h4>Contact</h4>
+                <ul class="footer-contact">
+                    <li>
+                        <i class="fas fa-phone"></i>
+                        <a href="tel:+18001234567">+1 (800) 123-4567</a>
+                    </li>
+                    <li>
+                        <i class="fas fa-envelope"></i>
+                        <a href="mailto:support@fixora.com">support@fixora.com</a>
+                    </li>
+                    <li>
+                        <i class="fas fa-location-dot"></i>
+                        <span>123 Service Street, Tech City</span>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+
+        <!-- الخط السفلي -->
+        <div class="footer-bottom">
+            <p>© 2026 <strong>Fixora</strong>. All rights reserved.</p>
+            <div class="footer-bottom-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+    <script src="../js/script.js"></script>
+    <script src="../js/footer.js"></script>
+</body>
+</html>
