@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Orders - Fixora</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <style>
+        .order-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-sm);
+            padding: 20px 24px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            margin-bottom: 16px;
+            transition: var(--transition);
+        }
+
+        .order-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .order-header .order-id {
+            font-weight: 700;
+            color: var(--text-primary);
+            font-size: 1.05rem;
+        }
+
+        .order-header .order-date {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .order-body {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .order-body .service-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .order-body .service-info i {
+            font-size: 1.4rem;
+            color: var(--accent);
+        }
+
+        .order-body .service-info .service-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .order-body .service-info .service-location {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .order-status-badge {
+            padding: 4px 16px;
+            border-radius: 60px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #b45309;
+        }
+        .status-progress {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        .status-scheduled {
+            background: #e0e7ff;
+            color: #4338ca;
+        }
+        .status-completed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .status-cancelled {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .order-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-sm {
+            padding: 6px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Inter', sans-serif;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-outline:hover {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+
+        .filter-tab {
+            padding: 8px 20px;
+            border: 2px solid var(--border);
+            border-radius: 60px;
+            background: var(--bg-primary);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: var(--transition);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .filter-tab:hover,
+        .filter-tab.active {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: rgba(102, 126, 234, 0.08);
+        }
+
+        .filter-tab.active {
+            background: var(--accent);
+            color: white;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-light);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            color: var(--border);
+            margin-bottom: 16px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-wrench"></i>
+                <span>Fix<span class="logo-highlight">ora</span></span>
+            </div>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="customer-dashboard.html"><i class="fas fa-gauge-high"></i> Dashboard</a></li>
+                <li><a href="book-service.html"><i class="fas fa-plus-circle"></i> Book Service</a></li>
+                <li><a href="my-orders.html" class="active"><i class="fas fa-clock-rotate-left"></i> My Orders</a></li>
+                <li><a href="customer-profile.html"><i class="fas fa-user"></i> Profile</a></li>
+                <li id="authLink"><a href="login.html" onclick="handleLogout(event)"><i class="fas fa-right-from-bracket"></i> Logout</a></li>
+            </ul>
+            <div class="nav-actions">
+                <button id="theme-toggle" class="theme-btn">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <div class="hamburger" id="hamburger">
+                    <i class="fas fa-bars"></i>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ===== MAIN ===== -->
+    <main class="main-content">
+        <div class="container">
+            <h1 class="page-title">
+                <i class="fas fa-clock-rotate-left"></i> My Orders
+            </h1>
+
+            <!-- Filter Tabs -->
+            <div class="filter-tabs">
+                <button class="filter-tab active" data-filter="all">All</button>
+                <button class="filter-tab" data-filter="pending">Pending</button>
+                <button class="filter-tab" data-filter="in-progress">In Progress</button>
+                <button class="filter-tab" data-filter="scheduled">Scheduled</button>
+                <button class="filter-tab" data-filter="completed">Completed</button>
+            </div>
+
+            <!-- Orders List -->
+            <div id="ordersContainer">
+                <!-- Rendered by JavaScript -->
+            </div>
+
+        </div>
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer">
+        <p>© 2026 <strong>Fixora</strong> — Professional Home Repair Services</p>
+        <p class="footer-update">Last updated: <span id="footer-date"></span></p>
+    </footer>
+
+    <script src="../js/script.js"></script>
+    <script>
+        // ===== ORDERS DATA =====
+        const ordersData = [
+            { id: '#ORD-001', service: 'Plumbing', status: 'in-progress', date: '2026-07-08', address: 'Al-Malaz, Riyadh', price: '$50' },
+            { id: '#ORD-002', service: 'AC Repair', status: 'completed', date: '2026-07-06', address: 'Al-Narjis, Riyadh', price: '$80' },
+            { id: '#ORD-003', service: 'Electrical', status: 'pending', date: '2026-07-09', address: 'Al-Sulaimaniyah, Riyadh', price: '$60' },
+            { id: '#ORD-004', service: 'Carpentry', status: 'scheduled', date: '2026-07-10', address: 'Al-Rawdah, Riyadh', price: '$45' },
+            { id: '#ORD-005', service: 'Painting', status: 'pending', date: '2026-07-08', address: 'Al-Mughrizat, Riyadh', price: '$40' },
+            { id: '#ORD-006', service: 'Plumbing', status: 'completed', date: '2026-07-04', address: 'Al-Malaz, Riyadh', price: '$50' },
+        ];
+
+        let currentFilter = 'all';
+
+        // ===== RENDER ORDERS =====
+        function renderOrders(filter = 'all') {
+            const container = document.getElementById('ordersContainer');
+            const filtered = filter === 'all' ? ordersData : ordersData.filter(o => o.status === filter);
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <p style="font-weight: 600; color: var(--text-secondary);">No orders found</p>
+                        <a href="book-service.html" class="btn-primary" style="display: inline-flex; margin-top: 12px;">
+                            <i class="fas fa-plus"></i> Book a Service
+                        </a>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            filtered.forEach(order => {
+                const statusClass = {
+                    'pending': 'status-pending',
+                    'in-progress': 'status-progress',
+                    'scheduled': 'status-scheduled',
+                    'completed': 'status-completed',
+                    'cancelled': 'status-cancelled'
+                }[order.status] || 'status-pending';
+
+                const statusLabels = {
+                    'pending': 'Pending',
+                    'in-progress': 'In Progress',
+                    'scheduled': 'Scheduled',
+                    'completed': '✅ Completed',
+                    'cancelled': '❌ Cancelled'
+                };
+
+                const icon = {
+                    'Plumbing': 'fa-faucet',
+                    'Electrical': 'fa-bolt',
+                    'AC Repair': 'fa-snowflake',
+                    'Carpentry': 'fa-hammer',
+                    'Painting': 'fa-paint-roller',
+                    'Masonry': 'fa-trowel'
+                }[order.service] || 'fa-wrench';
+
+                html += `
+                    <div class="order-card">
+                        <div class="order-header">
+                            <span class="order-id">${order.id}</span>
+                            <span class="order-date"><i class="far fa-calendar"></i> ${order.date}</span>
+                        </div>
+                        <div class="order-body">
+                            <div class="service-info">
+                                <i class="fas ${icon}"></i>
+                                <div>
+                                    <div class="service-name">${order.service}</div>
+                                    <div class="service-location"><i class="fas fa-location-dot" style="font-size: 0.7rem;"></i> ${order.address}</div>
+                                </div>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                                <span class="order-status-badge ${statusClass}">${statusLabels[order.status] || order.status}</span>
+                                <span style="font-weight: 700; color: var(--accent);">${order.price}</span>
+                                <div class="order-actions">
+                                    ${order.status !== 'completed' && order.status !== 'cancelled' ? `
+                                        <button class="btn-sm btn-danger" onclick="cancelOrder('${order.id}')">
+                                            <i class="fas fa-xmark"></i> Cancel
+                                        </button>
+                                    ` : ''}
+                                    <a href="order-details.html?id=${order.id}" class="btn-sm btn-outline">
+                                        <i class="fas fa-eye"></i> Details
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // ===== CANCEL ORDER =====
+        function cancelOrder(orderId) {
+            if (confirm(`Are you sure you want to cancel ${orderId}?`)) {
+                const order = ordersData.find(o => o.id === orderId);
+                if (order) {
+                    order.status = 'cancelled';
+                    renderOrders(currentFilter);
+                    alert(`❌ ${orderId} has been cancelled.`);
+                }
+            }
+        }
+
+        // ===== FILTER TABS =====
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                currentFilter = this.dataset.filter;
+                renderOrders(currentFilter);
+            });
+        });
+
+        // ===== CHECK LOGIN =====
+        document.addEventListener('DOMContentLoaded', function() {
+            const role = localStorage.getItem('userRole');
+            if (role !== 'customer') {
+                window.location.href = 'login.html';
+            }
+            renderOrders('all');
+        });
+
+        function handleLogout(event) {
+            event.preventDefault();
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('userRole');
+            localStorage.removeItem('userEmail');
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>

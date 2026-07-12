@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profile - Fixora</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <style>
+        .profile-container {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+        }
+
+        .profile-sidebar {
+            background: var(--bg-card);
+            border-radius: var(--radius-sm);
+            padding: 30px 24px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            text-align: center;
+            height: fit-content;
+        }
+
+        .profile-avatar-large {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: white;
+            margin: 0 auto 12px;
+        }
+
+        .profile-sidebar h3 {
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .profile-sidebar .role-tag {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            padding: 4px 16px;
+            border-radius: 60px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .profile-sidebar .member-since {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-top: 8px;
+        }
+
+        .profile-form {
+            background: var(--bg-card);
+            border-radius: var(--radius-sm);
+            padding: 30px 28px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+        }
+
+        .profile-form h3 {
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            transition: var(--transition);
+            outline: none;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.12);
+        }
+
+        .btn-save {
+            padding: 12px 32px;
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Inter', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.35);
+        }
+
+        @media (max-width: 768px) {
+            .profile-container {
+                grid-template-columns: 1fr;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-wrench"></i>
+                <span>Fix<span class="logo-highlight">ora</span></span>
+            </div>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="customer-dashboard.html"><i class="fas fa-gauge-high"></i> Dashboard</a></li>
+                <li><a href="book-service.html"><i class="fas fa-plus-circle"></i> Book Service</a></li>
+                <li><a href="my-orders.html"><i class="fas fa-clock-rotate-left"></i> My Orders</a></li>
+                <li><a href="customer-profile.html" class="active"><i class="fas fa-user"></i> Profile</a></li>
+                <li id="authLink"><a href="login.html" onclick="handleLogout(event)"><i class="fas fa-right-from-bracket"></i> Logout</a></li>
+            </ul>
+            <div class="nav-actions">
+                <button id="theme-toggle" class="theme-btn">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <div class="hamburger" id="hamburger">
+                    <i class="fas fa-bars"></i>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ===== MAIN ===== -->
+    <main class="main-content">
+        <div class="container">
+            <h1 class="page-title">
+                <i class="fas fa-user"></i> My Profile
+            </h1>
+
+            <div class="profile-container">
+
+                <!-- Sidebar -->
+                <div class="profile-sidebar">
+                    <div class="profile-avatar-large">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <h3 id="profileName">Ahmed Al-Saud</h3>
+                    <span class="role-tag">Customer</span>
+                    <p class="member-since">Member since Jan 2024</p>
+                    <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border);">
+                        <div style="display: flex; justify-content: space-around;">
+                            <div>
+                                <div style="font-weight: 900; color: var(--text-primary);">12</div>
+                                <div style="font-size: 0.75rem; color: var(--text-secondary);">Orders</div>
+                            </div>
+                            <div>
+                                <div style="font-weight: 900; color: var(--text-primary);">4.9</div>
+                                <div style="font-size: 0.75rem; color: var(--text-secondary);">Rating</div>
+                            </div>
+                            <div>
+                                <div style="font-weight: 900; color: var(--text-primary);">8</div>
+                                <div style="font-size: 0.75rem; color: var(--text-secondary);">Completed</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form -->
+                <div class="profile-form">
+                    <h3><i class="fas fa-pen" style="color: var(--accent);"></i> Edit Profile</h3>
+
+                    <form onsubmit="saveProfile(event)">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Full Name</label>
+                                <input type="text" id="fullName" value="Ahmed Al-Saud" />
+                            </div>
+                            <div class="form-group">
+                                <label>Email Address</label>
+                                <input type="email" id="email" value="ahmed@example.com" />
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Phone Number</label>
+                                <input type="tel" id="phone" value="+966 50 123 4567" />
+                            </div>
+                            <div class="form-group">
+                                <label>City</label>
+                                <select id="city">
+                                    <option selected>Riyadh</option>
+                                    <option>Jeddah</option>
+                                    <option>Dammam</option>
+                                    <option>Mecca</option>
+                                    <option>Medina</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Address</label>
+                            <input type="text" id="address" value="123 Main Street, Al-Malaz, Riyadh" />
+                        </div>
+
+                        <button type="submit" class="btn-save">
+                            <i class="fas fa-floppy-disk"></i> Save Changes
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer">
+        <p>© 2026 <strong>Fixora</strong> — Professional Home Repair Services</p>
+        <p class="footer-update">Last updated: <span id="footer-date"></span></p>
+    </footer>
+
+    <script src="../js/script.js"></script>
+    <script>
+        function saveProfile(event) {
+            event.preventDefault();
+            const name = document.getElementById('fullName').value;
+            document.getElementById('profileName').textContent = name;
+            alert('✅ Profile updated successfully!');
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const role = localStorage.getItem('userRole');
+            if (role !== 'customer') {
+                window.location.href = 'login.html';
+            }
+        });
+
+        function handleLogout(event) {
+            event.preventDefault();
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('userRole');
+            localStorage.removeItem('userEmail');
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>
