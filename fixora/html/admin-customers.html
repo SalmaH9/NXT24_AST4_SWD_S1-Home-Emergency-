@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin - Customers</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #f0f4f8;
+            --bg-card: #ffffff;
+            --text-primary: #0a1628;
+            --text-secondary: #4a5568;
+            --text-light: #718096;
+            --border: rgba(0, 0, 0, 0.06);
+            --shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+            --shadow-hover: 0 30px 80px rgba(0, 0, 0, 0.15);
+            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --accent: #667eea;
+            --radius-sm: 16px;
+            --transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        body.dark-mode {
+            --bg-primary: #0a0e1a;
+            --bg-card: #1a2335;
+            --text-primary: #e2e8f0;
+            --text-secondary: #a0aec0;
+            --text-light: #718096;
+            --border: rgba(255, 255, 255, 0.06);
+            --shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            --shadow-hover: 0 30px 80px rgba(0, 0, 0, 0.6);
+        }
+
+        /* ===== SIDEBAR ===== */
+        .page-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 24px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sidebar-header .logo {
+            font-size: 1.4rem;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-primary);
+        }
+
+        .sidebar-header .logo i {
+            color: var(--accent);
+            font-size: 1.6rem;
+        }
+
+        .sidebar-header .logo .logo-highlight {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .sidebar-header .admin-badge {
+            font-size: 0.7rem;
+            color: var(--text-light);
+            margin-top: 4px;
+            display: block;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 16px 12px;
+        }
+
+        .sidebar-nav ul {
+            list-style: none;
+        }
+
+        .sidebar-nav ul li {
+            margin-bottom: 4px;
+        }
+
+        .sidebar-nav ul li a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-nav ul li a i {
+            width: 20px;
+            font-size: 1.1rem;
+        }
+
+        .sidebar-nav ul li a:hover {
+            background: rgba(102, 126, 234, 0.08);
+            color: var(--accent);
+        }
+
+        .sidebar-nav ul li a.active {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .sidebar-divider {
+            border-top: 1px solid var(--border);
+            margin: 12px 0;
+            padding-top: 12px;
+        }
+
+        .sidebar-footer {
+            padding: 16px 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .theme-btn-sidebar {
+            width: 100%;
+            padding: 10px 16px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .theme-btn-sidebar:hover {
+            background: rgba(102, 126, 234, 0.08);
+            color: var(--accent);
+        }
+
+        /* ===== MAIN AREA ===== */
+        .main-area {
+            flex: 1;
+            margin-left: 260px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 30px 30px 20px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* ===== PAGE HEADER ===== */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+
+        .page-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .page-title i {
+            color: var(--accent);
+        }
+
+        /* ===== TABLE ===== */
+        .table-container {
+            background: var(--bg-card);
+            border-radius: var(--radius-sm);
+            padding: 24px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            overflow-x: auto;
+        }
+
+        .table-container table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table-container th {
+            text-align: left;
+            padding: 12px 16px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .table-container td {
+            padding: 14px 16px;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .table-container tr:hover {
+            background: rgba(102, 126, 234, 0.02);
+        }
+
+        .table-container .customer-name {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .status-badge {
+            padding: 4px 14px;
+            border-radius: 60px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            display: inline-block;
+        }
+
+        .status-active {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-inactive {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .action-btn {
+            padding: 4px 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: 'Inter', sans-serif;
+            margin-right: 4px;
+        }
+
+        .action-btn.edit {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+        }
+
+        .action-btn.edit:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .action-btn.delete {
+            background: rgba(229, 62, 62, 0.1);
+            color: #e53e3e;
+        }
+
+        .action-btn.delete:hover {
+            background: #e53e3e;
+            color: white;
+        }
+
+        .btn-add {
+            padding: 10px 20px;
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        /* ===== SIDEBAR TOGGLE ===== */
+        .sidebar-toggle {
+            display: none;
+            position: fixed;
+            top: 16px;
+            left: 16px;
+            z-index: 1001;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 10px 14px;
+            font-size: 1.2rem;
+            color: var(--text-primary);
+            cursor: pointer;
+            box-shadow: var(--shadow);
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 999;
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            background: var(--bg-card);
+            border-top: 1px solid var(--border);
+            color: var(--text-secondary);
+            text-align: center;
+            padding: 20px;
+        }
+
+        .footer p {
+            margin: 4px 0;
+            font-weight: 400;
+            font-size: 0.9rem;
+        }
+
+        .footer strong {
+            color: var(--text-primary);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 280px;
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .sidebar-overlay.open {
+                display: block;
+            }
+            .sidebar-toggle {
+                display: block;
+            }
+            .main-area {
+                margin-left: 0;
+                padding-top: 60px;
+            }
+            .main-content {
+                padding: 20px 16px;
+            }
+            .page-title {
+                font-size: 1.4rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .table-container {
+                padding: 16px;
+            }
+            .table-container th,
+            .table-container td {
+                padding: 8px 10px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== SIDEBAR TOGGLE ===== -->
+    <button class="sidebar-toggle" id="sidebarToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- ===== PAGE WRAPPER ===== -->
+    <div class="page-wrapper">
+
+        <!-- ===== SIDEBAR ===== -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-wrench"></i>
+                    <span>Fix<span class="logo-highlight">ora</span></span>
+                </div>
+                <span class="admin-badge"><i class="fas fa-shield-halved"></i> Admin Panel</span>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="admin-dashboard.html"><i class="fas fa-gauge-high"></i> Dashboard</a></li>
+                    <li><a href="admin-customers.html" class="active"><i class="fas fa-users"></i> Customers</a></li>
+                    <li><a href="admin-providers.html"><i class="fas fa-user-tie"></i> Providers</a></li>
+                    <li><a href="admin-orders.html"><i class="fas fa-clipboard-list"></i> Orders</a></li>
+                    <li><a href="admin-reports.html"><i class="fas fa-chart-line"></i> Reports</a></li>
+                    <li><a href="admin-settings.html"><i class="fas fa-gear"></i> Settings</a></li>
+                    <li class="sidebar-divider"></li>
+                    <li>
+                        <a href="index.html" onclick="handleLogout(event)" style="color: #ef4444; font-weight: 600;">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <button id="themeToggle" class="theme-btn-sidebar">
+                    <i class="fas fa-moon"></i> Dark Mode
+                </button>
+            </div>
+        </aside>
+
+        <!-- ===== MAIN AREA ===== -->
+        <div class="main-area">
+
+            <main class="main-content">
+                <div class="container">
+
+                    <!-- ===== HEADER ===== -->
+                    <div class="page-header">
+                        <h1 class="page-title">
+                            <i class="fas fa-users"></i> Customers
+                        </h1>
+                        <button class="btn-add" onclick="addCustomer()">
+                            <i class="fas fa-plus"></i> Add Customer
+                        </button>
+                    </div>
+
+                    <!-- ===== TABLE ===== -->
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Status</th>
+                                    <th>Joined</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="customer-name">Ahmed Al-Saud</td>
+                                    <td>ahmed@email.com</td>
+                                    <td>+966 50 123 4567</td>
+                                    <td><span class="status-badge status-active">Active</span></td>
+                                    <td>Jan 2024</td>
+                                    <td>
+                                        <button class="action-btn edit" onclick="editCustomer('Ahmed Al-Saud')"><i class="fas fa-edit"></i></button>
+                                        <button class="action-btn delete" onclick="deleteCustomer('Ahmed Al-Saud')"><i class="fas fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="customer-name">Fatima Al-Zahra</td>
+                                    <td>fatima@email.com</td>
+                                    <td>+966 50 234 5678</td>
+                                    <td><span class="status-badge status-active">Active</span></td>
+                                    <td>Feb 2024</td>
+                                    <td>
+                                        <button class="action-btn edit" onclick="editCustomer('Fatima Al-Zahra')"><i class="fas fa-edit"></i></button>
+                                        <button class="action-btn delete" onclick="deleteCustomer('Fatima Al-Zahra')"><i class="fas fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="customer-name">Mohammed Al-Otaibi</td>
+                                    <td>mohammed@email.com</td>
+                                    <td>+966 50 345 6789</td>
+                                    <td><span class="status-badge status-inactive">Inactive</span></td>
+                                    <td>Mar 2024</td>
+                                    <td>
+                                        <button class="action-btn edit" onclick="editCustomer('Mohammed Al-Otaibi')"><i class="fas fa-edit"></i></button>
+                                        <button class="action-btn delete" onclick="deleteCustomer('Mohammed Al-Otaibi')"><i class="fas fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="customer-name">Nora Al-Fahd</td>
+                                    <td>nora@email.com</td>
+                                    <td>+966 50 456 7890</td>
+                                    <td><span class="status-badge status-active">Active</span></td>
+                                    <td>Apr 2024</td>
+                                    <td>
+                                        <button class="action-btn edit" onclick="editCustomer('Nora Al-Fahd')"><i class="fas fa-edit"></i></button>
+                                        <button class="action-btn delete" onclick="deleteCustomer('Nora Al-Fahd')"><i class="fas fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="customer-name">Sultan Al-Ghamdi</td>
+                                    <td>sultan@email.com</td>
+                                    <td>+966 50 567 8901</td>
+                                    <td><span class="status-badge status-inactive">Inactive</span></td>
+                                    <td>May 2024</td>
+                                    <td>
+                                        <button class="action-btn edit" onclick="editCustomer('Sultan Al-Ghamdi')"><i class="fas fa-edit"></i></button>
+                                        <button class="action-btn delete" onclick="deleteCustomer('Sultan Al-Ghamdi')"><i class="fas fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </main>
+
+            <!-- ===== FOOTER ===== -->
+            <footer class="footer">
+                <p>© 2026 <strong>Fixora</strong> — Admin Panel</p>
+            </footer>
+
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // SIDEBAR TOGGLE
+        // ==========================================
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+        function toggleSidebar() {
+            sidebar.classList.toggle('open');
+            sidebarOverlay.classList.toggle('open');
+        }
+
+        sidebarToggle.addEventListener('click', toggleSidebar);
+        sidebarOverlay.addEventListener('click', toggleSidebar);
+
+        // ==========================================
+        // THEME TOGGLE
+        // ==========================================
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+
+        if (localStorage.getItem('adminTheme') === 'dark') {
+            body.classList.add('dark-mode');
+            themeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+        }
+
+        themeToggle.addEventListener('click', function() {
+            body.classList.toggle('dark-mode');
+            if (body.classList.contains('dark-mode')) {
+                localStorage.setItem('adminTheme', 'dark');
+                this.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+            } else {
+                localStorage.setItem('adminTheme', 'light');
+                this.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
+            }
+        });
+
+        // ==========================================
+        // FUNCTIONS
+        // ==========================================
+        function addCustomer() {
+            alert('📝 Add new customer form would open here');
+        }
+
+        function editCustomer(name) {
+            alert(`✏️ Edit customer: ${name}`);
+        }
+
+        function deleteCustomer(name) {
+            if (confirm(`⚠️ Are you sure you want to delete ${name}?`)) {
+                alert(`🗑️ ${name} has been deleted`);
+            }
+        }
+
+        function handleLogout(event) {
+            event.preventDefault();
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('userRole');
+            localStorage.removeItem('userEmail');
+            window.location.href = 'index.html';
+        }
+    </script>
+
+</body>
+</html>

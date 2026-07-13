@@ -83,8 +83,8 @@ function updateSidebarNavigation() {
 
     if (role === 'customer') {
         links = `
-            <li><a href="post-request.html"><i class="fas fa-plus-circle"></i> Post Request</a></li>
             <li><a href="customer-dashboard.html"><i class="fas fa-gauge-high"></i> Dashboard</a></li>
+            <li><a href="post-request.html"><i class="fas fa-plus-circle"></i> Post Request</a></li>            
             <li><a href="my-orders.html"><i class="fas fa-list-check"></i> My Orders</a></li>
             <li><a href="chat.html"><i class="fas fa-comments"></i> Messages</a></li>
             <li><a href="customer-profile.html"><i class="fas fa-user"></i> Profile</a></li>
@@ -201,4 +201,30 @@ document.addEventListener('DOMContentLoaded', function() {
     if (protectedProviderPages.includes(currentPage) && role !== 'provider') {
         window.location.href = 'login.html';
     }
+});
+
+
+
+// ==========================================
+// SET ACTIVE LINK IN SIDEBAR (لون ثابت)
+// ==========================================
+function setActiveLink() {
+    const currentPage = window.location.pathname.split('/').pop();
+    const links = document.querySelectorAll('.sidebar-nav ul li a');
+    
+    links.forEach(link => {
+        // شيل الـ active من كل الروابط
+        link.classList.remove('active');
+        
+        // لو الرابط هو الصفحة الحالية، ضيف active
+        const href = link.getAttribute('href');
+        if (href === currentPage) {
+            link.classList.add('active');
+        }
+    });
+}
+
+// تشغيلها عند تحميل الصفحة
+document.addEventListener('DOMContentLoaded', function() {
+    setActiveLink();
 });

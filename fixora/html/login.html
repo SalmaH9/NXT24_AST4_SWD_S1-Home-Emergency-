@@ -321,7 +321,7 @@
             max-width: 440px;
             width: 100%;
             border: 1px solid rgba(255, 255, 255, 0.4);
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.06), 
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.06),
                         0 10px 30px rgba(0, 0, 0, 0.02),
                         inset 0 1px 0 rgba(255, 255, 255, 0.5);
             position: relative;
@@ -392,7 +392,109 @@
             font-size: 0.95rem;
         }
 
-        /* ===== FORM ===== */
+        /* ==========================================
+           ADMIN LOGIN STYLES (جديد)
+           ========================================== */
+
+        /* Admin Login Link */
+        .admin-login-link {
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .admin-login-link a {
+            color: rgba(26, 32, 44, 0.3);
+            text-decoration: none;
+            font-size: 0.8rem;
+            transition: 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .admin-login-link a:hover {
+            color: #667eea;
+            text-decoration: underline;
+        }
+
+        /* Admin Login Form */
+        .admin-form {
+            display: none;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+            margin-bottom: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .admin-form.show {
+            display: block;
+            animation: slideIn 0.4s ease forwards;
+        }
+
+        .admin-form .form-group {
+            margin-bottom: 12px;
+        }
+
+        .admin-form .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: rgba(26, 32, 44, 0.6);
+            margin-bottom: 4px;
+        }
+
+        .admin-form .form-group input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+            background: rgba(255, 255, 255, 0.15);
+            color: #1a202c;
+            transition: 0.3s;
+            outline: none;
+        }
+
+        .admin-form .form-group input:focus {
+            border-color: #667eea;
+            background: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.04);
+        }
+
+        .admin-form .form-group input::placeholder {
+            color: rgba(26, 32, 44, 0.2);
+        }
+
+        /* Admin Login Button */
+        .btn-admin-login {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-admin-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(102, 126, 234, 0.2);
+        }
+
+        /* ==========================================
+           FORM
+           ========================================== */
         .login-form {
             position: relative;
         }
@@ -819,6 +921,32 @@
             <p>Sign in to manage your repairs</p>
         </div>
 
+        <!-- ========================================== -->
+        <!-- ===== ADMIN LOGIN SECTION (جديد) ===== -->
+        <!-- ========================================== -->
+
+        <!-- 1. رابط Admin Login -->
+        <div class="admin-login-link">
+            <a href="#" onclick="toggleAdminForm(event)">
+                <i class="fas fa-shield-halved"></i> Admin Login
+            </a>
+        </div>
+
+        <!-- 2. Admin Login Form (يظهر عند الضغط) -->
+        <div class="admin-form" id="adminForm">
+            <div class="form-group">
+                <label>Admin Email</label>
+                <input type="email" id="adminEmail" placeholder="you@example.com" />
+            </div>
+            <div class="form-group">
+                <label>Admin Password</label>
+                <input type="password" id="adminPassword" placeholder="••••••••" />
+            </div>
+            <button type="button" class="btn-admin-login" onclick="handleAdminLogin()">
+                <i class="fas fa-shield-halved"></i> Admin Sign In
+            </button>
+        </div>
+
         <!-- Login Form -->
         <form class="login-form" id="loginForm" onsubmit="handleLogin(event)">
 
@@ -898,106 +1026,157 @@
         </div>
 
     </div>
+
     <script>
-        // ==========================================
-        // ROLE SELECTOR
-        // ==========================================
-        const customerRole = document.getElementById('customerRole');
-        const providerRole = document.getElementById('providerRole');
+    // ==========================================
+    // ROLE SELECTOR
+    // ==========================================
+    const customerRole = document.getElementById('customerRole');
+    const providerRole = document.getElementById('providerRole');
 
-        customerRole.addEventListener('click', function() {
-            this.classList.add('active');
-            providerRole.classList.remove('active');
-            document.querySelector('input[name="role"][value="customer"]').checked = true;
-        });
+    customerRole.addEventListener('click', function() {
+        this.classList.add('active');
+        providerRole.classList.remove('active');
+        document.querySelector('input[name="role"][value="customer"]').checked = true;
+    });
 
-        providerRole.addEventListener('click', function() {
-            this.classList.add('active');
-            customerRole.classList.remove('active');
-            document.querySelector('input[name="role"][value="provider"]').checked = true;
-        });
+    providerRole.addEventListener('click', function() {
+        this.classList.add('active');
+        customerRole.classList.remove('active');
+        document.querySelector('input[name="role"][value="provider"]').checked = true;
+    });
 
-        // ==========================================
-        // TOGGLE PASSWORD
-        // ==========================================
-        const togglePassword = document.getElementById('togglePassword');
-        const passwordInput = document.getElementById('password');
+    // ==========================================
+    // TOGGLE PASSWORD
+    // ==========================================
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('password');
 
-        togglePassword.addEventListener('click', function() {
-            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-            passwordInput.setAttribute('type', type);
-            const icon = this.querySelector('i');
-            icon.classList.toggle('fa-eye');
-            icon.classList.toggle('fa-eye-slash');
-        });
+    togglePassword.addEventListener('click', function() {
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        const icon = this.querySelector('i');
+        icon.classList.toggle('fa-eye');
+        icon.classList.toggle('fa-eye-slash');
+    });
 
-        // ==========================================
-        // HANDLE LOGIN
-        // ==========================================
-        function handleLogin(event) {
-            event.preventDefault();
+    // ==========================================
+    // HANDLE LOGIN (العادي)
+    // ==========================================
+    function handleLogin(event) {
+        event.preventDefault();
 
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const errorMessage = document.getElementById('errorMessage');
-            const errorText = document.getElementById('errorText');
-            const rememberMe = document.getElementById('rememberMe').checked;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const errorMessage = document.getElementById('errorMessage');
+        const errorText = document.getElementById('errorText');
+        const rememberMe = document.getElementById('rememberMe').checked;
 
-            const role = document.querySelector('input[name="role"]:checked').value;
+        const role = document.querySelector('input[name="role"]:checked').value;
 
-            if (email === '' || password === '') {
-                errorText.textContent = 'Please fill in all fields';
-                errorMessage.classList.add('show');
-                return;
-            }
-
-            const validCustomer = email === 'demo@fixora.com' && password === 'password123';
-            const validProvider = email === 'provider@fixora.com' && password === 'provider123';
-
-            if (validCustomer || validProvider) {
-                errorMessage.classList.remove('show');
-
-                localStorage.setItem('isLoggedIn', 'true');
-                localStorage.setItem('userRole', role);
-                localStorage.setItem('userEmail', email);
-
-                if (rememberMe) {
-                    localStorage.setItem('rememberMe', 'true');
-                }
-
-                if (role === 'customer') {
-                    window.location.href = 'customer-dashboard.html';
-                } else if (role === 'provider') {
-                    window.location.href = 'provider-dashboard.html';
-                }
-            } else {
-                errorText.textContent = 'Invalid credentials. Try: demo@fixora.com / password123 or provider@fixora.com / provider123';
-                errorMessage.classList.add('show');
-            }
+        if (email === '' || password === '') {
+            errorText.textContent = 'Please fill in all fields';
+            errorMessage.classList.add('show');
+            return;
         }
 
-        // ==========================================
-        // REAL-TIME VALIDATION
-        // ==========================================
-        document.querySelectorAll('#loginForm input').forEach(input => {
-            input.addEventListener('input', () => {
-                document.getElementById('errorMessage').classList.remove('show');
-            });
-        });
+        const validCustomer = email === 'demo@fixora.com' && password === 'password123';
+        const validProvider = email === 'provider@fixora.com' && password === 'provider123';
 
-        // ==========================================
-        // AUTO-FILL REMEMBERED EMAIL
-        // ==========================================
-        window.addEventListener('DOMContentLoaded', function() {
-            if (localStorage.getItem('rememberMe') === 'true') {
-                const email = localStorage.getItem('userEmail');
-                if (email) {
-                    document.getElementById('email').value = email;
-                    document.getElementById('rememberMe').checked = true;
-                }
+        if (validCustomer || validProvider) {
+            errorMessage.classList.remove('show');
+
+            localStorage.setItem('isLoggedIn', 'true');
+            localStorage.setItem('userRole', role);
+            localStorage.setItem('userEmail', email);
+
+            // حفظ Remember Me بس لو مش أدمن
+            if (rememberMe && email !== 'admin@fixora.com') {
+                localStorage.setItem('rememberMe', 'true');
+            } else {
+                localStorage.removeItem('rememberMe');
             }
+
+            if (role === 'customer') {
+                window.location.href = 'customer-dashboard.html';
+            } else if (role === 'provider') {
+                window.location.href = 'provider-dashboard.html';
+            }
+        } else {
+            errorText.textContent = 'Invalid credentials. Try: demo@fixora.com / password123 or provider@fixora.com / provider123';
+            errorMessage.classList.add('show');
+        }
+    }
+
+    // ==========================================
+    // REAL-TIME VALIDATION
+    // ==========================================
+    document.querySelectorAll('#loginForm input').forEach(input => {
+        input.addEventListener('input', () => {
+            document.getElementById('errorMessage').classList.remove('show');
         });
-    </script>
+    });
+
+    // ==========================================
+    // AUTO-FILL REMEMBERED EMAIL (للمستخدمين العاديين بس)
+    // ==========================================
+    window.addEventListener('DOMContentLoaded', function() {
+        // لو في صفحة login و فيه Remember Me
+        if (localStorage.getItem('rememberMe') === 'true') {
+            const email = localStorage.getItem('userEmail');
+            // بس لو الإيميل مش بتاع الأدمن
+            if (email && email !== 'admin@fixora.com') {
+                document.getElementById('email').value = email;
+                document.getElementById('rememberMe').checked = true;
+            }
+        }
+    });
+
+    // ==========================================
+    // ADMIN LOGIN FUNCTIONS
+    // ==========================================
+
+    // 1. إظهار/إخفاء فورم الأدمن
+    function toggleAdminForm(event) {
+        event.preventDefault();
+        document.getElementById('adminForm').classList.toggle('show');
+    }
+
+    // 2. التحقق من بيانات الأدمن
+    function handleAdminLogin() {
+        const password = document.getElementById('adminPassword').value;
+
+        if (password === '') {
+            alert('⚠️ Please enter admin password');
+            return;
+        }
+
+        if (password === 'admin123') {
+            localStorage.setItem('isLoggedIn', 'true');
+            localStorage.setItem('userRole', 'admin');
+            localStorage.setItem('userEmail', 'admin@fixora.com');
+            
+            // ✨ مسح Remember Me عشان ما يظهرش إيميل الأدمن
+            localStorage.removeItem('rememberMe');
+            
+            window.location.href = 'admin-dashboard.html';
+        } else {
+            alert('❌ Invalid admin password. Try: admin123');
+        }
+    }
+
+    // 3. الضغط على Enter في حقل الأدمن
+    document.addEventListener('DOMContentLoaded', function() {
+        const adminPassword = document.getElementById('adminPassword');
+        if (adminPassword) {
+            adminPassword.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    handleAdminLogin();
+                }
+            });
+        }
+    });
+</script>
 
 </body>
 </html>

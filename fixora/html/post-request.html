@@ -18,7 +18,7 @@
 
     <div class="page-wrapper">
         <!-- SIDEBAR -->
-        <aside class="sidebar" id="sidebar">
+         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div class="logo">
                     <i class="fas fa-wrench"></i>
@@ -27,16 +27,15 @@
             </div>
             <nav class="sidebar-nav">
                 <ul>
-                    <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
-                    <li><a href="services.html"><i class="fas fa-tools"></i> Services</a></li>
-                    <li><a href="post-request.html" class="active"><i class="fas fa-plus-circle"></i> Post Request</a></li>
-                    <li><a href="select-technician.html"><i class="fas fa-handshake"></i> Offers</a></li>
                     <li><a href="customer-dashboard.html"><i class="fas fa-gauge-high"></i> Dashboard</a></li>
+                    <li><a href="post-request.html" class="active"><i class="fas fa-plus-circle"></i> Post Request</a></li>
                     <li><a href="my-orders.html"><i class="fas fa-list-check"></i> My Orders</a></li>
                     <li><a href="customer-profile.html"><i class="fas fa-user"></i> Profile</a></li>
-                    <li><a href="about.html"><i class="fas fa-circle-info"></i> About</a></li>
-                    <li><a href="contact.html"><i class="fas fa-envelope"></i> Contact</a></li>
-                    <li><a href="login.html" onclick="handleLogout(event)"><i class="fas fa-right-from-bracket"></i> Logout</a></li>
+                    <li style="margin-top: 16px; border-top: 1px solid var(--border); padding-top: 12px;">
+                        <a href="index.html" onclick="handleLogout(event)" style="color: #ef4444; font-weight: 600;">
+                            <i class="fas fa-sign-out-alt" style="margin-right: 10px;"></i> Logout
+                        </a>
+                    </li>
                 </ul>
             </nav>
             <div class="sidebar-footer">
