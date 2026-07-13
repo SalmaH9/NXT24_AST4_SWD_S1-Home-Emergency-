@@ -6,12 +6,14 @@ namespace HomeEmergency.Domain.Entities;
 public class RefreshToken : BaseEntity
 {
     public Guid UserId { get; set; }
-    public string Token { get; set; } = string.Empty;
+    public string? Token { get; set; }
+    public string? TokenHash { get; set; }
     public DateTime ExpiresAt { get; set; }
     public string CreatedByIp { get; set; } = string.Empty;
     public DateTime? RevokedAt { get; set; }
     public string? RevokedByIp { get; set; }
     public string? ReplacedByToken { get; set; }
+    public string? ReplacedByTokenHash { get; set; }
 
     public bool IsExpired => DateTime.UtcNow >= ExpiresAt;
     public bool IsRevoked => RevokedAt != null;

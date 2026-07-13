@@ -30,5 +30,12 @@ public class ApplicationUser : IdentityUser<Guid>
     public virtual ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
     public virtual ICollection<UserWarning> WarningsReceived { get; set; } = new List<UserWarning>();
     public virtual ICollection<UserWarning> WarningsIssued { get; set; } = new List<UserWarning>();
+    public virtual ICollection<ChatParticipant> ChatParticipants { get; set; } = new List<ChatParticipant>();
+    public virtual ICollection<Message> SentMessages { get; set; } = new List<Message>();
+    public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
+    public virtual ICollection<Rating> RatingsGiven { get; set; } = new List<Rating>();
+    public virtual ICollection<Rating> RatingsReceived { get; set; } = new List<Rating>();
+    public virtual ICollection<Advertisement> Advertisements { get; set; } = new List<Advertisement>();
+    public virtual ICollection<AIConversation> AIConversations { get; set; } = new List<AIConversation>();
 }
 

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using HomeEmergency.Application.DTOs.Files;
 using Microsoft.AspNetCore.Identity;
 using HomeEmergency.Application.DTOs.Verification;
 using HomeEmergency.Application.Interfaces.Persistence;
@@ -19,17 +20,20 @@ public class DocumentService : IDocumentService
     private readonly IFileStorageService _fileStorageService;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IMapper _mapper;
+    private readonly INotificationService _notificationService;
 
     public DocumentService(
         IUnitOfWork unitOfWork,
         IFileStorageService fileStorageService,
         UserManager<ApplicationUser> userManager,
-        IMapper mapper)
+        IMapper mapper,
+        INotificationService notificationService)
     {
         _unitOfWork = unitOfWork;
         _fileStorageService = fileStorageService;
         _userManager = userManager;
         _mapper = mapper;
+        _notificationService = notificationService;
     }
 
     public async Task<DocumentDto> UploadDocumentAsync(Guid userId, Stream fileStream, string fileName, DocumentType documentType)
@@ -50,7 +54,7 @@ public class DocumentService : IDocumentService
         }
 
         // 3. Save file using sanitized GUID and return the relative path
-        var relativeUrl = await _fileStorageService.SaveFileAsync(fileStream, fileName, "verification-documents");
+        var relativeUrl = await _fileStorageService.SaveProtectedFileAsync(fileStream, fileName, "verification-documents");
 
         // 4. Create database record
         var document = new VerificationDocument
@@ -78,6 +82,22 @@ public class DocumentService : IDocumentService
     {
         var pendingDocs = await _unitOfWork.VerificationDocuments.FindAsync(d => d.Status == DocumentStatus.Pending);
         return _mapper.Map<IEnumerable<DocumentDto>>(pendingDocs);
+    }
+
+    public async Task<StoredFileDownloadDto> DownloadDocumentAsync(Guid documentId, Guid requesterUserId, bool isAdmin)
+    {
+        var document = await _unitOfWork.VerificationDocuments.GetByIdAsync(documentId);
+        if (document == null)
+        {
+            throw new KeyNotFoundException("Verification document not found.");
+        }
+
+        if (!isAdmin && document.UserId != requesterUserId)
+        {
+            throw new UnauthorizedAccessException("You are not allowed to access this document.");
+        }
+
+        return await _fileStorageService.OpenReadAsync(document.DocumentUrl);
     }
 
     public async Task<bool> ApproveDocumentAsync(Guid documentId, Guid adminId)
@@ -115,6 +135,9 @@ public class DocumentService : IDocumentService
 
         // Commit modifications
         await _unitOfWork.CompleteAsync();
+        await _notificationService.CreateAsync(document.UserId, NotificationType.VerificationApproved,
+            "Verification approved", "One of your verification documents has been approved.",
+            NotificationReferenceType.VerificationDocument, document.Id);
 
         return true;
     }
@@ -136,6 +159,9 @@ public class DocumentService : IDocumentService
 
         _unitOfWork.VerificationDocuments.Update(document);
         await _unitOfWork.CompleteAsync();
+        await _notificationService.CreateAsync(document.UserId, NotificationType.VerificationRejected,
+            "Verification rejected", document.ReviewComments ?? "Your verification document was rejected.",
+            NotificationReferenceType.VerificationDocument, document.Id);
 
         return true;
     }
