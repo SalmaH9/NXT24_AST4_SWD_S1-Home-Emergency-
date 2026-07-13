@@ -15,7 +15,7 @@ public static class DependencyInjection
         // Register AutoMapper
         services.AddAutoMapper(assembly);
 
-        // Register FluentValidation
+        // Register FluentValidation validators for MVC auto-validation.
         services.AddValidatorsFromAssembly(assembly);
 
         // Register Application Services

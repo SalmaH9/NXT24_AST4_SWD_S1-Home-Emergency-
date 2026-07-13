@@ -2,54 +2,79 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using HomeEmergency.Application.DTOs.Files;
 using HomeEmergency.Application.Interfaces.Services;
+using HomeEmergency.Infrastructure.Options;
+using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.Extensions.Options;
 
 namespace HomeEmergency.Infrastructure.Services;
 
 public class LocalFileStorageService : IFileStorageService
 {
-    private readonly string _uploadFolder;
+    private readonly string _rootFolder;
+    private readonly string _publicFolder;
+    private readonly string _verificationFolder;
+    private readonly FileExtensionContentTypeProvider _contentTypeProvider = new();
 
-    public LocalFileStorageService()
+    public LocalFileStorageService(IOptions<StorageOptions> options)
     {
-        // Default local path, typically wwwroot/uploads
-        _uploadFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
-        
-        if (!Directory.Exists(_uploadFolder))
-        {
-            Directory.CreateDirectory(_uploadFolder);
-        }
+        var storageOptions = options.Value;
+        _rootFolder = Path.Combine(Directory.GetCurrentDirectory(), storageOptions.RootPath);
+        _publicFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+        _verificationFolder = storageOptions.VerificationFolder;
+
+        Directory.CreateDirectory(_rootFolder);
+        Directory.CreateDirectory(_publicFolder);
     }
 
-    public async Task<string> SaveFileAsync(Stream fileStream, string fileName, string folderName)
+    public async Task<string> SaveProtectedFileAsync(Stream fileStream, string fileName, string folderName)
     {
-        var cleanFileName = Path.GetFileName(fileName);
-        var uniqueFileName = $"{Guid.NewGuid()}{Path.GetExtension(cleanFileName)}";
-        var targetDirectory = Path.Combine(_uploadFolder, folderName);
-
-        if (!Directory.Exists(targetDirectory))
-        {
-            Directory.CreateDirectory(targetDirectory);
-        }
-
-        var filePath = Path.Combine(targetDirectory, uniqueFileName);
-
-        using (var destinationStream = new FileStream(filePath, FileMode.Create))
-        {
-            await fileStream.CopyToAsync(destinationStream);
-        }
-
-        // Returns relative URL to access the file
-        return $"/uploads/{folderName}/{uniqueFileName}";
+        return await SaveFileInternalAsync(fileStream, fileName, folderName, _rootFolder, isPublic: false);
     }
 
-    public void DeleteFile(string fileUrl)
+    public async Task<string> SavePublicFileAsync(Stream fileStream, string fileName, string folderName)
     {
-        if (string.IsNullOrEmpty(fileUrl)) return;
+        return await SaveFileInternalAsync(fileStream, fileName, folderName, _publicFolder, isPublic: true);
+    }
 
-        // Extract relative file path from URL
-        var relativePath = fileUrl.Replace("/", Path.DirectorySeparatorChar.ToString()).TrimStart(Path.DirectorySeparatorChar);
-        var absolutePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", relativePath);
+    public Task<StoredFileDownloadDto> OpenReadAsync(string storedPath)
+    {
+        if (string.IsNullOrWhiteSpace(storedPath))
+        {
+            throw new FileNotFoundException("Stored file path is missing.");
+        }
+
+        var normalizedPath = NormalizeStoredPath(storedPath);
+        var absolutePath = ResolveAbsolutePath(normalizedPath);
+
+        if (!File.Exists(absolutePath))
+        {
+            throw new FileNotFoundException("Stored file not found.");
+        }
+
+        if (!_contentTypeProvider.TryGetContentType(absolutePath, out var contentType))
+        {
+            contentType = "application/octet-stream";
+        }
+
+        return Task.FromResult(new StoredFileDownloadDto
+        {
+            Content = new FileStream(absolutePath, FileMode.Open, FileAccess.Read, FileShare.Read),
+            ContentType = contentType,
+            DownloadFileName = Path.GetFileName(absolutePath)
+        });
+    }
+
+    public void DeleteFile(string storedPath)
+    {
+        if (string.IsNullOrWhiteSpace(storedPath))
+        {
+            return;
+        }
+
+        var normalizedPath = NormalizeStoredPath(storedPath);
+        var absolutePath = ResolveAbsolutePath(normalizedPath);
 
         if (File.Exists(absolutePath))
         {
@@ -95,6 +120,60 @@ public class LocalFileStorageService : IFileStorageService
         }
 
         return false;
+    }
+
+    private async Task<string> SaveFileInternalAsync(Stream fileStream, string fileName, string folderName, string baseFolder, bool isPublic)
+    {
+        var cleanFileName = Path.GetFileName(fileName);
+        var uniqueFileName = $"{Guid.NewGuid()}{Path.GetExtension(cleanFileName)}";
+        var safeFolderName = Path.GetFileName(folderName);
+        var targetDirectory = Path.Combine(baseFolder, safeFolderName);
+
+        if (!Directory.Exists(targetDirectory))
+        {
+            Directory.CreateDirectory(targetDirectory);
+        }
+
+        var filePath = Path.Combine(targetDirectory, uniqueFileName);
+
+        using (var destinationStream = new FileStream(filePath, FileMode.Create))
+        {
+            await fileStream.CopyToAsync(destinationStream);
+        }
+
+        return isPublic
+            ? $"/uploads/{safeFolderName}/{uniqueFileName}"
+            : $"{safeFolderName}/{uniqueFileName}";
+    }
+
+    private string NormalizeStoredPath(string storedPath)
+    {
+        return storedPath.Replace('\\', '/').TrimStart('/');
+    }
+
+    private string ResolveAbsolutePath(string normalizedPath)
+    {
+        var candidatePath = normalizedPath.StartsWith("uploads/", StringComparison.OrdinalIgnoreCase)
+            ? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", normalizedPath.Replace('/', Path.DirectorySeparatorChar))
+            : Path.Combine(_rootFolder, normalizedPath.Replace('/', Path.DirectorySeparatorChar));
+
+        var fullPath = Path.GetFullPath(candidatePath);
+        var allowedRoot = normalizedPath.StartsWith("uploads/", StringComparison.OrdinalIgnoreCase)
+            ? Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads"))
+            : Path.GetFullPath(_rootFolder);
+
+        if (!fullPath.StartsWith(allowedRoot, StringComparison.OrdinalIgnoreCase))
+        {
+            throw new UnauthorizedAccessException("Invalid file path.");
+        }
+
+        if (normalizedPath.StartsWith(_verificationFolder, StringComparison.OrdinalIgnoreCase) ||
+            normalizedPath.StartsWith("uploads/verification-documents", StringComparison.OrdinalIgnoreCase))
+        {
+            return fullPath;
+        }
+
+        return fullPath;
     }
 }
 

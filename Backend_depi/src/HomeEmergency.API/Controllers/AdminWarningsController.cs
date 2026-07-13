@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -16,10 +15,12 @@ namespace HomeEmergency.API.Controllers;
 public class AdminWarningsController : ControllerBase
 {
     private readonly IWarningService _warningService;
+    private readonly ICurrentUserService _currentUserService;
 
-    public AdminWarningsController(IWarningService warningService)
+    public AdminWarningsController(IWarningService warningService, ICurrentUserService currentUserService)
     {
         _warningService = warningService;
+        _currentUserService = currentUserService;
     }
 
     /// <summary>
@@ -36,7 +37,7 @@ public class AdminWarningsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> CreateWarning(Guid userId, [FromBody] CreateWarningDto request)
     {
-        var adminId = GetAdminUserId();
+        var adminId = _currentUserService.GetRequiredUserId();
         var warningDto = await _warningService.CreateWarningAsync(userId, adminId, request);
         return Ok(warningDto);
     }
@@ -71,19 +72,6 @@ public class AdminWarningsController : ControllerBase
     {
         var result = await _warningService.RemoveWarningAsync(warningId);
         return Ok(result);
-    }
-
-    private Guid GetAdminUserId()
-    {
-        var adminIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value 
-                            ?? User.FindFirst("sub")?.Value;
-
-        if (string.IsNullOrEmpty(adminIdString) || !Guid.TryParse(adminIdString, out var adminId))
-        {
-            throw new UnauthorizedAccessException("Administrator is not authenticated.");
-        }
-
-        return adminId;
     }
 }
 

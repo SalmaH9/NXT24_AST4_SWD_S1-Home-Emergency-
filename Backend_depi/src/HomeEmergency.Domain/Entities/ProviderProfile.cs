@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace HomeEmergency.Domain.Entities;
 
@@ -16,5 +17,6 @@ public class ProviderProfile
 
     // Navigation Property
     public virtual ApplicationUser User { get; set; } = null!;
+    public virtual ICollection<Rating> Ratings { get; set; } = new List<Rating>();
 }
 

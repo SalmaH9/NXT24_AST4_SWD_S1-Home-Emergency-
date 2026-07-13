@@ -8,6 +8,7 @@ using HomeEmergency.Application.DTOs.Warnings;
 using HomeEmergency.Application.Interfaces.Persistence;
 using HomeEmergency.Application.Interfaces.Services;
 using HomeEmergency.Domain.Entities;
+using HomeEmergency.Domain.Enums;
 
 namespace HomeEmergency.Application.Services;
 
@@ -16,15 +17,18 @@ public class WarningService : IWarningService
     private readonly IUnitOfWork _unitOfWork;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IMapper _mapper;
+    private readonly INotificationService _notificationService;
 
     public WarningService(
         IUnitOfWork unitOfWork,
         UserManager<ApplicationUser> userManager,
-        IMapper mapper)
+        IMapper mapper,
+        INotificationService notificationService)
     {
         _unitOfWork = unitOfWork;
         _userManager = userManager;
         _mapper = mapper;
+        _notificationService = notificationService;
     }
 
     public async Task<WarningDto> CreateWarningAsync(Guid userId, Guid adminId, CreateWarningDto request)
@@ -50,6 +54,8 @@ public class WarningService : IWarningService
         // 3. Save to database
         await _unitOfWork.UserWarnings.AddAsync(warning);
         await _unitOfWork.CompleteAsync();
+        await _notificationService.CreateAsync(userId, NotificationType.WarningIssued, request.Title, request.Reason,
+            NotificationReferenceType.Warning, warning.Id);
 
         return _mapper.Map<WarningDto>(warning);
     }

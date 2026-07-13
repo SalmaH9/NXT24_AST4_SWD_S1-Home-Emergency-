@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -18,11 +17,13 @@ namespace HomeEmergency.API.Controllers;
 public class DocumentsController : ControllerBase
 {
     private readonly IDocumentService _documentService;
+    private readonly ICurrentUserService _currentUserService;
     private const long MaxFileSizeInBytes = 5 * 1024 * 1024; // 5MB
 
-    public DocumentsController(IDocumentService documentService)
+    public DocumentsController(IDocumentService documentService, ICurrentUserService currentUserService)
     {
         _documentService = documentService;
+        _currentUserService = currentUserService;
     }
 
     /// <summary>
@@ -44,7 +45,7 @@ public class DocumentsController : ControllerBase
             return BadRequest("No files were uploaded.");
         }
 
-        var userId = GetUserId();
+        var userId = _currentUserService.GetRequiredUserId();
         var uploadedDocs = new List<DocumentDto>();
 
         foreach (var file in files)
@@ -76,22 +77,21 @@ public class DocumentsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> GetMyDocuments()
     {
-        var userId = GetUserId();
+        var userId = _currentUserService.GetRequiredUserId();
         var documents = await _documentService.GetUserDocumentsAsync(userId);
         return Ok(documents);
     }
 
-    private Guid GetUserId()
+    [HttpGet("{id}/download")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DownloadDocument(Guid id)
     {
-        var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value 
-                           ?? User.FindFirst("sub")?.Value;
-
-        if (string.IsNullOrEmpty(userIdString) || !Guid.TryParse(userIdString, out var userId))
-        {
-            throw new UnauthorizedAccessException("User is not authenticated.");
-        }
-
-        return userId;
+        var userId = _currentUserService.GetRequiredUserId();
+        var file = await _documentService.DownloadDocumentAsync(id, userId, isAdmin: false);
+        return File(file.Content, file.ContentType, file.DownloadFileName);
     }
 }
 
