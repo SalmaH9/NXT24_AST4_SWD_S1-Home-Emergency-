@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat - Fixora</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/chat.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <style>
+        /* ===== Additional Styles ===== */
+        .chat-area {
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-card);
+            height: 100%;
+            min-height: 500px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-height: 300px;
+            max-height: calc(100vh - 320px);
+        }
+
+        .chat-input-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            border-top: 1px solid var(--border);
+            background: var(--bg-secondary);
+            flex-shrink: 0;
+            min-height: 70px;
+        }
+
+        .chat-input-area input {
+            flex: 1;
+            padding: 10px 16px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            outline: none;
+            transition: var(--transition);
+            min-height: 44px;
+        }
+
+        .chat-input-area input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.08);
+        }
+
+        .chat-input-area input:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-send {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: none;
+            background: var(--gradient-primary);
+            color: white;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .btn-send:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.35);
+        }
+
+        .btn-send:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .no-chat-selected {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-light);
+            margin: auto;
+        }
+
+        .no-chat-selected i {
+            font-size: 4rem;
+            color: var(--border);
+            margin-bottom: 16px;
+        }
+
+        .no-chat-selected h3 {
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .no-chat-selected p {
+            font-size: 0.95rem;
+        }
+
+        .chat-layout {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 0;
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            height: calc(100vh - 180px);
+            min-height: 500px;
+        }
+
+        @media (max-width: 768px) {
+            .chat-layout {
+                grid-template-columns: 1fr;
+                height: auto;
+                min-height: 600px;
+            }
+            .chat-sidebar {
+                max-height: 300px;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
+            .chat-messages {
+                max-height: 400px;
+            }
+            .chat-container {
+                height: auto;
+                padding: 12px;
+            }
+            .chat-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .chat-messages {
+                padding: 12px 16px;
+                max-height: 350px;
+            }
+            .chat-input-area {
+                padding: 8px 12px;
+                flex-wrap: wrap;
+            }
+            .chat-input-tools {
+                order: 2;
+            }
+            .chat-input-area input {
+                order: 1;
+                width: 100%;
+            }
+            .btn-send {
+                order: 3;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Mobile Toggle -->
+    <button class="sidebar-toggle" id="sidebar-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <div class="page-wrapper">
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-wrench"></i>
+                    <span>Fix<span class="logo-highlight">ora</span></span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <!-- الروابط يتم إضافتها ديناميكياً بواسطة JavaScript -->
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <button id="theme-toggle" class="theme-btn-sidebar">
+                    <i class="fas fa-moon"></i> Dark Mode
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN -->
+        <div class="main-area">
+
+            <main class="main-content">
+                <div class="chat-container">
+
+                    <!-- Header -->
+                    <div class="chat-header">
+                        <h1 class="page-title">
+                            <i class="fas fa-comments" style="color: var(--accent);"></i> Messages
+                        </h1>
+                        <div class="chat-header-actions">
+                            <button class="btn-new-chat" onclick="openNewChat()">
+                                <i class="fas fa-plus"></i> New Chat
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Chat Layout -->
+                    <div class="chat-layout">
+
+                        <!-- Left Sidebar: Conversations List -->
+                        <div class="chat-sidebar">
+                            <div class="chat-search">
+                                <input type="text" id="chatSearch" placeholder="Search conversations..." oninput="filterChats(this.value)" />
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <div class="chat-list" id="chatList">
+                                <!-- يتم عرض المحادثات بواسطة JavaScript -->
+                            </div>
+                        </div>
+
+                        <!-- Right Side: Chat Area -->
+                        <div class="chat-area" id="chatArea">
+                            <!-- Chat Header -->
+                            <div class="chat-area-header" id="chatAreaHeader">
+                                <div class="chat-partner-info">
+                                    <div class="chat-partner-avatar" id="partnerAvatar">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div>
+                                        <h4 id="partnerName">Select a conversation</h4>
+                                        <span class="online-status offline" id="partnerStatus">Offline</span>
+                                    </div>
+                                </div>
+                                <div class="chat-area-actions">
+                                    <button class="btn-chat-action" onclick="viewChatInfo()" title="View Details">
+                                        <i class="fas fa-info-circle"></i>
+                                    </button>
+                                    <button class="btn-chat-action" id="callBtn" onclick="callPartner()" title="Call">
+                                        <i class="fas fa-phone"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Messages -->
+                            <div class="chat-messages" id="chatMessages">
+                                <div class="no-chat-selected">
+                                    <i class="fas fa-comment-dots"></i>
+                                    <h3>No Conversation Selected</h3>
+                                    <p>Select a conversation from the left sidebar or start a new chat.</p>
+                                </div>
+                            </div>
+
+                            <!-- Typing Indicator -->
+                            <div class="typing-indicator" id="typingIndicator" style="display:none;">
+                                <span class="typing-dots">
+                                    <span></span><span></span><span></span>
+                                </span>
+                                <span class="typing-text" id="typingText">Typing...</span>
+                            </div>
+
+                            <!-- Chat Input -->
+                            <div class="chat-input-area" id="chatInputArea">
+                                <div class="chat-input-tools">
+                                    <button class="btn-attach" onclick="attachFile()" title="Attach File">
+                                        <i class="fas fa-paperclip"></i>
+                                    </button>
+                                    <button class="btn-emoji" onclick="toggleEmoji()" title="Emoji">
+                                        <i class="fas fa-smile"></i>
+                                    </button>
+                                    <input type="file" id="fileInput" multiple style="display:none;" onchange="handleFileAttach(this)" />
+                                </div>
+                                <input type="text" id="chatInput" placeholder="Select a conversation to start chatting..." disabled onkeypress="handleChatKeyPress(event)" />
+                                <button class="btn-send" id="sendBtn" onclick="sendMessage()" disabled>
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
+
+                            <!-- Emoji Picker -->
+                            <div class="emoji-picker" id="emojiPicker" style="display:none;">
+                                <div class="emoji-grid" id="emojiGrid">
+                                    <!-- يتم إضافتها بواسطة JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </main>
+
+            <footer class="footer">
+                <p>© 2026 <strong>Fixora</strong> — Professional Home Repair Services</p>
+                <p class="footer-update">Last updated: <span id="footer-date"></span></p>
+            </footer>
+        </div>
+    </div>
+
+    <!-- ===== MODAL: New Chat ===== -->
+    <div class="modal-overlay" id="newChatModal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-plus-circle" style="color: var(--accent);"></i> New Conversation</h3>
+                <button class="modal-close" onclick="closeNewChatModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Search for user</label>
+                    <input type="text" id="newChatSearch" placeholder="Type name or email..." oninput="searchUsers(this.value)" />
+                </div>
+                <div class="user-list" id="userList">
+                    <!-- يتم عرض المستخدمين بواسطة JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/script.js"></script>
+    <script src="../js/chat.js"></script>
+    <script src="../js/chatbot.js"></script>
+
+</body>
+</html>

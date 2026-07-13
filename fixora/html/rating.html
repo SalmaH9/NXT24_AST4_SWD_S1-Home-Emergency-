@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rate & Review - Fixora</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/rating.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+</head>
+<body>
+
+    <!-- Mobile Toggle -->
+    <button class="sidebar-toggle" id="sidebar-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <div class="page-wrapper">
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-wrench"></i>
+                    <span>Fix<span class="logo-highlight">ora</span></span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="customer-dashboard.html"><i class="fas fa-gauge-high"></i> Dashboard</a></li>
+                    <li><a href="my-orders.html"><i class="fas fa-list-check"></i> My Orders</a></li>
+                    <li><a href="customer-profile.html"><i class="fas fa-user"></i> Profile</a></li>
+                    <li style="margin-top: 16px; border-top: 1px solid var(--border); padding-top: 12px;">
+                        <a href="index.html" onclick="handleLogout(event)" style="color: #ef4444; font-weight: 600;">
+                            <i class="fas fa-sign-out-alt" style="margin-right: 10px;"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <button id="theme-toggle" class="theme-btn-sidebar">
+                    <i class="fas fa-moon"></i> Dark Mode
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN -->
+        <div class="main-area">
+
+            <main class="main-content">
+                <div class="rating-container">
+
+                    <!-- Header -->
+                    <div class="rating-header">
+                        <h1 class="page-title">
+                            <i class="fas fa-star" style="color: #f6ad55;"></i> Rate & Review
+                        </h1>
+                        <p class="page-subtitle">Your feedback helps us improve and helps other customers make informed decisions</p>
+                    </div>
+
+                    <!-- Order Info -->
+                    <div class="order-info-card">
+                        <div class="order-info-header">
+                            <span class="order-id"><i class="fas fa-clipboard-list"></i> <span id="orderId">#ORD-001</span></span>
+                            <span class="order-status completed">✅ Completed</span>
+                        </div>
+                        <div class="order-info-body">
+                            <span><i class="fas fa-tag"></i> <span id="orderService">Plumbing</span></span>
+                            <span><i class="fas fa-calendar"></i> <span id="orderDate">July 8, 2026</span></span>
+                            <span><i class="fas fa-user"></i> <span id="orderTechnician">Ahmed Al-Rashid</span></span>
+                        </div>
+                    </div>
+
+                    <!-- Rating Section -->
+                    <div class="rating-card">
+                        <h3><i class="fas fa-user-tie"></i> Rate Your Technician</h3>
+                        <p class="subtitle">How was your experience with <span id="techName">Ahmed Al-Rashid</span>?</p>
+
+                        <!-- Star Rating -->
+                        <div class="star-rating">
+                            <p class="rating-label">Overall Rating</p>
+                            <div class="stars" id="starContainer">
+                                <i class="far fa-star" data-value="1" onclick="setRating(1)"></i>
+                                <i class="far fa-star" data-value="2" onclick="setRating(2)"></i>
+                                <i class="far fa-star" data-value="3" onclick="setRating(3)"></i>
+                                <i class="far fa-star" data-value="4" onclick="setRating(4)"></i>
+                                <i class="far fa-star" data-value="5" onclick="setRating(5)"></i>
+                            </div>
+                            <span class="rating-text" id="ratingText">Select a rating</span>
+                            <input type="hidden" id="selectedRating" value="0" />
+                        </div>
+
+                        <!-- Rating Categories -->
+                        <div class="rating-categories">
+                            <div class="category-item">
+                                <label>Quality of Work</label>
+                                <div class="category-stars" data-category="quality">
+                                    <i class="far fa-star" data-value="1" onclick="setCategoryRating('quality', 1)"></i>
+                                    <i class="far fa-star" data-value="2" onclick="setCategoryRating('quality', 2)"></i>
+                                    <i class="far fa-star" data-value="3" onclick="setCategoryRating('quality', 3)"></i>
+                                    <i class="far fa-star" data-value="4" onclick="setCategoryRating('quality', 4)"></i>
+                                    <i class="far fa-star" data-value="5" onclick="setCategoryRating('quality', 5)"></i>
+                                </div>
+                            </div>
+                            <div class="category-item">
+                                <label>Communication</label>
+                                <div class="category-stars" data-category="communication">
+                                    <i class="far fa-star" data-value="1" onclick="setCategoryRating('communication', 1)"></i>
+                                    <i class="far fa-star" data-value="2" onclick="setCategoryRating('communication', 2)"></i>
+                                    <i class="far fa-star" data-value="3" onclick="setCategoryRating('communication', 3)"></i>
+                                    <i class="far fa-star" data-value="4" onclick="setCategoryRating('communication', 4)"></i>
+                                    <i class="far fa-star" data-value="5" onclick="setCategoryRating('communication', 5)"></i>
+                                </div>
+                            </div>
+                            <div class="category-item">
+                                <label>Punctuality</label>
+                                <div class="category-stars" data-category="punctuality">
+                                    <i class="far fa-star" data-value="1" onclick="setCategoryRating('punctuality', 1)"></i>
+                                    <i class="far fa-star" data-value="2" onclick="setCategoryRating('punctuality', 2)"></i>
+                                    <i class="far fa-star" data-value="3" onclick="setCategoryRating('punctuality', 3)"></i>
+                                    <i class="far fa-star" data-value="4" onclick="setCategoryRating('punctuality', 4)"></i>
+                                    <i class="far fa-star" data-value="5" onclick="setCategoryRating('punctuality', 5)"></i>
+                                </div>
+                            </div>
+                            <div class="category-item">
+                                <label>Value for Money</label>
+                                <div class="category-stars" data-category="value">
+                                    <i class="far fa-star" data-value="1" onclick="setCategoryRating('value', 1)"></i>
+                                    <i class="far fa-star" data-value="2" onclick="setCategoryRating('value', 2)"></i>
+                                    <i class="far fa-star" data-value="3" onclick="setCategoryRating('value', 3)"></i>
+                                    <i class="far fa-star" data-value="4" onclick="setCategoryRating('value', 4)"></i>
+                                    <i class="far fa-star" data-value="5" onclick="setCategoryRating('value', 5)"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Review Text -->
+                        <div class="review-text-area">
+                            <label for="reviewText">Write a Review</label>
+                            <textarea id="reviewText" rows="4" placeholder="Share your experience with this technician... What went well? What could be improved?"></textarea>
+                            <p class="hint">Your review helps other customers make better decisions.</p>
+                        </div>
+
+                        <!-- Photos -->
+                        <div class="review-photos">
+                            <label>Add Photos (Optional)</label>
+                            <div class="photo-upload" id="photoUpload">
+                                <input type="file" id="reviewPhotos" multiple accept="image/*" onchange="handleReviewPhotos(this)" />
+                                <i class="fas fa-camera"></i>
+                                <p>Click to upload photos of the completed work</p>
+                                <span class="file-types">JPG, PNG up to 5MB each</span>
+                            </div>
+                            <div class="photo-preview-grid" id="photoPreviewGrid"></div>
+                        </div>
+                    </div>
+
+                    <!-- Rate Customer (Technician View) -->
+                    <div class="rating-card" id="rateCustomerCard" style="display:none;">
+                        <h3><i class="fas fa-user"></i> Rate Your Customer</h3>
+                        <p class="subtitle">How was your experience working with <span id="customerName">Ahmed Al-Saud</span>?</p>
+
+                        <div class="star-rating">
+                            <p class="rating-label">Overall Rating</p>
+                            <div class="stars" id="customerStarContainer">
+                                <i class="far fa-star" data-value="1" onclick="setCustomerRating(1)"></i>
+                                <i class="far fa-star" data-value="2" onclick="setCustomerRating(2)"></i>
+                                <i class="far fa-star" data-value="3" onclick="setCustomerRating(3)"></i>
+                                <i class="far fa-star" data-value="4" onclick="setCustomerRating(4)"></i>
+                                <i class="far fa-star" data-value="5" onclick="setCustomerRating(5)"></i>
+                            </div>
+                            <span class="rating-text" id="customerRatingText">Select a rating</span>
+                            <input type="hidden" id="selectedCustomerRating" value="0" />
+                        </div>
+
+                        <div class="review-text-area">
+                            <label for="customerReviewText">Write a Review</label>
+                            <textarea id="customerReviewText" rows="3" placeholder="Share your experience with this customer..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Submit -->
+                    <div class="rating-actions">
+                        <button class="btn-skip" onclick="skipRating()">
+                            <i class="fas fa-forward"></i> Skip for Now
+                        </button>
+                        <button class="btn-submit-rating" onclick="submitRating()">
+                            <i class="fas fa-paper-plane"></i> Submit Rating
+                        </button>
+                    </div>
+
+                    <!-- Success State -->
+                    <div class="rating-success" id="ratingSuccess" style="display:none;">
+                        <div class="success-icon">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <h2>Thank You for Your Feedback! ⭐</h2>
+                        <p>Your rating has been submitted successfully. Your feedback helps us improve our service quality.</p>
+                        <div class="success-actions">
+                            <a href="customer-dashboard.html" class="btn-primary">
+                                <i class="fas fa-gauge-high"></i> Dashboard
+                            </a>
+                            <a href="my-orders.html" class="btn-secondary">
+                                <i class="fas fa-list-check"></i> My Orders
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </main>
+
+            <footer class="footer">
+                <p>© 2026 <strong>Fixora</strong> — Professional Home Repair Services</p>
+                <p class="footer-update">Last updated: <span id="footer-date"></span></p>
+            </footer>
+        </div>
+    </div>
+
+    <script src="../js/script.js"></script>
+    <script src="../js/rating.js"></script>
+    <script src="../js/chatbot.js"></script>
+
+</body>
+</html>

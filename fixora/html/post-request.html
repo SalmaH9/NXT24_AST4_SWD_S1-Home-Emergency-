@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Post a Request - Fixora</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/post-request.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+</head>
+<body>
+    <!-- Mobile Toggle -->
+    <button class="sidebar-toggle" id="sidebar-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <div class="page-wrapper">
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-wrench"></i>
+                    <span>Fix<span class="logo-highlight">ora</span></span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="services.html"><i class="fas fa-tools"></i> Services</a></li>
+                    <li><a href="post-request.html" class="active"><i class="fas fa-plus-circle"></i> Post Request</a></li>
+                    <li><a href="select-technician.html"><i class="fas fa-handshake"></i> Offers</a></li>
+                    <li><a href="customer-dashboard.html"><i class="fas fa-gauge-high"></i> Dashboard</a></li>
+                    <li><a href="my-orders.html"><i class="fas fa-list-check"></i> My Orders</a></li>
+                    <li><a href="customer-profile.html"><i class="fas fa-user"></i> Profile</a></li>
+                    <li><a href="about.html"><i class="fas fa-circle-info"></i> About</a></li>
+                    <li><a href="contact.html"><i class="fas fa-envelope"></i> Contact</a></li>
+                    <li><a href="login.html" onclick="handleLogout(event)"><i class="fas fa-right-from-bracket"></i> Logout</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <button id="theme-toggle" class="theme-btn-sidebar">
+                    <i class="fas fa-moon"></i> Dark Mode
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN -->
+        <div class="main-area">
+
+            <main class="main-content">
+                <div class="request-container">
+
+                    <h1 class="page-title">
+                        <i class="fas fa-clipboard-list"></i> Post a Service Request
+                    </h1>
+
+                    <p class="page-subtitle">Describe your problem and get offers from qualified technicians</p>
+
+                    <!-- Progress Indicator -->
+                    <div class="request-progress">
+                        <div class="progress-line" id="requestProgressLine"></div>
+                        <div class="progress-step active" data-step="1">
+                            <div class="step-dot">1</div>
+                            <span class="step-label">Describe</span>
+                        </div>
+                        <div class="progress-step" data-step="2">
+                            <div class="step-dot">2</div>
+                            <span class="step-label">Details</span>
+                        </div>
+                        <div class="progress-step" data-step="3">
+                            <div class="step-dot">3</div>
+                            <span class="step-label">Location</span>
+                        </div>
+                        <div class="progress-step" data-step="4">
+                            <div class="step-dot">4</div>
+                            <span class="step-label">Review</span>
+                        </div>
+                    </div>
+
+                    <!-- ===== STEP 1: PROBLEM DESCRIPTION ===== -->
+                    <div class="request-step active" id="reqStep1">
+                        <div class="form-card">
+                            <h3><i class="fas fa-pen-to-square"></i> What do you need help with?</h3>
+                            <p class="subtitle">Select a category and describe your problem</p>
+
+                            <div class="form-group">
+                                <label>Service Category <span class="required">*</span></label>
+                                <div class="category-grid" id="categoryGrid">
+                                    <button type="button" class="category-card" data-value="plumbing">
+                                        <i class="fas fa-faucet"></i>
+                                        <span>Plumbing</span>
+                                    </button>
+                                    <button type="button" class="category-card" data-value="electrical">
+                                        <i class="fas fa-bolt"></i>
+                                        <span>Electrical</span>
+                                    </button>
+                                    <button type="button" class="category-card" data-value="ac-repair">
+                                        <i class="fas fa-snowflake"></i>
+                                        <span>AC Repair</span>
+                                    </button>
+                                    <button type="button" class="category-card" data-value="carpentry">
+                                        <i class="fas fa-hammer"></i>
+                                        <span>Carpentry</span>
+                                    </button>
+                                    <button type="button" class="category-card" data-value="painting">
+                                        <i class="fas fa-paint-roller"></i>
+                                        <span>Painting</span>
+                                    </button>
+                                    <button type="button" class="category-card" data-value="masonry">
+                                        <i class="fas fa-trowel"></i>
+                                        <span>Masonry</span>
+                                    </button>
+                                    <button type="button" class="category-card" data-value="cleaning">
+                                        <i class="fas fa-broom"></i>
+                                        <span>Cleaning</span>
+                                    </button>
+                                    <button type="button" class="category-card" data-value="gardening">
+                                        <i class="fas fa-leaf"></i>
+                                        <span>Gardening</span>
+                                    </button>
+                                    <button type="button" class="category-card" data-value="appliance">
+                                        <i class="fas fa-tv"></i>
+                                        <span>Appliance</span>
+                                    </button>
+                                    <button type="button" class="category-card" data-value="pest-control">
+                                        <i class="fas fa-bug"></i>
+                                        <span>Pest Control</span>
+                                    </button>
+                                    <button type="button" class="category-card" data-value="other">
+                                        <i class="fas fa-ellipsis"></i>
+                                        <span>Other</span>
+                                    </button>
+                                </div>
+                                <input type="hidden" id="selectedCategory" />
+                            </div>
+
+                            <div class="form-group">
+                                <label>Problem Description <span class="required">*</span></label>
+                                <textarea id="problemDesc" placeholder="Describe your problem in detail... e.g., 'The kitchen sink is leaking from the pipe under the counter. Water is dripping constantly.'" rows="5"></textarea>
+                                <p class="hint">Be specific — this helps technicians understand the issue before visiting</p>
+                            </div>
+                        </div>
+
+                        <div class="step-nav">
+                            <div></div>
+                            <button class="btn-step btn-next" onclick="nextRequestStep(2)">
+                                Next <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- ===== STEP 2: DETAILS ===== -->
+                    <div class="request-step" id="reqStep2">
+                        <div class="form-card">
+                            <h3><i class="fas fa-sliders"></i> Service Details</h3>
+                            <p class="subtitle">Add more details to get better offers</p>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Number of Technicians Needed</label>
+                                    <div class="tech-counter">
+                                        <button type="button" class="counter-btn" onclick="changeTechCount(-1)"><i class="fas fa-minus"></i></button>
+                                        <span class="counter-value" id="techCount">1</span>
+                                        <button type="button" class="counter-btn" onclick="changeTechCount(1)"><i class="fas fa-plus"></i></button>
+                                    </div>
+                                    <input type="hidden" id="techCountInput" value="1" />
+                                </div>
+                                <div class="form-group">
+                                    <label>Urgency Level <span class="required">*</span></label>
+                                    <div class="urgency-options" id="urgencyOptions">
+                                        <button type="button" class="urgency-btn" data-value="normal">
+                                            <i class="fas fa-clock"></i>
+                                            <span>Normal</span>
+                                            <small>Within 3 days</small>
+                                        </button>
+                                        <button type="button" class="urgency-btn" data-value="urgent">
+                                            <i class="fas fa-fire"></i>
+                                            <span>Urgent</span>
+                                            <small>Within 24 hours</small>
+                                        </button>
+                                        <button type="button" class="urgency-btn" data-value="emergency">
+                                            <i class="fas fa-triangle-exclamation"></i>
+                                            <span>Emergency</span>
+                                            <small>ASAP</small>
+                                        </button>
+                                    </div>
+                                    <input type="hidden" id="selectedUrgency" />
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Upload Photos / Videos</label>
+                                <div class="media-upload" id="mediaUpload">
+                                    <input type="file" id="mediaFiles" multiple accept="image/*,video/*" onchange="handleMediaUpload(this)" />
+                                    <i class="fas fa-camera"></i>
+                                    <h4>Add Photos or Videos</h4>
+                                    <p>Drag & drop or click to browse</p>
+                                    <p class="file-types">JPG, PNG, MP4 up to 10MB each</p>
+                                </div>
+                                <div class="media-preview-grid" id="mediaPreviewGrid"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Preferred Date & Time</label>
+                                <div class="form-row">
+                                    <div class="form-group" style="margin-bottom:0;">
+                                        <input type="date" id="prefDate" />
+                                    </div>
+                                    <div class="form-group" style="margin-bottom:0;">
+                                        <select id="prefTime">
+                                            <option value="">Any time</option>
+                                            <option value="morning">Morning (8AM - 12PM)</option>
+                                            <option value="afternoon">Afternoon (12PM - 4PM)</option>
+                                            <option value="evening">Evening (4PM - 8PM)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="step-nav">
+                            <button class="btn-step btn-prev" onclick="prevRequestStep(1)">
+                                <i class="fas fa-arrow-left"></i> Back
+                            </button>
+                            <button class="btn-step btn-next" onclick="nextRequestStep(3)">
+                                Next <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- ===== STEP 3: LOCATION ===== -->
+                    <div class="request-step" id="reqStep3">
+                        <div class="form-card">
+                            <h3><i class="fas fa-location-dot"></i> Service Location</h3>
+                            <p class="subtitle">Where do you need the service?</p>
+
+                            <div class="form-group">
+                                <label>City <span class="required">*</span></label>
+                                <select id="reqCity">
+                                    <option value="">Select city</option>
+                                    <option>Cairo</option>
+                                    <option>Alexandria</option>
+                                    <option>Giza</option>
+                                    <option>Sharm El-Sheikh</option>
+                                    <option>Hurghada</option>
+                                    <option>Luxor</option>
+                                    <option>Aswan</option>
+                                    <option>Port Said</option>
+                                    <option>Suez</option>
+                                    <option>Mansoura</option>
+                                    <option>Tanta</option>
+                                    <option>Ismailia</option>
+                                    <option>Faiyum</option>
+                                    <option>Zagazig</option>
+                                    <option>Damietta</option>
+                                    <option>Asyut</option>
+                                    <option>Minya</option>
+                                    <option>Sohag</option>
+                                    <option>Qena</option>
+                                    <option>Beni Suef</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Full Address <span class="required">*</span></label>
+                                <input type="text" id="reqAddress" placeholder="Street, District, Building, Floor, Apartment" />
+                            </div>
+
+                            <div class="form-group">
+                                <label>Pin Location on Map</label>
+                                <div class="map-placeholder" id="mapPlaceholder">
+                                    <i class="fas fa-map-location-dot"></i>
+                                    <h4>Interactive Map</h4>
+                                    <p>Click to set your exact location</p>
+                                    <button type="button" class="btn-detect" onclick="detectLocation()">
+                                        <i class="fas fa-location-crosshairs"></i> Use My Current Location
+                                    </button>
+                                </div>
+                                <input type="hidden" id="latLng" />
+                            </div>
+
+                            <div class="form-group">
+                                <label>Landmark (Optional)</label>
+                                <input type="text" id="reqLandmark" placeholder="e.g., Near Al-Rashid Mall, Opposite King Fahd Hospital" />
+                            </div>
+                        </div>
+
+                        <div class="step-nav">
+                            <button class="btn-step btn-prev" onclick="prevRequestStep(2)">
+                                <i class="fas fa-arrow-left"></i> Back
+                            </button>
+                            <button class="btn-step btn-next" onclick="nextRequestStep(4)">
+                                Next <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- ===== STEP 4: REVIEW & SUBMIT ===== -->
+                    <div class="request-step" id="reqStep4">
+                        <div class="form-card">
+                            <h3><i class="fas fa-clipboard-check"></i> Review Your Request</h3>
+                            <p class="subtitle">Verify everything before posting</p>
+
+                            <div class="review-section">
+                                <h4><i class="fas fa-tag"></i> Category</h4>
+                                <div class="review-value" id="reviewCategory">--</div>
+                            </div>
+
+                            <div class="review-section">
+                                <h4><i class="fas fa-align-left"></i> Description</h4>
+                                <div class="review-value" id="reviewDesc">--</div>
+                            </div>
+
+                            <div class="review-section">
+                                <h4><i class="fas fa-users"></i> Technicians Needed</h4>
+                                <div class="review-value" id="reviewTechs">--</div>
+                            </div>
+
+                            <div class="review-section">
+                                <h4><i class="fas fa-fire-flame-curved"></i> Urgency</h4>
+                                <div class="review-value" id="reviewUrgency">--</div>
+                            </div>
+
+                            <div class="review-section">
+                                <h4><i class="fas fa-location-dot"></i> Location</h4>
+                                <div class="review-value" id="reviewLocation">--</div>
+                            </div>
+
+                            <div class="review-section" id="reviewMediaSection" style="display:none;">
+                                <h4><i class="fas fa-images"></i> Attachments</h4>
+                                <div class="review-media-grid" id="reviewMediaGrid"></div>
+                            </div>
+                        </div>
+
+                        <div class="step-nav">
+                            <button class="btn-step btn-prev" onclick="prevRequestStep(3)">
+                                <i class="fas fa-arrow-left"></i> Back
+                            </button>
+                            <button class="btn-step btn-submit" onclick="submitRequest()">
+                                <i class="fas fa-paper-plane"></i> Post Request
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- ===== SUCCESS STATE ===== -->
+                    <div class="request-success" id="requestSuccess">
+                        <div class="success-icon">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <h2>Request Posted!</h2>
+                        <p>Your service request has been posted. Qualified technicians will send you offers shortly.</p>
+                        <div class="success-actions">
+                            <a href="select-technician.html" class="btn-step btn-next">
+                                <i class="fas fa-search"></i> View Offers
+                            </a>
+                            <a href="customer-dashboard.html" class="btn-step btn-prev" style="text-decoration:none;">
+                                <i class="fas fa-gauge-high"></i> Dashboard
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </main>
+
+            <footer class="footer">
+                <p>© 2026 <strong>Fixora</strong> — Professional Home Repair Services</p>
+                <p class="footer-update">Last updated: <span id="footer-date"></span></p>
+            </footer>
+        </div>
+    </div>
+
+    <script src="../js/script.js"></script>
+    <script src="../js/post-request.js"></script>
+    <script>
+        // Check if user is logged in (customer or guest)
+        document.addEventListener('DOMContentLoaded', function() {
+            const role = localStorage.getItem('userRole');
+            if (role !== 'customer') {
+                // Allow guests but show a message
+                const guestNote = document.createElement('div');
+                guestNote.style.cssText = `
+                    background: #fef3c7; 
+                    border: 1px solid #fcd34d; 
+                    border-radius: 12px; 
+                    padding: 12px 16px; 
+                    margin-bottom: 20px;
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    color: #92400e;
+                `;
+                guestNote.innerHTML = `
+                    <i class="fas fa-info-circle" style="font-size: 1.2rem;"></i>
+                    <span>You are posting as a guest. <a href="login.html" style="color: #667eea; font-weight: 600;">Sign in</a> to track your requests.</span>
+                `;
+                document.querySelector('.request-container').prepend(guestNote);
+            }
+        });
+
+        function handleLogout(event) {
+            event.preventDefault();
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('userRole');
+            localStorage.removeItem('userEmail');
+            window.location.href = 'login.html';
+        }
+    </script>
+        <script src="../js/chatbot.js"></script>
+
+</body>
+</html>

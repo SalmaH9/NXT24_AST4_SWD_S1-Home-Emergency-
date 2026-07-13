@@ -144,142 +144,156 @@
 </head>
 <body>
 
-    <!-- ===== NAVBAR ===== -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="logo">
-                <i class="fas fa-wrench"></i>
-                <span>Fix<span class="logo-highlight">ora</span></span>
+    <!-- Mobile Toggle -->
+    <button class="sidebar-toggle" id="sidebar-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <div class="page-wrapper">
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-wrench"></i>
+                    <span>Fix<span class="logo-highlight">ora</span></span>
+                </div>
             </div>
-            <ul class="nav-links" id="navLinks">
-                <li><a href="customer-dashboard.html" class="active"><i class="fas fa-gauge-high"></i> Dashboard</a></li>
-                <li><a href="book-service.html"><i class="fas fa-screwdriver-wrench"></i> Book Service</a></li>
-                <li><a href="my-orders.html"><i class="fas fa-clock-rotate-left"></i> My Orders</a></li>
-                <li><a href="profile.html"><i class="fas fa-user"></i> Profile</a></li>
-                <li id="authLink"><a href="login.html" onclick="handleLogout(event)"><i class="fas fa-right-from-bracket"></i> Logout</a></li>
-            </ul>
-            <div class="nav-actions">
-                <button id="theme-toggle" class="theme-btn">
-                    <i class="fas fa-moon"></i>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="post-request.html"><i class="fas fa-plus-circle"></i> Post Request</a></li>
+                    <li><a href="customer-dashboard.html" class="active"><i class="fas fa-gauge-high"></i> Dashboard</a></li>
+                    <li><a href="my-orders.html"><i class="fas fa-list-check"></i> My Orders</a></li>
+                    <li><a href="customer-profile.html"><i class="fas fa-user"></i> Profile</a></li>
+                    <li style="margin-top: 16px; border-top: 1px solid var(--border); padding-top: 12px;">
+                        <a href="index.html" onclick="handleLogout(event)" style="color: #ef4444; font-weight: 600;">
+                            <i class="fas fa-sign-out-alt" style="margin-right: 10px;"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <button id="theme-toggle" class="theme-btn-sidebar">
+                    <i class="fas fa-moon"></i> Dark Mode
                 </button>
-                <div class="hamburger" id="hamburger">
-                    <i class="fas fa-bars"></i>
-                </div>
             </div>
-        </div>
-    </nav>
+        </aside>
 
-    <!-- ===== MAIN ===== -->
-    <main class="main-content">
-        <div class="container">
-            <h1 class="page-title">
-                <i class="fas fa-gauge-high"></i> 
-                Welcome Back, <span id="userName">Customer</span>! 👋
-            </h1>
+        <!-- MAIN -->
+        <div class="main-area">
 
-            <!-- Stats -->
-            <section class="stats">
-                <div class="stat-card">
-                    <i class="fas fa-clipboard-list"></i>
-                    <h3 id="activeOrders">3</h3>
-                    <p>Active Orders</p>
-                </div>
-                <div class="stat-card">
-                    <i class="fas fa-check-circle"></i>
-                    <h3 id="completedOrders">12</h3>
-                    <p>Completed</p>
-                </div>
-                <div class="stat-card">
-                    <i class="fas fa-clock"></i>
-                    <h3 id="pendingOrders">2</h3>
-                    <p>Pending</p>
-                </div>
-                <div class="stat-card">
-                    <i class="fas fa-star"></i>
-                    <h3>4.9</h3>
-                    <p>Your Rating</p>
-                </div>
-            </section>
+            <main class="main-content">
+                <div class="container">
+                    <h1 class="page-title">
+                        <i class="fas fa-gauge-high"></i> 
+                        Welcome Back, <span id="userName">Customer</span>! 👋
+                    </h1>
 
-            <!-- Dashboard Grid -->
-            <div class="dashboard-grid">
+                    <!-- Stats -->
+                    <section class="stats">
+                        <div class="stat-card">
+                            <i class="fas fa-clipboard-list"></i>
+                            <h3 id="activeOrders">3</h3>
+                            <p>Active Orders</p>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-check-circle"></i>
+                            <h3 id="completedOrders">12</h3>
+                            <p>Completed</p>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-clock"></i>
+                            <h3 id="pendingOrders">2</h3>
+                            <p>Pending</p>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-star"></i>
+                            <h3>4.9</h3>
+                            <p>Your Rating</p>
+                        </div>
+                    </section>
 
-                <!-- Quick Actions -->
-                <div class="dashboard-card">
-                    <div class="card-icon"><i class="fas fa-bolt"></i></div>
-                    <h3>Quick Actions</h3>
-                    <p>Book a repair or check your recent activity</p>
-                    <div class="quick-actions">
-                        <a href="services.html" class="btn-sm">
-                            <i class="fas fa-plus"></i> New Repair
-                        </a>
-                        <a href="#" class="btn-sm-outline">
-                            <i class="fas fa-clock-rotate-left"></i> History
-                        </a>
+                    <!-- Dashboard Grid -->
+                    <div class="dashboard-grid">
+
+                        <!-- Quick Actions -->
+                        <div class="dashboard-card">
+                            <div class="card-icon"><i class="fas fa-bolt"></i></div>
+                            <h3>Quick Actions</h3>
+                            <p>Book a repair or check your recent activity</p>
+                            <div class="quick-actions">
+                                <a href="post-request.html" class="btn-sm">
+                                    <i class="fas fa-plus"></i> New Repair
+                                </a>
+                                <a href="my-orders.html" class="btn-sm-outline">
+                                    <i class="fas fa-clock-rotate-left"></i> History
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Recent Orders -->
+                        <div class="dashboard-card">
+                            <div class="card-icon"><i class="fas fa-clock"></i></div>
+                            <h3>Recent Orders</h3>
+                            <p>Your latest repair requests</p>
+                            <div class="recent-orders">
+                                <div class="recent-order-item">
+                                    <div>
+                                        <strong style="color: var(--text-primary);">#ORD-001</strong>
+                                        <span style="color: var(--text-secondary); font-size: 0.85rem; display: block;">Plumbing - 2 days ago</span>
+                                    </div>
+                                    <span class="order-status status-progress">In Progress</span>
+                                </div>
+                                <div class="recent-order-item">
+                                    <div>
+                                        <strong style="color: var(--text-primary);">#ORD-002</strong>
+                                        <span style="color: var(--text-secondary); font-size: 0.85rem; display: block;">AC Repair - 5 days ago</span>
+                                    </div>
+                                    <span class="order-status status-completed">Completed</span>
+                                </div>
+                                <div class="recent-order-item">
+                                    <div>
+                                        <strong style="color: var(--text-primary);">#ORD-003</strong>
+                                        <span style="color: var(--text-secondary); font-size: 0.85rem; display: block;">Electrical - 1 day ago</span>
+                                    </div>
+                                    <span class="order-status status-pending">Pending</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Book a Service -->
+                        <div class="dashboard-card">
+                            <div class="card-icon"><i class="fas fa-screwdriver-wrench"></i></div>
+                            <h3>Need a Repair?</h3>
+                            <p>Choose from our wide range of professional services</p>
+                            <a href="post-request.html" class="btn-sm">
+                                <i class="fas fa-arrow-right"></i> Post Request
+                            </a>
+                        </div>
+
+                        <!-- Contact Support -->
+                        <div class="dashboard-card">
+                            <div class="card-icon"><i class="fas fa-headset"></i></div>
+                            <h3>Need Help?</h3>
+                            <p>Our support team is here for you 24/7</p>
+                            <a href="contact.html" class="btn-sm-outline">
+                                <i class="fas fa-envelope"></i> Contact Support
+                            </a>
+                        </div>
+
                     </div>
                 </div>
+            </main>
 
-                <!-- Recent Orders -->
-                <div class="dashboard-card">
-                    <div class="card-icon"><i class="fas fa-clock"></i></div>
-                    <h3>Recent Orders</h3>
-                    <p>Your latest repair requests</p>
-                    <div class="recent-orders">
-                        <div class="recent-order-item">
-                            <div>
-                                <strong style="color: var(--text-primary);">#ORD-001</strong>
-                                <span style="color: var(--text-secondary); font-size: 0.85rem; display: block;">Plumbing - 2 days ago</span>
-                            </div>
-                            <span class="order-status status-progress">In Progress</span>
-                        </div>
-                        <div class="recent-order-item">
-                            <div>
-                                <strong style="color: var(--text-primary);">#ORD-002</strong>
-                                <span style="color: var(--text-secondary); font-size: 0.85rem; display: block;">AC Repair - 5 days ago</span>
-                            </div>
-                            <span class="order-status status-completed">Completed</span>
-                        </div>
-                        <div class="recent-order-item">
-                            <div>
-                                <strong style="color: var(--text-primary);">#ORD-003</strong>
-                                <span style="color: var(--text-secondary); font-size: 0.85rem; display: block;">Electrical - 1 day ago</span>
-                            </div>
-                            <span class="order-status status-pending">Pending</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Book a Service -->
-                <div class="dashboard-card">
-                    <div class="card-icon"><i class="fas fa-screwdriver-wrench"></i></div>
-                    <h3>Need a Repair?</h3>
-                    <p>Choose from our wide range of professional services</p>
-                    <a href="services.html" class="btn-sm">
-                        <i class="fas fa-arrow-right"></i> Browse Services
-                    </a>
-                </div>
-
-                <!-- Contact Support -->
-                <div class="dashboard-card">
-                    <div class="card-icon"><i class="fas fa-headset"></i></div>
-                    <h3>Need Help?</h3>
-                    <p>Our support team is here for you 24/7</p>
-                    <a href="contact.html" class="btn-sm-outline">
-                        <i class="fas fa-envelope"></i> Contact Support
-                    </a>
-                </div>
-
-            </div>
+            <footer class="footer">
+                <p>© 2026 <strong>Fixora</strong> — Professional Home Repair Services</p>
+                <p class="footer-update">Last updated: <span id="footer-date"></span></p>
+            </footer>
         </div>
-    </main>
-
-    <!-- ===== FOOTER ===== -->
-    <footer class="footer">
-        <p>© 2026 <strong>Fixora</strong> — Professional Home Repair Services</p>
-        <p class="footer-update">Last updated: <span id="footer-date"></span></p>
-    </footer>
+    </div>
 
     <script src="../js/script.js"></script>
+    <script src="../js/chatbot.js"></script>
     <script>
         // Check if customer is logged in
         document.addEventListener('DOMContentLoaded', function() {
@@ -293,12 +307,17 @@
             document.getElementById('userName').textContent = email.split('@')[0];
         });
 
+        // Logout function - redirects to HOME page
         function handleLogout(event) {
             event.preventDefault();
             localStorage.removeItem('isLoggedIn');
             localStorage.removeItem('userRole');
             localStorage.removeItem('userEmail');
-            window.location.href = 'login.html';
+            localStorage.removeItem('userName');
+            localStorage.removeItem('userPhone');
+            localStorage.removeItem('providerVerified');
+            localStorage.removeItem('currentRequest');
+            window.location.href = 'index.html';
         }
     </script>
 </body>

@@ -54,6 +54,20 @@
             font-weight: 600;
         }
 
+        .detail-item .value.status-badge-sm {
+            padding: 2px 12px;
+            border-radius: 60px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .status-pending { background: #fef3c7; color: #b45309; }
+        .status-selected { background: #dbeafe; color: #1e40af; }
+        .status-examined { background: #e0e7ff; color: #4338ca; }
+        .status-progress { background: #dbeafe; color: #1e40af; }
+        .status-completed { background: #d1fae5; color: #065f46; }
+        .status-cancelled { background: #fee2e2; color: #991b1b; }
+
         .timeline {
             position: relative;
             padding-left: 28px;
@@ -105,6 +119,54 @@
             font-size: 0.9rem;
         }
 
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+
+        .btn-action {
+            padding: 10px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Inter', sans-serif;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-primary-action {
+            background: var(--gradient-primary);
+            color: white;
+        }
+
+        .btn-track-action {
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            color: white;
+        }
+
+        .btn-outline-action {
+            background: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-outline-action:hover {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
         @media (max-width: 768px) {
             .details-grid {
                 grid-template-columns: 1fr;
@@ -113,146 +175,315 @@
     </style>
 </head>
 <body>
+    <!-- Mobile Toggle -->
+    <button class="sidebar-toggle" id="sidebar-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
 
-    <!-- ===== NAVBAR ===== -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="logo">
-                <i class="fas fa-wrench"></i>
-                <span>Fix<span class="logo-highlight">ora</span></span>
+    <div class="page-wrapper">
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-wrench"></i>
+                    <span>Fix<span class="logo-highlight">ora</span></span>
+                </div>
             </div>
-            <ul class="nav-links" id="navLinks">
-                <li><a href="customer-dashboard.html"><i class="fas fa-gauge-high"></i> Dashboard</a></li>
-                <li><a href="book-service.html"><i class="fas fa-plus-circle"></i> Book Service</a></li>
-                <li><a href="my-orders.html"><i class="fas fa-clock-rotate-left"></i> My Orders</a></li>
-                <li><a href="customer-profile.html"><i class="fas fa-user"></i> Profile</a></li>
-                <li id="authLink"><a href="login.html" onclick="handleLogout(event)"><i class="fas fa-right-from-bracket"></i> Logout</a></li>
-            </ul>
-            <div class="nav-actions">
-                <button id="theme-toggle" class="theme-btn">
-                    <i class="fas fa-moon"></i>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="post-request.html"><i class="fas fa-plus-circle"></i> Post Request</a></li>
+                    <li><a href="customer-dashboard.html"><i class="fas fa-gauge-high"></i> Dashboard</a></li>
+                    <li><a href="my-orders.html" class="active"><i class="fas fa-list-check"></i> My Orders</a></li>
+                    <li><a href="customer-profile.html"><i class="fas fa-user"></i> Profile</a></li>
+                    <li style="margin-top: 16px; border-top: 1px solid var(--border); padding-top: 12px;">
+                        <a href="index.html" onclick="handleLogout(event)" style="color: #ef4444; font-weight: 600;">
+                            <i class="fas fa-sign-out-alt" style="margin-right: 10px;"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <button id="theme-toggle" class="theme-btn-sidebar">
+                    <i class="fas fa-moon"></i> Dark Mode
                 </button>
-                <div class="hamburger" id="hamburger">
-                    <i class="fas fa-bars"></i>
-                </div>
             </div>
+        </aside>
+
+        <!-- MAIN -->
+        <div class="main-area">
+
+            <main class="main-content">
+                <div class="container">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 24px;">
+                        <h1 class="page-title" style="margin-bottom: 0;">
+                            <i class="fas fa-receipt"></i> Order <span id="orderId">#ORD-001</span>
+                        </h1>
+                        <span class="status-badge-sm status-selected" id="orderStatus" style="padding: 8px 20px; font-size: 0.9rem; border-radius: 60px; font-weight: 700;">Selected</span>
+                    </div>
+
+                    <div class="details-grid">
+
+                        <!-- Order Info -->
+                        <div class="detail-card">
+                            <h3><i class="fas fa-circle-info"></i> Order Information</h3>
+                            <div class="detail-item">
+                                <span class="label">Service</span>
+                                <span class="value" id="detailService">Plumbing</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">Status</span>
+                                <span class="value" id="detailStatus">
+                                    <span class="status-badge-sm status-selected">Selected</span>
+                                </span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">Date</span>
+                                <span class="value" id="detailDate">2026-07-08</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">Address</span>
+                                <span class="value" id="detailAddress">Al-Malaz, Riyadh</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">Price</span>
+                                <span class="value" style="color: var(--accent); font-size: 1.2rem;" id="detailPrice">$50</span>
+                            </div>
+                        </div>
+
+                        <!-- Technician Info -->
+                        <div class="detail-card">
+                            <h3><i class="fas fa-user-tie"></i> <span id="techSectionTitle">Assigned Technician</span></h3>
+                            <div id="techInfo" style="display: flex; align-items: center; gap: 16px; margin-bottom: 12px;">
+                                <div style="width: 56px; height: 56px; border-radius: 50%; background: var(--gradient-primary); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.6rem; font-weight: 700;" id="techAvatar">
+                                    AA
+                                </div>
+                                <div>
+                                    <div style="font-weight: 700; color: var(--text-primary); font-size: 1.05rem;" id="techName">Ahmed Al-Rashid</div>
+                                    <div style="color: var(--text-secondary); font-size: 0.85rem;" id="techRating">⭐ 4.9 (128 reviews)</div>
+                                    <div style="color: var(--text-light); font-size: 0.8rem;" id="techSpecialty">Plumbing Specialist</div>
+                                </div>
+                            </div>
+                            <div id="noTechInfo" style="display: none; text-align: center; padding: 20px; color: var(--text-secondary);">
+                                <i class="fas fa-clock" style="font-size: 2rem; display: block; margin-bottom: 8px;"></i>
+                                <p>No technician assigned yet. <br>Your request is pending.</p>
+                            </div>
+                            <div class="action-buttons" id="techActions">
+                                <a href="tel:+966501234567" class="btn-action btn-outline-action">
+                                    <i class="fas fa-phone"></i> Call
+                                </a>
+                                <a href="#" class="btn-action btn-outline-action">
+                                    <i class="fas fa-message"></i> Message
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Timeline -->
+                        <div class="detail-card" style="grid-column: 1 / -1;">
+                            <h3><i class="fas fa-clock"></i> Order Timeline</h3>
+                            <div class="timeline" id="timelineContainer">
+                                <!-- Timeline items will be rendered by JavaScript -->
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="detail-card" style="grid-column: 1 / -1;">
+                            <h3><i class="fas fa-gavel"></i> Actions</h3>
+                            <div class="action-buttons" id="actionButtons">
+                                <!-- Buttons will be rendered by JavaScript -->
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </main>
+
+            <footer class="footer">
+                <p>© 2026 <strong>Fixora</strong> — Professional Home Repair Services</p>
+                <p class="footer-update">Last updated: <span id="footer-date"></span></p>
+            </footer>
         </div>
-    </nav>
-
-    <!-- ===== MAIN ===== -->
-    <main class="main-content">
-        <div class="container">
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 24px;">
-                <h1 class="page-title" style="margin-bottom: 0;">
-                    <i class="fas fa-receipt"></i> Order <span id="orderId">#ORD-001</span>
-                </h1>
-                <span class="order-status-badge status-progress" id="orderStatus" style="padding: 8px 20px; font-size: 0.9rem;">In Progress</span>
-            </div>
-
-            <div class="details-grid">
-
-                <!-- Order Info -->
-                <div class="detail-card">
-                    <h3><i class="fas fa-circle-info"></i> Order Information</h3>
-                    <div class="detail-item">
-                        <span class="label">Service</span>
-                        <span class="value" id="detailService">Plumbing</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="label">Date</span>
-                        <span class="value" id="detailDate">2026-07-08</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="label">Time</span>
-                        <span class="value" id="detailTime">09:00 AM</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="label">Address</span>
-                        <span class="value" id="detailAddress">Al-Malaz, Riyadh</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="label">Price</span>
-                        <span class="value" style="color: var(--accent); font-size: 1.2rem;" id="detailPrice">$50</span>
-                    </div>
-                </div>
-
-                <!-- Technician Info -->
-                <div class="detail-card">
-                    <h3><i class="fas fa-user-tie"></i> Assigned Technician</h3>
-                    <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 12px;">
-                        <div style="width: 56px; height: 56px; border-radius: 50%; background: var(--gradient-primary); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.6rem; font-weight: 700;">
-                            KA
-                        </div>
-                        <div>
-                            <div style="font-weight: 700; color: var(--text-primary); font-size: 1.05rem;">Khalid Al-Omari</div>
-                            <div style="color: var(--text-secondary); font-size: 0.85rem;">⭐ 4.8 (124 reviews)</div>
-                            <div style="color: var(--text-light); font-size: 0.8rem;">Plumbing & Electrical Specialist</div>
-                        </div>
-                    </div>
-                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                        <a href="tel:+966501234567" class="btn-sm btn-primary" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 0.85rem;">
-                            <i class="fas fa-phone"></i> Call
-                        </a>
-                        <a href="#" class="btn-sm btn-outline" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 0.85rem; border: 1px solid var(--border); color: var(--text-primary);">
-                            <i class="fas fa-message"></i> Message
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Timeline -->
-                <div class="detail-card" style="grid-column: 1 / -1;">
-                    <h3><i class="fas fa-clock"></i> Order Timeline</h3>
-                    <div class="timeline">
-                        <div class="timeline-item">
-                            <div class="time">July 8, 2026 - 09:00 AM</div>
-                            <div class="title">🟢 Service Started</div>
-                            <div class="desc">Technician arrived at your location</div>
-                        </div>
-                        <div class="timeline-item">
-                            <div class="time">July 8, 2026 - 08:30 AM</div>
-                            <div class="title">📋 Technician Assigned</div>
-                            <div class="desc">Khalid Al-Omari has been assigned to your order</div>
-                        </div>
-                        <div class="timeline-item">
-                            <div class="time">July 7, 2026 - 03:00 PM</div>
-                            <div class="title">✅ Order Confirmed</div>
-                            <div class="desc">Your booking has been confirmed</div>
-                        </div>
-                        <div class="timeline-item">
-                            <div class="time">July 7, 2026 - 02:30 PM</div>
-                            <div class="title">📩 Order Placed</div>
-                            <div class="desc">You booked a plumbing service</div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </main>
-
-    <!-- ===== FOOTER ===== -->
-    <footer class="footer">
-        <p>© 2026 <strong>Fixora</strong> — Professional Home Repair Services</p>
-        <p class="footer-update">Last updated: <span id="footer-date"></span></p>
-    </footer>
+    </div>
 
     <script src="../js/script.js"></script>
     <script>
-        // ===== CHECK LOGIN =====
+        // ===== ORDER DATA =====
+        var orderDetails = {
+            id: '#ORD-001',
+            service: 'Plumbing',
+            status: 'selected',
+            date: '2026-07-08',
+            address: 'Al-Malaz, Riyadh',
+            price: '$50',
+            technician: {
+                name: 'Ahmed Al-Rashid',
+                initials: 'AA',
+                rating: '4.9',
+                reviews: 128,
+                specialty: 'Plumbing Specialist',
+                phone: '+966 50 123 4567'
+            },
+            timeline: [
+                { time: 'July 8, 2026 - 09:00 AM', title: '📋 Technician Selected', desc: 'Ahmed Al-Rashid has been selected for your job' },
+                { time: 'July 8, 2026 - 08:30 AM', title: '👷 Reviewing Bids', desc: 'You are reviewing technician bids' },
+                { time: 'July 7, 2026 - 03:00 PM', title: '✅ Request Posted', desc: 'Your service request has been posted' },
+                { time: 'July 7, 2026 - 02:30 PM', title: '📩 Order Placed', desc: 'You submitted a plumbing service request' }
+            ]
+        };
+
+        // ===== INIT =====
         document.addEventListener('DOMContentLoaded', function() {
-            const role = localStorage.getItem('userRole');
+            var role = localStorage.getItem('userRole');
             if (role !== 'customer') {
                 window.location.href = 'login.html';
             }
+
+            // Load order from URL params or localStorage
+            var params = new URLSearchParams(window.location.search);
+            var orderId = params.get('id');
+            
+            // Try to load from localStorage
+            var savedOrder = localStorage.getItem('currentOrderDetails');
+            if (savedOrder) {
+                try {
+                    var parsed = JSON.parse(savedOrder);
+                    if (parsed.id === orderId || !orderId) {
+                        orderDetails = parsed;
+                    }
+                } catch(e) {}
+            }
+
+            renderOrderDetails();
         });
+
+        function renderOrderDetails() {
+            // Basic info
+            document.getElementById('orderId').textContent = orderDetails.id;
+            document.getElementById('detailService').textContent = orderDetails.service;
+            document.getElementById('detailDate').textContent = orderDetails.date;
+            document.getElementById('detailAddress').textContent = orderDetails.address;
+            document.getElementById('detailPrice').textContent = orderDetails.price;
+
+            // Status
+            var statusEl = document.getElementById('orderStatus');
+            var statusMap = {
+                'pending': { class: 'status-pending', label: '⏳ Pending' },
+                'selected': { class: 'status-selected', label: '👷 Selected' },
+                'examined': { class: 'status-examined', label: '📋 Examined' },
+                'in-progress': { class: 'status-progress', label: '🔧 In Progress' },
+                'accepted': { class: 'status-selected', label: '✅ Accepted' },
+                'completed': { class: 'status-completed', label: '✅ Completed' },
+                'cancelled': { class: 'status-cancelled', label: '❌ Cancelled' }
+            };
+            var status = statusMap[orderDetails.status] || statusMap['pending'];
+            statusEl.className = 'status-badge-sm ' + status.class;
+            statusEl.textContent = status.label;
+
+            // Status in details
+            var detailStatus = document.getElementById('detailStatus');
+            detailStatus.innerHTML = '<span class="status-badge-sm ' + status.class + '">' + status.label + '</span>';
+
+            // Technician
+            if (orderDetails.technician) {
+                document.getElementById('techInfo').style.display = 'flex';
+                document.getElementById('noTechInfo').style.display = 'none';
+                document.getElementById('techName').textContent = orderDetails.technician.name;
+                document.getElementById('techAvatar').textContent = orderDetails.technician.initials || orderDetails.technician.name.substring(0, 2).toUpperCase();
+                document.getElementById('techRating').textContent = '⭐ ' + orderDetails.technician.rating + ' (' + orderDetails.technician.reviews + ' reviews)';
+                document.getElementById('techSpecialty').textContent = orderDetails.technician.specialty || 'Service Provider';
+                document.getElementById('techSectionTitle').textContent = 'Assigned Technician';
+                document.getElementById('techActions').style.display = 'flex';
+            } else {
+                document.getElementById('techInfo').style.display = 'none';
+                document.getElementById('noTechInfo').style.display = 'block';
+                document.getElementById('techSectionTitle').textContent = 'No Technician Assigned';
+                document.getElementById('techActions').style.display = 'none';
+            }
+
+            // Timeline
+            var timelineContainer = document.getElementById('timelineContainer');
+            timelineContainer.innerHTML = orderDetails.timeline.map(function(item) {
+                return `
+                    <div class="timeline-item">
+                        <div class="time">${item.time}</div>
+                        <div class="title">${item.title}</div>
+                        <div class="desc">${item.desc}</div>
+                    </div>
+                `;
+            }).join('');
+
+            // Action buttons
+            var actionsContainer = document.getElementById('actionButtons');
+            var actionsHtml = '';
+
+            if (orderDetails.status === 'selected') {
+                actionsHtml += `
+                    <a href="examination.html" class="btn-action btn-primary-action">
+                        <i class="fas fa-file-medical"></i> View Examination
+                    </a>
+                `;
+            }
+
+            if (orderDetails.status === 'examined') {
+                actionsHtml += `
+                    <a href="examination.html" class="btn-action btn-primary-action">
+                        <i class="fas fa-file-contract"></i> Review Report
+                    </a>
+                `;
+            }
+
+            if (orderDetails.status === 'in-progress' || orderDetails.status === 'accepted') {
+                actionsHtml += `
+                    <a href="execution.html" class="btn-action btn-track-action">
+                        <i class="fas fa-location-dot"></i> Track Service
+                    </a>
+                `;
+            }
+
+            if (orderDetails.status !== 'completed' && orderDetails.status !== 'cancelled') {
+                actionsHtml += `
+                    <button class="btn-action btn-outline-action" onclick="cancelOrder()" style="color: #ef4444; border-color: #ef4444;">
+                        <i class="fas fa-xmark"></i> Cancel Order
+                    </button>
+                `;
+            }
+
+            if (orderDetails.status === 'completed') {
+                actionsHtml += `
+                    <a href="rating.html" class="btn-action btn-track-action">
+                        <i class="fas fa-star"></i> Rate Technician
+                    </a>
+                `;
+            }
+
+            if (!actionsHtml) {
+                actionsHtml = `
+                    <p style="color: var(--text-secondary);">No actions available for this order.</p>
+                `;
+            }
+
+            actionsContainer.innerHTML = actionsHtml;
+        }
+
+        function cancelOrder() {
+            if (confirm('Are you sure you want to cancel this order?')) {
+                orderDetails.status = 'cancelled';
+                localStorage.setItem('currentOrderDetails', JSON.stringify(orderDetails));
+                renderOrderDetails();
+                alert('❌ Order has been cancelled.');
+            }
+        }
 
         function handleLogout(event) {
             event.preventDefault();
             localStorage.removeItem('isLoggedIn');
             localStorage.removeItem('userRole');
             localStorage.removeItem('userEmail');
-            window.location.href = 'login.html';
+            localStorage.removeItem('currentExecution');
+            window.location.href = 'index.html';
         }
     </script>
+        <script src="../js/chatbot.js"></script>
+
 </body>
 </html>

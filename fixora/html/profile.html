@@ -8,282 +8,153 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <style>
-        .profile-header {
-            display: flex;
-            align-items: center;
-            gap: 30px;
-            padding: 30px;
-            background: var(--bg-card);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border);
-            flex-wrap: wrap;
-        }
-        .profile-avatar {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background: var(--gradient-primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
-            color: white;
-            flex-shrink: 0;
-        }
-        .profile-name h2 {
-            color: var(--text-primary);
-            margin: 0;
-            font-size: 1.8rem;
-        }
-        .profile-name .role-tag {
-            background: var(--accent);
-            color: white;
-            padding: 4px 16px;
-            border-radius: 60px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            display: inline-block;
-            margin-top: 4px;
-        }
-        .profile-name p {
-            color: var(--text-secondary);
-            margin: 4px 0 0;
-        }
-        .profile-stats {
-            display: flex;
-            gap: 30px;
-            margin-left: auto;
-            flex-wrap: wrap;
-        }
-        .profile-stat {
-            text-align: center;
-        }
-        .profile-stat h3 {
-            color: var(--text-primary);
-            font-size: 1.6rem;
-            margin: 0;
-        }
-        .profile-stat p {
-            color: var(--text-secondary);
-            font-size: 0.8rem;
-            margin: 0;
-        }
-
-        .profile-details {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
-            margin-top: 24px;
-        }
-        .detail-card {
-            background: var(--bg-card);
-            padding: 24px;
-            border-radius: var(--radius-sm);
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow);
-        }
-        .detail-card h3 {
-            color: var(--text-primary);
-            font-size: 1rem;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .detail-card h3 i {
-            color: var(--accent);
-        }
-        .detail-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid var(--border);
-        }
+        .profile-header { display: flex; align-items: center; gap: 30px; padding: 30px; background: var(--bg-card); border-radius: var(--radius); box-shadow: var(--shadow); border: 1px solid var(--border); flex-wrap: wrap; }
+        .profile-avatar { width: 100px; height: 100px; border-radius: 50%; background: var(--gradient-primary); display: flex; align-items: center; justify-content: center; font-size: 3rem; color: white; flex-shrink: 0; }
+        .profile-name h2 { color: var(--text-primary); margin: 0; font-size: 1.8rem; }
+        .profile-name .role-tag { background: var(--accent); color: white; padding: 4px 16px; border-radius: 60px; font-size: 0.75rem; font-weight: 700; display: inline-block; margin-top: 4px; }
+        .profile-name p { color: var(--text-secondary); margin: 4px 0 0; }
+        .profile-stats { display: flex; gap: 30px; margin-left: auto; flex-wrap: wrap; }
+        .profile-stat { text-align: center; }
+        .profile-stat h3 { color: var(--text-primary); font-size: 1.6rem; margin: 0; }
+        .profile-stat p { color: var(--text-secondary); font-size: 0.8rem; margin: 0; }
+        .profile-details { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 24px; }
+        .detail-card { background: var(--bg-card); padding: 24px; border-radius: var(--radius-sm); border: 1px solid var(--border); box-shadow: var(--shadow); }
+        .detail-card h3 { color: var(--text-primary); font-size: 1rem; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+        .detail-card h3 i { color: var(--accent); }
+        .detail-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); }
         .detail-item:last-child { border-bottom: none; }
-        .detail-item .label {
-            color: var(--text-secondary);
-            font-weight: 500;
-        }
-        .detail-item .value {
-            color: var(--text-primary);
-            font-weight: 600;
-        }
-
-        .edit-btn {
-            background: var(--gradient-primary);
-            color: white;
-            border: none;
-            padding: 12px 32px;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: var(--transition);
-            font-family: 'Inter', sans-serif;
-            margin-top: 16px;
-        }
-        .edit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.35);
-        }
-
-        @media (max-width: 768px) {
-            .profile-header {
-                flex-direction: column;
-                text-align: center;
-            }
-            .profile-stats {
-                margin-left: 0;
-                width: 100%;
-                justify-content: center;
-            }
-            .profile-details {
-                grid-template-columns: 1fr;
-            }
-        }
+        .detail-item .label { color: var(--text-secondary); font-weight: 500; }
+        .detail-item .value { color: var(--text-primary); font-weight: 600; }
+        .edit-btn { background: var(--gradient-primary); color: white; border: none; padding: 12px 32px; border-radius: 12px; font-weight: 700; font-size: 1rem; cursor: pointer; transition: var(--transition); font-family: 'Inter', sans-serif; margin-top: 16px; }
+        .edit-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(102, 126, 234, 0.35); }
+        @media (max-width: 768px) { .profile-header { flex-direction: column; text-align: center; } .profile-stats { margin-left: 0; width: 100%; justify-content: center; } .profile-details { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
-    <!-- ===== NAVBAR ===== -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="logo">
-                <i class="fas fa-wrench"></i>
-                <span>Fix<span class="logo-highlight">ora</span></span>
+    <button class="sidebar-toggle" id="sidebar-toggle"><i class="fas fa-bars"></i></button>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <div class="page-wrapper">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-wrench"></i>
+                    <span>Fix<span class="logo-highlight">ora</span></span>
+                </div>
             </div>
-            <ul class="nav-links" id="navLinks">
-                <li><a href="provider-dashboard.html"><i class="fas fa-gauge-high"></i> Dashboard</a></li>
-                <li><a href="orders.html"><i class="fas fa-list-check"></i> Orders</a></li>
-                <li><a href="schedule.html"><i class="fas fa-calendar-days"></i> Schedule</a></li>
-                <li><a href="profile.html" class="active"><i class="fas fa-user-gear"></i> Profile</a></li>
-                <li id="authLink"><a href="login.html" onclick="handleLogout(event)"><i class="fas fa-right-from-bracket"></i> Logout</a></li>
-            </ul>
-            <div class="nav-actions">
-                <button id="theme-toggle" class="theme-btn">
-                    <i class="fas fa-moon"></i>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="provider-dashboard.html"><i class="fas fa-gauge-high"></i> Dashboard</a></li>
+                    <li><a href="orders.html"><i class="fas fa-list-check"></i> Orders</a></li>
+                    <li><a href="schedule.html"><i class="fas fa-calendar-days"></i> Schedule</a></li>
+                    <li><a href="profile.html" class="active"><i class="fas fa-user-gear"></i> Profile</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <button class="theme-btn-sidebar" id="theme-toggle-sidebar">
+                    <i class="fas fa-moon"></i> Dark Mode
                 </button>
-                <div class="hamburger" id="hamburger">
-                    <i class="fas fa-bars"></i>
-                </div>
+                <a href="login.html" onclick="handleLogout(event)" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; color: var(--text-secondary); text-decoration: none; font-weight: 600; font-size: 0.9rem; margin-top: 8px; transition: var(--transition);">
+                    <i class="fas fa-right-from-bracket"></i> Logout
+                </a>
             </div>
+        </aside>
+
+        <div class="main-area">
+            <main class="main-content">
+                <div class="container">
+                    <h1 class="page-title">
+                        <i class="fas fa-user-gear"></i> Profile
+                    </h1>
+
+                    <div class="profile-header">
+                        <div class="profile-avatar"><i class="fas fa-user-tie"></i></div>
+                        <div class="profile-name">
+                            <h2 id="profileName">Khalid Al-Omari</h2>
+                            <span class="role-tag">Provider</span>
+                            <p id="profileSpecialty">⚡ Plumbing & Electrical Specialist</p>
+                        </div>
+                        <div class="profile-stats">
+                            <div class="profile-stat"><h3 id="profileRating">4.8 ⭐</h3><p>Rating</p></div>
+                            <div class="profile-stat"><h3 id="profileJobs">48</h3><p>Completed Jobs</p></div>
+                            <div class="profile-stat"><h3 id="profileYears">5</h3><p>Years Experience</p></div>
+                        </div>
+                    </div>
+
+                    <div class="profile-details">
+                        <div class="detail-card">
+                            <h3><i class="fas fa-circle-info"></i> Personal Information</h3>
+                            <div class="detail-item"><span class="label">Full Name</span><span class="value" id="profileName2">Khalid Al-Omari</span></div>
+                            <div class="detail-item"><span class="label">Email</span><span class="value" id="profileEmail">khalid@fixora.com</span></div>
+                            <div class="detail-item"><span class="label">Phone</span><span class="value" id="profilePhone">+966 50 123 4567</span></div>
+                            <div class="detail-item"><span class="label">Location</span><span class="value" id="profileLocation">Riyadh, Saudi Arabia</span></div>
+                        </div>
+                        <div class="detail-card">
+                            <h3><i class="fas fa-briefcase"></i> Professional Info</h3>
+                            <div class="detail-item"><span class="label">Role</span><span class="value" id="profileRole2">Provider</span></div>
+                            <div class="detail-item"><span class="label">Specialty</span><span class="value" id="profileSpecialty2">Plumbing & Electrical</span></div>
+                            <div class="detail-item"><span class="label">Experience</span><span class="value" id="profileExperience">5 Years</span></div>
+                            <div class="detail-item"><span class="label">License</span><span class="value" style="color: #48bb78;">✅ Certified</span></div>
+                        </div>
+                        <div class="detail-card" style="grid-column: 1 / -1;">
+                            <h3><i class="fas fa-pen-to-square"></i> About Me</h3>
+                            <p style="color: var(--text-secondary); line-height: 1.8;">Professional home repair specialist with over 5 years of experience in plumbing and electrical services. Committed to providing high-quality, reliable, and affordable repairs. Available 24/7 for emergency services.</p>
+                            <button class="edit-btn" onclick="editProfile()"><i class="fas fa-pen"></i> Edit Profile</button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <footer class="footer">
+                <div class="footer-container">
+                    <div class="footer-grid">
+                        <div class="footer-col">
+                            <div class="footer-logo"><i class="fas fa-wrench"></i><span>Fix<span class="logo-highlight">ora</span></span></div>
+                            <p class="footer-desc">Connecting homeowners with trusted service providers.</p>
+                        </div>
+                        <div class="footer-col">
+                            <h4>Quick Links</h4>
+                            <ul>
+                                <li><a href="provider-dashboard.html">Dashboard</a></li>
+                                <li><a href="orders.html">Orders</a></li>
+                                <li><a href="schedule.html">Schedule</a></li>
+                            </ul>
+                        </div>
+                        <div class="footer-col">
+                            <h4>Contact</h4>
+                            <ul class="footer-contact">
+                                <li><i class="fas fa-phone"></i><a href="tel:+18001234567">+1 (800) 123-4567</a></li>
+                                <li><i class="fas fa-envelope"></i><a href="mailto:support@fixora.com">support@fixora.com</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="footer-bottom">
+                        <p>© 2026 <strong>Fixora</strong>. All rights reserved.</p>
+                        <div class="footer-bottom-links">
+                            <a href="#">Privacy Policy</a>
+                            <a href="#">Terms of Service</a>
+                        </div>
+                    </div>
+                </div>
+            </footer>
         </div>
-    </nav>
-
-    <!-- ===== MAIN ===== -->
-    <main class="main-content">
-        <div class="container">
-            <h1 class="page-title">
-                <i class="fas fa-user-gear"></i> Profile
-            </h1>
-
-            <!-- Profile Header -->
-            <div class="profile-header">
-                <div class="profile-avatar">
-                    <i class="fas fa-user-tie"></i>
-                </div>
-                <div class="profile-name">
-                    <h2 id="profileName">Khalid Al-Omari</h2>
-                    <span class="role-tag">Provider</span>
-                    <p id="profileSpecialty">⚡ Plumbing & Electrical Specialist</p>
-                </div>
-                <div class="profile-stats">
-                    <div class="profile-stat">
-                        <h3 id="profileRating">4.8 ⭐</h3>
-                        <p>Rating</p>
-                    </div>
-                    <div class="profile-stat">
-                        <h3 id="profileJobs">48</h3>
-                        <p>Completed Jobs</p>
-                    </div>
-                    <div class="profile-stat">
-                        <h3 id="profileYears">5</h3>
-                        <p>Years Experience</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Profile Details -->
-            <div class="profile-details">
-                <div class="detail-card">
-                    <h3><i class="fas fa-circle-info"></i> Personal Information</h3>
-                    <div class="detail-item">
-                        <span class="label">Full Name</span>
-                        <span class="value" id="profileName2">Khalid Al-Omari</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="label">Email</span>
-                        <span class="value" id="profileEmail">khalid@fixora.com</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="label">Phone</span>
-                        <span class="value" id="profilePhone">+966 50 123 4567</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="label">Location</span>
-                        <span class="value" id="profileLocation">Riyadh, Saudi Arabia</span>
-                    </div>
-                </div>
-
-                <div class="detail-card">
-                    <h3><i class="fas fa-briefcase"></i> Professional Info</h3>
-                    <div class="detail-item">
-                        <span class="label">Role</span>
-                        <span class="value" id="profileRole2">Provider</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="label">Specialty</span>
-                        <span class="value" id="profileSpecialty2">Plumbing & Electrical</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="label">Experience</span>
-                        <span class="value" id="profileExperience">5 Years</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="label">License</span>
-                        <span class="value" style="color: #48bb78;">✅ Certified</span>
-                    </div>
-                </div>
-
-                <div class="detail-card" style="grid-column: 1 / -1;">
-                    <h3><i class="fas fa-pen-to-square"></i> About Me</h3>
-                    <p style="color: var(--text-secondary); line-height: 1.8;">
-                        Professional home repair specialist with over 5 years of experience in plumbing and electrical services. 
-                        Committed to providing high-quality, reliable, and affordable repairs. Available 24/7 for emergency services.
-                    </p>
-                    <button class="edit-btn" onclick="editProfile()">
-                        <i class="fas fa-pen"></i> Edit Profile
-                    </button>
-                </div>
-            </div>
-
-        </div>
-    </main>
-
-    <!-- ===== FOOTER ===== -->
-    <footer class="footer">
-        <p>© 2026 <strong>Fixora</strong> — Professional Home Repair Services</p>
-        <p class="footer-update">Last updated: <span id="footer-date"></span></p>
-    </footer>
+    </div>
 
     <script src="../js/script.js"></script>
+    <script src="../js/footer.js"></script>
     <script>
         function editProfile() {
             const name = prompt('Enter your full name:', 'Khalid Al-Omari');
-            if (name) {
-                document.getElementById('profileName').textContent = name;
-                document.getElementById('profileName2').textContent = name;
-                alert('✅ Profile updated successfully!');
-            }
+            if (name) { document.getElementById('profileName').textContent = name; document.getElementById('profileName2').textContent = name; alert('✅ Profile updated successfully!'); }
         }
-
+        function handleLogout(event) { event.preventDefault(); localStorage.removeItem('isLoggedIn'); localStorage.removeItem('userRole'); localStorage.removeItem('userEmail'); window.location.href = 'login.html'; }
         document.addEventListener('DOMContentLoaded', function() {
             const role = localStorage.getItem('userRole');
-            if (role !== 'provider') {
-                window.location.href = 'login.html';
-            }
+            if (role !== 'provider') { window.location.href = 'login.html'; }
         });
     </script>
+        <script src="../js/chatbot.js"></script>
+
 </body>
 </html>

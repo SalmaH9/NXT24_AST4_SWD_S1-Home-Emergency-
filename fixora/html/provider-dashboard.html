@@ -10,120 +10,138 @@
 </head>
 <body>
 
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="logo">
-                <i class="fas fa-wrench"></i>
-                <span>Fix<span class="logo-highlight">ora</span></span>
+    <!-- Mobile Toggle -->
+    <button class="sidebar-toggle" id="sidebar-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <div class="page-wrapper">
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-wrench"></i>
+                    <span>Fix<span class="logo-highlight">ora</span></span>
+                </div>
             </div>
-            <ul class="nav-links" id="navLinks">
-                <li><a href="provider-dashboard.html" class="active"><i class="fas fa-gauge-high"></i> Dashboard</a></li>
-                <li><a href="orders.html"><i class="fas fa-list-check"></i> Orders</a></li>
-                <li><a href="schedule.html"><i class="fas fa-calendar-days"></i> Schedule</a></li>
-                <li><a href="profile.html"><i class="fas fa-user-gear"></i> Profile</a></li>
-                <li id="authLink"><a href="login.html" onclick="handleLogout(event)"><i class="fas fa-right-from-bracket"></i> Logout</a></li>
-            </ul>
-            <div class="nav-actions">
-                <button id="theme-toggle" class="theme-btn">
-                    <i class="fas fa-moon"></i>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="provider-dashboard.html" class="active"><i class="fas fa-gauge-high"></i> Dashboard</a></li>
+                    <li><a href="orders.html"><i class="fas fa-list-check"></i> Orders</a></li>
+                    <li><a href="schedule.html"><i class="fas fa-calendar-days"></i> Schedule</a></li>
+                    <li><a href="examination.html"><i class="fas fa-file-medical"></i> Examination</a></li>
+                    <li><a href="profile.html"><i class="fas fa-user-gear"></i> Profile</a></li>
+                    <li style="margin-top: 16px; border-top: 1px solid var(--border); padding-top: 12px;">
+                        <a href="index.html" onclick="handleLogout(event)" style="color: #ef4444; font-weight: 600;">
+                            <i class="fas fa-sign-out-alt" style="margin-right: 10px;"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <button id="theme-toggle" class="theme-btn-sidebar">
+                    <i class="fas fa-moon"></i> Dark Mode
                 </button>
-                <div class="hamburger" id="hamburger">
-                    <i class="fas fa-bars"></i>
-                </div>
             </div>
+        </aside>
+
+        <!-- MAIN -->
+        <div class="main-area">
+
+            <main class="main-content">
+                <div class="container">
+                    <h1 class="page-title">
+                        <i class="fas fa-gauge-high"></i> 
+                        Provider Dashboard
+                    </h1>
+
+                    <!-- Stats -->
+                    <section class="stats">
+                        <div class="stat-card">
+                            <i class="fas fa-clipboard-list"></i>
+                            <h3>12</h3>
+                            <p>Pending Orders</p>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-check-circle"></i>
+                            <h3>48</h3>
+                            <p>Completed Jobs</p>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-star"></i>
+                            <h3>4.8</h3>
+                            <p>Rating</p>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-clock"></i>
+                            <h3>3</h3>
+                            <p>Today's Jobs</p>
+                        </div>
+                    </section>
+
+                    <!-- Recent Orders -->
+                    <section style="background: var(--bg-card); border-radius: var(--radius); padding: 30px; box-shadow: var(--shadow); border: 1px solid var(--border);">
+                        <h2 style="color: var(--text-primary); margin-bottom: 20px; display: flex; align-items: center; gap: 12px;">
+                            <i class="fas fa-clock" style="color: var(--accent);"></i>
+                            Recent Orders
+                        </h2>
+                        <div style="overflow-x: auto;">
+                            <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                                <thead>
+                                    <tr style="border-bottom: 2px solid var(--border);">
+                                        <th style="padding: 12px; color: var(--text-secondary); font-weight: 600;">Order ID</th>
+                                        <th style="padding: 12px; color: var(--text-secondary); font-weight: 600;">Customer</th>
+                                        <th style="padding: 12px; color: var(--text-secondary); font-weight: 600;">Service</th>
+                                        <th style="padding: 12px; color: var(--text-secondary); font-weight: 600;">Status</th>
+                                        <th style="padding: 12px; color: var(--text-secondary); font-weight: 600;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="border-bottom: 1px solid var(--border);">
+                                        <td style="padding: 12px; color: var(--text-primary); font-weight: 600;">#ORD-001</td>
+                                        <td style="padding: 12px; color: var(--text-secondary);">Ahmed Al-Saud</td>
+                                        <td style="padding: 12px; color: var(--text-secondary);"><i class="fas fa-faucet" style="color: var(--accent);"></i> Plumbing</td>
+                                        <td style="padding: 12px;"><span style="background: #fef3c7; color: #b45309; padding: 4px 12px; border-radius: 60px; font-size: 0.8rem; font-weight: 600;">Pending</span></td>
+                                        <td style="padding: 12px;">
+                                            <button style="background: var(--accent); color: white; border: none; padding: 6px 16px; border-radius: 8px; cursor: pointer; font-weight: 600;">Accept</button>
+                                        </td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid var(--border);">
+                                        <td style="padding: 12px; color: var(--text-primary); font-weight: 600;">#ORD-002</td>
+                                        <td style="padding: 12px; color: var(--text-secondary);">Fatima Al-Zahra</td>
+                                        <td style="padding: 12px; color: var(--text-secondary);"><i class="fas fa-bolt" style="color: var(--accent);"></i> Electrical</td>
+                                        <td style="padding: 12px;"><span style="background: #d1fae5; color: #065f46; padding: 4px 12px; border-radius: 60px; font-size: 0.8rem; font-weight: 600;">In Progress</span></td>
+                                        <td style="padding: 12px;">
+                                            <button style="background: #48bb78; color: white; border: none; padding: 6px 16px; border-radius: 8px; cursor: pointer; font-weight: 600;">Complete</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 12px; color: var(--text-primary); font-weight: 600;">#ORD-003</td>
+                                        <td style="padding: 12px; color: var(--text-secondary);">Mohammed Al-Otaibi</td>
+                                        <td style="padding: 12px; color: var(--text-secondary);"><i class="fas fa-snowflake" style="color: var(--accent);"></i> AC Repair</td>
+                                        <td style="padding: 12px;"><span style="background: #e0e7ff; color: #4338ca; padding: 4px 12px; border-radius: 60px; font-size: 0.8rem; font-weight: 600;">Scheduled</span></td>
+                                        <td style="padding: 12px;">
+                                            <button style="background: var(--accent); color: white; border: none; padding: 6px 16px; border-radius: 8px; cursor: pointer; font-weight: 600;">Start</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                </div>
+            </main>
+
+            <footer class="footer">
+                <p>© 2026 <strong>Fixora</strong> — Professional Home Repair Services</p>
+                <p class="footer-update">Last updated: <span id="footer-date"></span></p>
+            </footer>
         </div>
-    </nav>
-
-    <main class="main-content">
-        <div class="container">
-            <h1 class="page-title">
-                <i class="fas fa-gauge-high"></i> 
-                Provider Dashboard
-            </h1>
-
-            <!-- Stats -->
-            <section class="stats">
-                <div class="stat-card">
-                    <i class="fas fa-clipboard-list"></i>
-                    <h3>12</h3>
-                    <p>Pending Orders</p>
-                </div>
-                <div class="stat-card">
-                    <i class="fas fa-check-circle"></i>
-                    <h3>48</h3>
-                    <p>Completed Jobs</p>
-                </div>
-                <div class="stat-card">
-                    <i class="fas fa-star"></i>
-                    <h3>4.8</h3>
-                    <p>Rating</p>
-                </div>
-                <div class="stat-card">
-                    <i class="fas fa-clock"></i>
-                    <h3>3</h3>
-                    <p>Today's Jobs</p>
-                </div>
-            </section>
-
-            <!-- Recent Orders -->
-            <section style="background: var(--bg-card); border-radius: var(--radius); padding: 30px; box-shadow: var(--shadow); border: 1px solid var(--border);">
-                <h2 style="color: var(--text-primary); margin-bottom: 20px; display: flex; align-items: center; gap: 12px;">
-                    <i class="fas fa-clock" style="color: var(--accent);"></i>
-                    Recent Orders
-                </h2>
-                <div style="overflow-x: auto;">
-                    <table style="width: 100%; border-collapse: collapse; text-align: left;">
-                        <thead>
-                            <tr style="border-bottom: 2px solid var(--border);">
-                                <th style="padding: 12px; color: var(--text-secondary); font-weight: 600;">Order ID</th>
-                                <th style="padding: 12px; color: var(--text-secondary); font-weight: 600;">Customer</th>
-                                <th style="padding: 12px; color: var(--text-secondary); font-weight: 600;">Service</th>
-                                <th style="padding: 12px; color: var(--text-secondary); font-weight: 600;">Status</th>
-                                <th style="padding: 12px; color: var(--text-secondary); font-weight: 600;">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr style="border-bottom: 1px solid var(--border);">
-                                <td style="padding: 12px; color: var(--text-primary); font-weight: 600;">#ORD-001</td>
-                                <td style="padding: 12px; color: var(--text-secondary);">Ahmed Al-Saud</td>
-                                <td style="padding: 12px; color: var(--text-secondary);"><i class="fas fa-faucet" style="color: var(--accent);"></i> Plumbing</td>
-                                <td style="padding: 12px;"><span style="background: #fef3c7; color: #b45309; padding: 4px 12px; border-radius: 60px; font-size: 0.8rem; font-weight: 600;">Pending</span></td>
-                                <td style="padding: 12px;">
-                                    <button style="background: var(--accent); color: white; border: none; padding: 6px 16px; border-radius: 8px; cursor: pointer; font-weight: 600;">Accept</button>
-                                </td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid var(--border);">
-                                <td style="padding: 12px; color: var(--text-primary); font-weight: 600;">#ORD-002</td>
-                                <td style="padding: 12px; color: var(--text-secondary);">Fatima Al-Zahra</td>
-                                <td style="padding: 12px; color: var(--text-secondary);"><i class="fas fa-bolt" style="color: var(--accent);"></i> Electrical</td>
-                                <td style="padding: 12px;"><span style="background: #d1fae5; color: #065f46; padding: 4px 12px; border-radius: 60px; font-size: 0.8rem; font-weight: 600;">In Progress</span></td>
-                                <td style="padding: 12px;">
-                                    <button style="background: #48bb78; color: white; border: none; padding: 6px 16px; border-radius: 8px; cursor: pointer; font-weight: 600;">Complete</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 12px; color: var(--text-primary); font-weight: 600;">#ORD-003</td>
-                                <td style="padding: 12px; color: var(--text-secondary);">Mohammed Al-Otaibi</td>
-                                <td style="padding: 12px; color: var(--text-secondary);"><i class="fas fa-snowflake" style="color: var(--accent);"></i> AC Repair</td>
-                                <td style="padding: 12px;"><span style="background: #e0e7ff; color: #4338ca; padding: 4px 12px; border-radius: 60px; font-size: 0.8rem; font-weight: 600;">Scheduled</span></td>
-                                <td style="padding: 12px;">
-                                    <button style="background: var(--accent); color: white; border: none; padding: 6px 16px; border-radius: 8px; cursor: pointer; font-weight: 600;">Start</button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-        </div>
-    </main>
-
-    <footer class="footer">
-        <p>© 2026 <strong>Fixora</strong> — Professional Home Repair Services</p>
-        <p class="footer-update">Last updated: <span id="footer-date"></span></p>
-    </footer>
+    </div>
 
     <script src="../js/script.js"></script>
+        <script src="../js/chatbot.js"></script>
     <script>
         // Check if provider is logged in
         window.addEventListener('DOMContentLoaded', function() {
@@ -133,13 +151,19 @@
             }
         });
 
+        // Logout function - redirects to HOME page
         function handleLogout(event) {
             event.preventDefault();
             localStorage.removeItem('isLoggedIn');
             localStorage.removeItem('userRole');
             localStorage.removeItem('userEmail');
-            window.location.href = 'login.html';
+            localStorage.removeItem('userName');
+            localStorage.removeItem('userPhone');
+            localStorage.removeItem('providerVerified');
+            localStorage.removeItem('currentRequest');
+            window.location.href = 'index.html';
         }
     </script>
+
 </body>
 </html>

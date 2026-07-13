@@ -9,278 +9,43 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <style>
-        .contact-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-        }
-
-        .contact-form-wrapper {
-            background: var(--bg-card);
-            border-radius: var(--radius);
-            padding: 35px;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border);
-        }
-
-        .contact-form-wrapper h3 {
-            color: var(--text-primary);
-            font-size: 1.4rem;
-            margin-bottom: 8px;
-        }
-
-        .contact-form-wrapper .subtitle {
-            color: var(--text-secondary);
-            margin-bottom: 24px;
-            font-size: 0.95rem;
-        }
-
-        .form-group {
-            margin-bottom: 18px;
-        }
-
-        .form-group label {
-            display: block;
-            font-weight: 600;
-            font-size: 0.9rem;
-            color: var(--text-primary);
-            margin-bottom: 6px;
-        }
-
-        .form-group .input-wrapper {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        .form-group .input-wrapper .input-icon {
-            position: absolute;
-            left: 16px;
-            color: var(--text-light);
-            font-size: 1rem;
-            transition: 0.3s;
-            pointer-events: none;
-        }
-
-        .form-group .input-wrapper input,
-        .form-group .input-wrapper textarea {
-            width: 100%;
-            padding: 14px 16px 14px 48px;
-            border: 2px solid var(--border);
-            border-radius: 14px;
-            font-size: 1rem;
-            font-family: 'Inter', sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            transition: var(--transition);
-            outline: none;
-            resize: vertical;
-        }
-
-        .form-group .input-wrapper textarea {
-            padding: 14px 16px;
-            min-height: 120px;
-        }
-
-        .form-group .input-wrapper input:focus,
-        .form-group .input-wrapper textarea:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.12);
-        }
-
-        .form-group .input-wrapper input:focus ~ .input-icon {
-            color: var(--accent);
-        }
-
-        .btn-submit {
-            width: 100%;
-            padding: 16px;
-            background: var(--gradient-primary);
-            color: white;
-            border: none;
-            border-radius: 14px;
-            font-size: 1.1rem;
-            font-weight: 700;
-            font-family: 'Inter', sans-serif;
-            cursor: pointer;
-            transition: var(--transition);
-            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.35);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-        }
-
-        .btn-submit:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 40px rgba(102, 126, 234, 0.5);
-        }
-
-        /* ===== INFO CARDS ===== */
-        .info-cards {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .info-card {
-            background: var(--bg-card);
-            border-radius: var(--radius-sm);
-            padding: 24px 28px;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border);
-            transition: var(--transition);
-        }
-
-        .info-card:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-hover);
-        }
-
-        .info-card .icon-wrapper {
-            width: 48px;
-            height: 48px;
-            border-radius: 14px;
-            background: rgba(102, 126, 234, 0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.4rem;
-            color: var(--accent);
-            margin-bottom: 12px;
-        }
-
-        .info-card h4 {
-            color: var(--text-primary);
-            font-size: 1rem;
-            margin-bottom: 4px;
-        }
-
-        .info-card p {
-            color: var(--text-secondary);
-            font-size: 0.95rem;
-            margin: 0;
-        }
-
-        .info-card a {
-            color: var(--accent);
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .info-card a:hover {
-            text-decoration: underline;
-        }
-
-        /* ===== EMERGENCY CARD ===== */
-        .emergency-card {
-            background: var(--bg-card);
-            border-radius: var(--radius-sm);
-            padding: 24px 28px;
-            border: 2px solid #e85d3a;
-            box-shadow: var(--shadow);
-        }
-
-        .emergency-card .icon-wrapper {
-            width: 48px;
-            height: 48px;
-            border-radius: 14px;
-            background: #fee2e2;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.4rem;
-            color: #e85d3a;
-            margin-bottom: 12px;
-        }
-
-        .emergency-card h4 {
-            color: var(--text-primary);
-            font-size: 1rem;
-            margin-bottom: 4px;
-        }
-
-        .emergency-card p {
-            color: var(--text-secondary);
-            font-size: 0.95rem;
-            margin-bottom: 12px;
-        }
-
-        .emergency-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            background: #e85d3a;
-            color: white;
-            padding: 12px 28px;
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 1rem;
-            transition: var(--transition);
-        }
-
-        .emergency-btn:hover {
-            background: #c94a2a;
-            transform: scale(1.02);
-        }
-
-        /* ===== MAP ===== */
-        .map-container {
-            margin-top: 30px;
-            border-radius: var(--radius);
-            overflow: hidden;
-            border: 1px solid var(--border);
-            background: var(--bg-card);
-        }
-
-        .map-container iframe {
-            width: 100%;
-            height: 280px;
-            border: none;
-            display: block;
-        }
-
-        /* ===== SUCCESS MESSAGE ===== */
-        .success-message {
-            background: #d1fae5;
-            color: #065f46;
-            padding: 14px 20px;
-            border-radius: 12px;
-            display: none;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 16px;
-            font-weight: 600;
-        }
-
-        .success-message.show {
-            display: flex;
-        }
-
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 992px) {
-            .contact-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .contact-form-wrapper {
-                padding: 24px 18px;
-            }
-            .info-card {
-                padding: 18px 20px;
-            }
-            .emergency-card {
-                padding: 18px 20px;
-            }
-        }
+        .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        .contact-form-wrapper { background: var(--bg-card); border-radius: var(--radius); padding: 35px; box-shadow: var(--shadow); border: 1px solid var(--border); }
+        .contact-form-wrapper h3 { color: var(--text-primary); font-size: 1.4rem; margin-bottom: 8px; }
+        .contact-form-wrapper .subtitle { color: var(--text-secondary); margin-bottom: 24px; font-size: 0.95rem; }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; font-weight: 600; font-size: 0.9rem; color: var(--text-primary); margin-bottom: 6px; }
+        .form-group .input-wrapper { position: relative; display: flex; align-items: center; }
+        .form-group .input-wrapper .input-icon { position: absolute; left: 16px; color: var(--text-light); font-size: 1rem; transition: 0.3s; pointer-events: none; }
+        .form-group .input-wrapper input, .form-group .input-wrapper textarea { width: 100%; padding: 14px 16px 14px 48px; border: 2px solid var(--border); border-radius: 14px; font-size: 1rem; font-family: 'Inter', sans-serif; background: var(--bg-primary); color: var(--text-primary); transition: var(--transition); outline: none; resize: vertical; }
+        .form-group .input-wrapper textarea { padding: 14px 16px; min-height: 120px; }
+        .form-group .input-wrapper input:focus, .form-group .input-wrapper textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.12); }
+        .btn-submit { width: 100%; padding: 16px; background: var(--gradient-primary); color: white; border: none; border-radius: 14px; font-size: 1.1rem; font-weight: 700; font-family: 'Inter', sans-serif; cursor: pointer; transition: var(--transition); box-shadow: 0 8px 30px rgba(102, 126, 234, 0.35); display: flex; align-items: center; justify-content: center; gap: 12px; }
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(102, 126, 234, 0.5); }
+        .info-cards { display: flex; flex-direction: column; gap: 20px; }
+        .info-card { background: var(--bg-card); border-radius: var(--radius-sm); padding: 24px 28px; box-shadow: var(--shadow); border: 1px solid var(--border); transition: var(--transition); }
+        .info-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); }
+        .info-card .icon-wrapper { width: 48px; height: 48px; border-radius: 14px; background: rgba(102, 126, 234, 0.1); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; color: var(--accent); margin-bottom: 12px; }
+        .info-card h4 { color: var(--text-primary); font-size: 1rem; margin-bottom: 4px; }
+        .info-card p { color: var(--text-secondary); font-size: 0.95rem; margin: 0; }
+        .info-card a { color: var(--accent); text-decoration: none; font-weight: 600; }
+        .info-card a:hover { text-decoration: underline; }
+        .emergency-card { background: var(--bg-card); border-radius: var(--radius-sm); padding: 24px 28px; border: 2px solid #e85d3a; box-shadow: var(--shadow); }
+        .emergency-card .icon-wrapper { width: 48px; height: 48px; border-radius: 14px; background: #fee2e2; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; color: #e85d3a; margin-bottom: 12px; }
+        .emergency-card h4 { color: var(--text-primary); font-size: 1rem; margin-bottom: 4px; }
+        .emergency-card p { color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 12px; }
+        .emergency-btn { display: inline-flex; align-items: center; gap: 10px; background: #e85d3a; color: white; padding: 12px 28px; border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 1rem; transition: var(--transition); }
+        .emergency-btn:hover { background: #c94a2a; transform: scale(1.02); }
+        .map-container { margin-top: 30px; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); background: var(--bg-card); }
+        .map-container iframe { width: 100%; height: 280px; border: none; display: block; }
+        .success-message { background: #d1fae5; color: #065f46; padding: 14px 20px; border-radius: 12px; display: none; align-items: center; gap: 12px; margin-bottom: 16px; font-weight: 600; }
+        .success-message.show { display: flex; }
+        @media (max-width: 992px) { .contact-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 480px) { .contact-form-wrapper { padding: 24px 18px; } .info-card, .emergency-card { padding: 18px 20px; } }
     </style>
 </head>
 <body>
 
-    <!-- ===== NAVBAR ===== -->
     <nav class="navbar">
         <div class="nav-container">
             <div class="logo">
@@ -305,7 +70,6 @@
         </div>
     </nav>
 
-    <!-- ===== MAIN ===== -->
     <main class="main-content">
         <div class="container">
             <h1 class="page-title">
@@ -313,13 +77,11 @@
             </h1>
 
             <div class="contact-grid">
-
-                <!-- ===== LEFT: CONTACT FORM ===== -->
+                <!-- Form -->
                 <div class="contact-form-wrapper">
                     <h3>Send Us a Message</h3>
                     <p class="subtitle">We'll get back to you within 24 hours</p>
 
-                    <!-- Success Message -->
                     <div class="success-message" id="successMessage">
                         <i class="fas fa-circle-check"></i>
                         <span>Your message has been sent successfully!</span>
@@ -333,7 +95,6 @@
                                 <i class="fas fa-user input-icon"></i>
                             </div>
                         </div>
-
                         <div class="form-group">
                             <label for="contactEmail">Email Address</label>
                             <div class="input-wrapper">
@@ -341,7 +102,6 @@
                                 <i class="fas fa-envelope input-icon"></i>
                             </div>
                         </div>
-
                         <div class="form-group">
                             <label for="contactPhone">Phone Number</label>
                             <div class="input-wrapper">
@@ -349,11 +109,17 @@
                                 <i class="fas fa-phone input-icon"></i>
                             </div>
                         </div>
-
+                        <div class="form-group">
+                            <label for="contactSubject">Subject</label>
+                            <div class="input-wrapper">
+                                <input type="text" id="contactSubject" placeholder="What is this about?" />
+                                <i class="fas fa-tag input-icon"></i>
+                            </div>
+                        </div>
                         <div class="form-group">
                             <label for="contactMessage">Message</label>
                             <div class="input-wrapper">
-                                <textarea id="contactMessage" placeholder="Tell us about your repair needs..." required></textarea>
+                                <textarea id="contactMessage" placeholder="Describe your issue or question in detail..." rows="4" required></textarea>
                             </div>
                         </div>
 
@@ -363,25 +129,23 @@
                     </form>
                 </div>
 
-                <!-- ===== RIGHT: INFO CARDS ===== -->
+                <!-- Info Cards -->
                 <div class="info-cards">
-
-                    <!-- Get in Touch -->
-                    <div class="info-card">
-                        <div class="icon-wrapper">
-                            <i class="fas fa-location-dot"></i>
-                        </div>
-                        <h4>Visit Us</h4>
-                        <p>123 Main Street, Al-Malaz,<br />Riyadh, Saudi Arabia</p>
-                    </div>
-
-                    <div class="info-card">
+                    <div class="emergency-card">
                         <div class="icon-wrapper">
                             <i class="fas fa-phone"></i>
                         </div>
+<<<<<<< Updated upstream
                         <h4>Call Us</h4>
                         <p><a href="tel:+966501234567">+20 123 456 7890</a></p>
                         <p style="font-size: 0.85rem; color: var(--text-light);">Mon–Sat, 8:00 AM – 10:00 PM</p>
+=======
+                        <h4>Emergency? Call Us Now</h4>
+                        <p>Available 24/7 for urgent repairs</p>
+                        <a href="tel:+966501234567" class="emergency-btn">
+                            <i class="fas fa-phone"></i> +966 50 123 4567
+                        </a>
+>>>>>>> Stashed changes
                     </div>
 
                     <div class="info-card">
@@ -389,157 +153,146 @@
                             <i class="fas fa-envelope"></i>
                         </div>
                         <h4>Email Us</h4>
-                        <p><a href="mailto:info@fixora.com">info@fixora.com</a></p>
-                        <p style="font-size: 0.85rem; color: var(--text-light);">We reply within 24 hours</p>
+                        <p>We respond within 24 hours</p>
+                        <a href="mailto:support@fixora.com">support@fixora.com</a>
                     </div>
 
-                    <!-- Emergency Card -->
-                    <div class="emergency-card">
+                    <div class="info-card">
                         <div class="icon-wrapper">
-                            <i class="fas fa-triangle-exclamation"></i>
+                            <i class="fas fa-location-dot"></i>
                         </div>
+<<<<<<< Updated upstream
                         <h4>⚠️ Emergency? Need Urgent Help?</h4>
                         <p>Call us 24/7 for emergency repairs — we're always here for you.</p>
                         <a href="tel:+966501234567" class="emergency-btn">
                             <i class="fas fa-phone"></i> +20 123 456 7890
                         </a>
+=======
+                        <h4>Visit Us</h4>
+                        <p>123 Service Street, Tech City, ST 12345</p>
+>>>>>>> Stashed changes
                     </div>
 
+                    <div class="info-card">
+                        <div class="icon-wrapper">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <h4>Working Hours</h4>
+                        <p>Mon-Fri: 8:00 AM - 10:00 PM<br />Sat-Sun: 9:00 AM - 8:00 PM</p>
+                    </div>
                 </div>
             </div>
 
-            <!-- ===== MAP ===== -->
+            <!-- Map -->
             <div class="map-container">
+<<<<<<< Updated upstream
                 <iframe
                     src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d56785.79008964856!2d31.2142013!3d27.1842202!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sar!2seg!4v1783882557931!5m2!1sar!2seg"
                     allowfullscreen=""
                     loading="lazy"
                     referrerpolicy="no-referrer-when-downgrade"
                     title="Fixora Location Map">
+=======
+                <iframe 
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3620.123456789012!2d46.6753!3d24.7136!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e2f03890d489525%3A0x5c7b6c5e8e6f5b4d!2sRiyadh%2C%20Saudi%20Arabia!5e0!3m2!1sen!2seg!4v1700000000000" 
+                    allowfullscreen="" 
+                    loading="lazy" 
+                    referrerpolicy="no-referrer-when-downgrade">
+>>>>>>> Stashed changes
                 </iframe>
             </div>
 
         </div>
     </main>
 
-    <!-- ===== FOOTER ===== -->
-   <!-- ===== FOOTER ===== -->
-<footer class="footer">
-    <div class="footer-container">
-        <div class="footer-grid">
-
-            <!-- العمود 1: الشعار والوصف -->
-            <div class="footer-col">
-                <div class="footer-logo">
-                    <i class="fas fa-wrench"></i>
-                    <span>Fix<span class="logo-highlight">ora</span></span>
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <div class="footer-logo">
+                        <i class="fas fa-wrench"></i>
+                        <span>Fix<span class="logo-highlight">ora</span></span>
+                    </div>
+                    <p class="footer-desc">
+                        Connecting homeowners with trusted service providers for fast, reliable emergency repairs and maintenance.
+                    </p>
+                    <div class="footer-social">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
                 </div>
-                <p class="footer-desc">
-                    Connecting homeowners with trusted service providers for fast, reliable emergency repairs and maintenance.
-                </p>
-                <div class="footer-social">
-                    <a href="#"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-youtube"></i></a>
+                <div class="footer-col">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="services.html">Services</a></li>
+                        <li><a href="about.html">How it Works</a></li>
+                        <li><a href="contact.html">Contact Us</a></li>
+                        <li><a href="#">Testimonials</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Services</h4>
+                    <ul>
+                        <li><a href="services.html">Plumbing</a></li>
+                        <li><a href="services.html">Electrical</a></li>
+                        <li><a href="services.html">HVAC Repair</a></li>
+                        <li><a href="services.html">General Maintenance</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Contact</h4>
+                    <ul class="footer-contact">
+                        <li><i class="fas fa-phone"></i><a href="tel:+18001234567">+1 (800) 123-4567</a></li>
+                        <li><i class="fas fa-envelope"></i><a href="mailto:support@fixora.com">support@fixora.com</a></li>
+                        <li><i class="fas fa-location-dot"></i><span>123 Service Street, Tech City</span></li>
+                    </ul>
                 </div>
             </div>
-
-            <!-- العمود 2: روابط سريعة -->
-            <div class="footer-col">
-                <h4>Quick Links</h4>
-                <ul>
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="services.html">Services</a></li>
-                    <li><a href="about.html">How it Works</a></li>
-                    <li><a href="contact.html">Contact Us</a></li>
-                    <li><a href="#">Testimonials</a></li>
-                </ul>
-            </div>
-
-            <!-- العمود 3: الخدمات -->
-            <div class="footer-col">
-                <h4>Services</h4>
-                <ul>
-                    <li><a href="services.html">Plumbing</a></li>
-                    <li><a href="services.html">Electrical</a></li>
-                    <li><a href="services.html">HVAC Repair</a></li>
-                    <li><a href="services.html">General Maintenance</a></li>
-                </ul>
-            </div>
-
-            <!-- العمود 4: معلومات الاتصال -->
-            <div class="footer-col">
-                <h4>Contact</h4>
-                <ul class="footer-contact">
-                    <li>
-                        <i class="fas fa-phone"></i>
-                        <a href="tel:+18001234567">+1 (800) 123-4567</a>
-                    </li>
-                    <li>
-                        <i class="fas fa-envelope"></i>
-                        <a href="mailto:support@fixora.com">support@fixora.com</a>
-                    </li>
-                    <li>
-                        <i class="fas fa-location-dot"></i>
-                        <span>123 Service Street, Tech City</span>
-                    </li>
-                </ul>
-            </div>
-
-        </div>
-
-        <!-- الخط السفلي -->
-        <div class="footer-bottom">
-            <p>© 2026 <strong>Fixora</strong>. All rights reserved.</p>
-            <div class="footer-bottom-links">
-                <a href="#">Privacy Policy</a>
-                <a href="#">Terms of Service</a>
+            <div class="footer-bottom">
+                <p>© 2026 <strong>Fixora</strong>. All rights reserved.</p>
+                <div class="footer-bottom-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                </div>
             </div>
         </div>
-    </div>
-</footer>
+    </footer>
 
     <script src="../js/script.js"></script>
-     <script src="../js/footer.js"></script>
+    <script src="../js/footer.js"></script>
+    <script src="../js/chatbot.js"></script>
+
     <script>
-        // ===== CONTACT FORM HANDLER =====
+        // ===== HANDLE CONTACT FORM =====
         function handleContactForm(event) {
             event.preventDefault();
-
+            
             const name = document.getElementById('contactName').value.trim();
             const email = document.getElementById('contactEmail').value.trim();
             const message = document.getElementById('contactMessage').value.trim();
-
-            // Simple validation
-            if (name === '' || email === '' || message === '') {
+            
+            if (!name || !email || !message) {
                 alert('⚠️ Please fill in all required fields.');
                 return;
             }
-
+            
             // Show success message
             const successMsg = document.getElementById('successMessage');
             successMsg.classList.add('show');
-
+            
             // Reset form
             document.getElementById('contactForm').reset();
-
-            // Hide success message after 5 seconds
+            
+            // Hide success after 5 seconds
             setTimeout(() => {
                 successMsg.classList.remove('show');
             }, 5000);
-
-            // Optional: Log to console
-            console.log('📩 New message from:', name, email);
-            console.log('📝 Message:', message);
+            
+            console.log('📧 Contact Form Submitted:', { name, email, message });
         }
-
-        // ===== REAL-TIME VALIDATION =====
-        document.querySelectorAll('#contactForm input, #contactForm textarea').forEach(input => {
-            input.addEventListener('input', () => {
-                document.getElementById('successMessage').classList.remove('show');
-            });
-        });
     </script>
 </body>
 </html>
