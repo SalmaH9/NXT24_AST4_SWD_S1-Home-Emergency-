@@ -1,5 +1,4 @@
 using System;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -15,10 +14,12 @@ namespace HomeEmergency.API.Controllers;
 public class ProfileController : ControllerBase
 {
     private readonly IUserService _userService;
+    private readonly ICurrentUserService _currentUserService;
 
-    public ProfileController(IUserService userService)
+    public ProfileController(IUserService userService, ICurrentUserService currentUserService)
     {
         _userService = userService;
+        _currentUserService = currentUserService;
     }
 
     /// <summary>
@@ -31,7 +32,7 @@ public class ProfileController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetProfile()
     {
-        var userId = GetUserId();
+        var userId = _currentUserService.GetRequiredUserId();
         var profile = await _userService.GetUserProfileAsync(userId);
         return Ok(profile);
     }
@@ -46,7 +47,7 @@ public class ProfileController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetCompleteInfo()
     {
-        var userId = GetUserId();
+        var userId = _currentUserService.GetRequiredUserId();
         var info = await _userService.GetUserCompleteInfoAsync(userId);
         return Ok(info);
     }
@@ -63,22 +64,9 @@ public class ProfileController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileRequestDto request)
     {
-        var userId = GetUserId();
+        var userId = _currentUserService.GetRequiredUserId();
         var result = await _userService.UpdateUserProfileAsync(userId, request);
         return Ok(result);
-    }
-
-    private Guid GetUserId()
-    {
-        var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value 
-                           ?? User.FindFirst("sub")?.Value;
-
-        if (string.IsNullOrEmpty(userIdString) || !Guid.TryParse(userIdString, out var userId))
-        {
-            throw new UnauthorizedAccessException("User is not authenticated.");
-        }
-        
-        return userId;
     }
 }
 

@@ -15,10 +15,12 @@ namespace HomeEmergency.API.Controllers;
 public class AdminUsersController : ControllerBase
 {
     private readonly IAdminUserService _adminUserService;
+    private readonly ICurrentUserService _currentUserService;
 
-    public AdminUsersController(IAdminUserService adminUserService)
+    public AdminUsersController(IAdminUserService adminUserService, ICurrentUserService currentUserService)
     {
         _adminUserService = adminUserService;
+        _currentUserService = currentUserService;
     }
 
     /// <summary>
@@ -83,7 +85,7 @@ public class AdminUsersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> SuspendUser(Guid userId, [FromBody] SuspendUserRequestDto request)
     {
-        var adminId = GetAdminUserId();
+        var adminId = _currentUserService.GetRequiredUserId();
         var result = await _adminUserService.SuspendUserAsync(userId, adminId, request);
         return Ok(result);
     }
@@ -102,19 +104,6 @@ public class AdminUsersController : ControllerBase
     {
         var result = await _adminUserService.UnsuspendUserAsync(userId);
         return Ok(result);
-    }
-
-    private Guid GetAdminUserId()
-    {
-        var adminIdString = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value 
-                            ?? User.FindFirst("sub")?.Value;
-
-        if (string.IsNullOrEmpty(adminIdString) || !Guid.TryParse(adminIdString, out var adminId))
-        {
-            throw new UnauthorizedAccessException("Administrator is not authenticated.");
-        }
-
-        return adminId;
     }
 }
 

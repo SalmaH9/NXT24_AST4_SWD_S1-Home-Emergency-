@@ -2,7 +2,9 @@ using System;
 using System.Net;
 using System.Text.Json;
 using System.Threading.Tasks;
+using FluentValidation;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -36,36 +38,68 @@ public class ExceptionHandlingMiddleware
 
     private async Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
-        context.Response.ContentType = "application/json";
-        
-        var statusCode = HttpStatusCode.InternalServerError;
-        var message = "An internal server error occurred.";
+        context.Response.ContentType = "application/problem+json";
 
-        // Map specific exceptions to HTTP Status Codes
-        if (exception is InvalidOperationException || exception is ArgumentException)
-        {
-            statusCode = HttpStatusCode.BadRequest;
-            message = exception.Message;
-        }
-        else if (exception is UnauthorizedAccessException)
-        {
-            statusCode = HttpStatusCode.Unauthorized;
-            message = exception.Message;
-        }
-
+        var (statusCode, title) = MapStatus(exception);
         context.Response.StatusCode = (int)statusCode;
 
-        var response = new
+        var problemDetails = new ProblemDetails
         {
             Status = (int)statusCode,
-            Title = statusCode.ToString(),
-            Detail = message,
-            Errors = _env.IsDevelopment() ? exception.StackTrace : null
+            Title = title,
+            Detail = exception.Message,
+            Instance = context.Request.Path
         };
 
+        if (_env.IsDevelopment())
+        {
+            problemDetails.Extensions["stackTrace"] = exception.StackTrace;
+        }
+
+        if (exception is ValidationException validationException)
+        {
+            problemDetails.Extensions["errors"] = validationException.Errors
+                .GroupBy(x => x.PropertyName)
+                .ToDictionary(
+                    x => x.Key,
+                    x => x.Select(e => e.ErrorMessage).ToArray());
+        }
+
         var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
-        var json = JsonSerializer.Serialize(response, options);
+        var json = JsonSerializer.Serialize(problemDetails, options);
         await context.Response.WriteAsync(json);
+    }
+
+    private static (HttpStatusCode StatusCode, string Title) MapStatus(Exception exception)
+    {
+        return exception switch
+        {
+            ValidationException => (HttpStatusCode.BadRequest, "Validation failed"),
+            KeyNotFoundException => (HttpStatusCode.NotFound, "Resource not found"),
+            ArgumentException => (HttpStatusCode.BadRequest, "Invalid request"),
+            InvalidOperationException invalidOperationException when IsConflict(invalidOperationException.Message)
+                => (HttpStatusCode.Conflict, "Conflict"),
+            InvalidOperationException => (HttpStatusCode.BadRequest, "Invalid operation"),
+            UnauthorizedAccessException unauthorizedAccessException when IsForbidden(unauthorizedAccessException.Message)
+                => (HttpStatusCode.Forbidden, "Forbidden"),
+            UnauthorizedAccessException => (HttpStatusCode.Unauthorized, "Unauthorized"),
+            _ => (HttpStatusCode.InternalServerError, "Internal server error")
+        };
+    }
+
+    private static bool IsConflict(string? message)
+    {
+        return !string.IsNullOrWhiteSpace(message) &&
+               (message.Contains("already", StringComparison.OrdinalIgnoreCase) ||
+                message.Contains("duplicate", StringComparison.OrdinalIgnoreCase) ||
+                message.Contains("reuse", StringComparison.OrdinalIgnoreCase) ||
+                message.Contains("conflict", StringComparison.OrdinalIgnoreCase));
+    }
+
+    private static bool IsForbidden(string? message)
+    {
+        return !string.IsNullOrWhiteSpace(message) &&
+               message.Contains("not allowed", StringComparison.OrdinalIgnoreCase);
     }
 }
 

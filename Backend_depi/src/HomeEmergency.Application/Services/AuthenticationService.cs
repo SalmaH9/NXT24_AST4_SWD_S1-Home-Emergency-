@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using HomeEmergency.Application.DTOs.Auth;
@@ -160,7 +161,7 @@ public class AuthenticationService : IAuthenticationService
         var refreshToken = new RefreshToken
         {
             UserId = user.Id,
-            Token = refreshTokenString,
+            TokenHash = HashToken(refreshTokenString),
             ExpiresAt = DateTime.UtcNow.AddDays(7),
             CreatedByIp = ipAddress
         };
@@ -194,7 +195,9 @@ public class AuthenticationService : IAuthenticationService
         }
 
         // 2. Fetch the corresponding Refresh Token record
-        var tokensList = await _unitOfWork.RefreshTokens.FindAsync(r => r.Token == request.RefreshToken);
+        var refreshTokenHash = HashToken(request.RefreshToken);
+        var tokensList = await _unitOfWork.RefreshTokens.FindAsync(
+            r => r.TokenHash == refreshTokenHash || r.Token == request.RefreshToken);
         var storedToken = tokensList.FirstOrDefault();
 
         if (storedToken == null)
@@ -245,11 +248,14 @@ public class AuthenticationService : IAuthenticationService
         storedToken.RevokedAt = DateTime.UtcNow;
         storedToken.RevokedByIp = ipAddress;
         storedToken.ReplacedByToken = newRefreshTokenString;
+        storedToken.ReplacedByTokenHash = HashToken(newRefreshTokenString);
+        storedToken.Token = null;
+        storedToken.TokenHash ??= refreshTokenHash;
 
         var newRefreshToken = new RefreshToken
         {
             UserId = userId,
-            Token = newRefreshTokenString,
+            TokenHash = HashToken(newRefreshTokenString),
             ExpiresAt = DateTime.UtcNow.AddDays(7),
             CreatedByIp = ipAddress
         };
@@ -269,6 +275,12 @@ public class AuthenticationService : IAuthenticationService
     {
         var randomBytes = RandomNumberGenerator.GetBytes(32);
         return Convert.ToBase64String(randomBytes);
+    }
+
+    private static string HashToken(string token)
+    {
+        var hashBytes = SHA256.HashData(Encoding.UTF8.GetBytes(token));
+        return Convert.ToHexString(hashBytes);
     }
 }
 

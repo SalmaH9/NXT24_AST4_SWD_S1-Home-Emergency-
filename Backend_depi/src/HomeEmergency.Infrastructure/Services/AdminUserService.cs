@@ -23,19 +23,22 @@ public class AdminUserService : IAdminUserService
     private readonly ApplicationDbContext _context;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
+    private readonly INotificationService _notificationService;
 
     public AdminUserService(
         UserManager<ApplicationUser> userManager,
         RoleManager<IdentityRole<Guid>> roleManager,
         ApplicationDbContext context,
         IUnitOfWork unitOfWork,
-        IMapper mapper)
+        IMapper mapper,
+        INotificationService notificationService)
     {
         _userManager = userManager;
         _roleManager = roleManager;
         _context = context;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _notificationService = notificationService;
     }
 
     public async Task<PaginatedListDto<AdminUserSummaryDto>> GetUsersAsync(int pageNumber, int pageSize)
@@ -230,6 +233,8 @@ public class AdminUserService : IAdminUserService
         }
 
         await _unitOfWork.CompleteAsync();
+        await _notificationService.CreateAsync(userId, NotificationType.AccountSuspended,
+            "Account suspended", request.Reason, NotificationReferenceType.User, userId);
 
         return true;
     }

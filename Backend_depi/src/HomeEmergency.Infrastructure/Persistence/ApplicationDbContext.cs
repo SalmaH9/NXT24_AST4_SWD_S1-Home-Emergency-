@@ -20,6 +20,15 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityR
     public DbSet<UserWarning> UserWarnings { get; set; } = null!;
     public DbSet<RefreshToken> RefreshTokens { get; set; } = null!;
     public DbSet<SubscriptionPlan> SubscriptionPlans { get; set; } = null!;
+    public DbSet<Chat> Chats { get; set; } = null!;
+    public DbSet<ChatParticipant> ChatParticipants { get; set; } = null!;
+    public DbSet<Message> Messages { get; set; } = null!;
+    public DbSet<Notification> Notifications { get; set; } = null!;
+    public DbSet<Rating> Ratings { get; set; } = null!;
+    public DbSet<Advertisement> Advertisements { get; set; } = null!;
+    public DbSet<AdvertisementCategory> AdvertisementCategories { get; set; } = null!;
+    public DbSet<AIConversation> AIConversations { get; set; } = null!;
+    public DbSet<AIMessage> AIMessages { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

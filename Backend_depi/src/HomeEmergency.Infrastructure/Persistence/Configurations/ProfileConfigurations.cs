@@ -136,6 +136,22 @@ public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
         builder.HasKey(x => x.Id);
         builder.ToTable("RefreshTokens");
 
+        builder.Property(x => x.Token)
+            .HasMaxLength(512);
+
+        builder.Property(x => x.TokenHash)
+            .HasMaxLength(128);
+
+        builder.Property(x => x.ReplacedByToken)
+            .HasMaxLength(512);
+
+        builder.Property(x => x.ReplacedByTokenHash)
+            .HasMaxLength(128);
+
+        builder.HasIndex(x => x.TokenHash)
+            .IsUnique()
+            .HasFilter("[TokenHash] IS NOT NULL");
+
         builder.HasOne(x => x.User)
             .WithMany(x => x.RefreshTokens)
             .HasForeignKey(x => x.UserId)

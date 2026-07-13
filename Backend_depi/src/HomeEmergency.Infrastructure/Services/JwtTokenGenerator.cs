@@ -22,7 +22,12 @@ public class JwtTokenGenerator : IJwtTokenGenerator
     public string GenerateAccessToken(ApplicationUser user, IList<string> roles)
     {
         var jwtSettings = _configuration.GetSection("JwtSettings");
-        var secret = jwtSettings["Secret"] ?? "SuperSecretKeySecureAuthenticationAtLeast32BytesLength!";
+        var secret = jwtSettings["Secret"];
+        if (string.IsNullOrWhiteSpace(secret))
+        {
+            throw new InvalidOperationException("JwtSettings:Secret is required.");
+        }
+
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
@@ -42,8 +47,8 @@ public class JwtTokenGenerator : IJwtTokenGenerator
         {
             Subject = new ClaimsIdentity(claims),
             Expires = DateTime.UtcNow.AddMinutes(double.Parse(jwtSettings["ExpiryInMinutes"] ?? "15")),
-            Issuer = jwtSettings["Issuer"] ?? "HomeEmergencyAPI",
-            Audience = jwtSettings["Audience"] ?? "HomeEmergencyClients",
+            Issuer = jwtSettings["Issuer"] ?? throw new InvalidOperationException("JwtSettings:Issuer is required."),
+            Audience = jwtSettings["Audience"] ?? throw new InvalidOperationException("JwtSettings:Audience is required."),
             SigningCredentials = creds
         };
 
@@ -56,7 +61,11 @@ public class JwtTokenGenerator : IJwtTokenGenerator
     public ClaimsPrincipal? GetPrincipalFromExpiredToken(string token)
     {
         var jwtSettings = _configuration.GetSection("JwtSettings");
-        var secret = jwtSettings["Secret"] ?? "SuperSecretKeySecureAuthenticationAtLeast32BytesLength!";
+        var secret = jwtSettings["Secret"];
+        if (string.IsNullOrWhiteSpace(secret))
+        {
+            throw new InvalidOperationException("JwtSettings:Secret is required.");
+        }
         
         var tokenValidationParameters = new TokenValidationParameters
         {
@@ -64,8 +73,8 @@ public class JwtTokenGenerator : IJwtTokenGenerator
             ValidateAudience = true,
             ValidateLifetime = false, // We allow validation of expired tokens to rotate them
             ValidateIssuerSigningKey = true,
-            ValidIssuer = jwtSettings["Issuer"] ?? "HomeEmergencyAPI",
-            ValidAudience = jwtSettings["Audience"] ?? "HomeEmergencyClients",
+            ValidIssuer = jwtSettings["Issuer"] ?? throw new InvalidOperationException("JwtSettings:Issuer is required."),
+            ValidAudience = jwtSettings["Audience"] ?? throw new InvalidOperationException("JwtSettings:Audience is required."),
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret))
         };
 
