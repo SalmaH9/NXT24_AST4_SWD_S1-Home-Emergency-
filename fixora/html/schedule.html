@@ -101,79 +101,124 @@
 </head>
 <body>
 
-    <!-- ===== NAVBAR ===== -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="logo">
-                <i class="fas fa-wrench"></i>
-                <span>Fix<span class="logo-highlight">ora</span></span>
+    <!-- ===== MOBILE SIDEBAR TOGGLE ===== -->
+    <button class="sidebar-toggle" id="sidebar-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <!-- ===== PAGE WRAPPER ===== -->
+    <div class="page-wrapper">
+
+        <!-- ===== SIDEBAR ===== -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-wrench"></i>
+                    <span>Fix<span class="logo-highlight">ora</span></span>
+                </div>
             </div>
-            <ul class="nav-links" id="navLinks">
-                <li><a href="provider-dashboard.html"><i class="fas fa-gauge-high"></i> Dashboard</a></li>
-                <li><a href="orders.html"><i class="fas fa-list-check"></i> Orders</a></li>
-                <li><a href="schedule.html" class="active"><i class="fas fa-calendar-days"></i> Schedule</a></li>
-                <li><a href="profile.html"><i class="fas fa-user-gear"></i> Profile</a></li>
-                <li id="authLink"><a href="login.html" onclick="handleLogout(event)"><i class="fas fa-right-from-bracket"></i> Logout</a></li>
-            </ul>
-            <div class="nav-actions">
-                <button id="theme-toggle" class="theme-btn">
-                    <i class="fas fa-moon"></i>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="provider-dashboard.html"><i class="fas fa-gauge-high"></i> Dashboard</a></li>
+                    <li><a href="orders.html"><i class="fas fa-list-check"></i> Orders</a></li>
+                    <li><a href="schedule.html" class="active"><i class="fas fa-calendar-days"></i> Schedule</a></li>
+                    <li><a href="profile.html"><i class="fas fa-user-gear"></i> Profile</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <button class="theme-btn-sidebar" id="theme-toggle-sidebar">
+                    <i class="fas fa-moon"></i> Dark Mode
                 </button>
-                <div class="hamburger" id="hamburger">
-                    <i class="fas fa-bars"></i>
-                </div>
+                <a href="login.html" onclick="handleLogout(event)" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; color: var(--text-secondary); text-decoration: none; font-weight: 600; font-size: 0.9rem; margin-top: 8px; transition: var(--transition);">
+                    <i class="fas fa-right-from-bracket"></i> Logout
+                </a>
             </div>
+        </aside>
+
+        <!-- ===== MAIN AREA ===== -->
+        <div class="main-area">
+            <main class="main-content">
+                <div class="container">
+                    <h1 class="page-title">
+                        <i class="fas fa-calendar-days"></i> Schedule
+                    </h1>
+
+                    <!-- Stats -->
+                    <div class="schedule-stats">
+                        <div class="stat-mini">
+                            <h3 id="todayJobs">0</h3>
+                            <p>Today's Jobs</p>
+                        </div>
+                        <div class="stat-mini">
+                            <h3 id="weekJobs">0</h3>
+                            <p>This Week</p>
+                        </div>
+                        <div class="stat-mini">
+                            <h3 id="monthJobs">0</h3>
+                            <p>This Month</p>
+                        </div>
+                    </div>
+
+                    <!-- Day Tabs -->
+                    <div class="day-tabs" id="dayTabs">
+                        <button class="day-tab active" data-day="today">Today</button>
+                        <button class="day-tab" data-day="tomorrow">Tomorrow</button>
+                        <button class="day-tab" data-day="wed">Wed</button>
+                        <button class="day-tab" data-day="thu">Thu</button>
+                        <button class="day-tab" data-day="fri">Fri</button>
+                    </div>
+
+                    <!-- Schedule List -->
+                    <div style="background: var(--bg-card); border-radius: var(--radius); padding: 24px 28px; box-shadow: var(--shadow); border: 1px solid var(--border);">
+                        <div id="scheduleList">
+                            <!-- Rows will be inserted by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- ===== FOOTER ===== -->
+            <footer class="footer">
+                <div class="footer-container">
+                    <div class="footer-grid">
+                        <div class="footer-col">
+                            <div class="footer-logo">
+                                <i class="fas fa-wrench"></i>
+                                <span>Fix<span class="logo-highlight">ora</span></span>
+                            </div>
+                            <p class="footer-desc">Connecting homeowners with trusted service providers.</p>
+                        </div>
+                        <div class="footer-col">
+                            <h4>Quick Links</h4>
+                            <ul>
+                                <li><a href="provider-dashboard.html">Dashboard</a></li>
+                                <li><a href="orders.html">Orders</a></li>
+                                <li><a href="schedule.html">Schedule</a></li>
+                            </ul>
+                        </div>
+                        <div class="footer-col">
+                            <h4>Contact</h4>
+                            <ul class="footer-contact">
+                                <li><i class="fas fa-phone"></i><a href="tel:+18001234567">+1 (800) 123-4567</a></li>
+                                <li><i class="fas fa-envelope"></i><a href="mailto:support@fixora.com">support@fixora.com</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="footer-bottom">
+                        <p>© 2026 <strong>Fixora</strong>. All rights reserved.</p>
+                        <div class="footer-bottom-links">
+                            <a href="#">Privacy Policy</a>
+                            <a href="#">Terms of Service</a>
+                        </div>
+                    </div>
+                </div>
+            </footer>
         </div>
-    </nav>
-
-    <!-- ===== MAIN ===== -->
-    <main class="main-content">
-        <div class="container">
-            <h1 class="page-title">
-                <i class="fas fa-calendar-days"></i> Schedule
-            </h1>
-
-            <!-- Stats -->
-            <div class="schedule-stats">
-                <div class="stat-mini">
-                    <h3 id="todayJobs">0</h3>
-                    <p>Today's Jobs</p>
-                </div>
-                <div class="stat-mini">
-                    <h3 id="weekJobs">0</h3>
-                    <p>This Week</p>
-                </div>
-                <div class="stat-mini">
-                    <h3 id="monthJobs">0</h3>
-                    <p>This Month</p>
-                </div>
-            </div>
-
-            <!-- Day Tabs -->
-            <div class="day-tabs" id="dayTabs">
-                <button class="day-tab active" data-day="today">Today</button>
-                <button class="day-tab" data-day="tomorrow">Tomorrow</button>
-                <button class="day-tab" data-day="wed">Wed</button>
-                <button class="day-tab" data-day="thu">Thu</button>
-                <button class="day-tab" data-day="fri">Fri</button>
-            </div>
-
-            <!-- Schedule List -->
-            <div style="background: var(--bg-card); border-radius: var(--radius); padding: 24px 28px; box-shadow: var(--shadow); border: 1px solid var(--border);">
-                <div id="scheduleList">
-                    <!-- Rows will be inserted by JavaScript -->
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <!-- ===== FOOTER ===== -->
-    <footer class="footer">
-        <p>© 2026 <strong>Fixora</strong> — Professional Home Repair Services</p>
-        <p class="footer-update">Last updated: <span id="footer-date"></span></p>
-    </footer>
+    </div>
 
     <script src="../js/script.js"></script>
+    <script src="../js/footer.js"></script>
     <script>
         // ===== SCHEDULE DATA =====
         const scheduleData = {
@@ -206,12 +251,10 @@
 
         let currentDay = 'today';
 
-        // ===== RENDER SCHEDULE =====
         function renderSchedule(day) {
             const container = document.getElementById('scheduleList');
             const items = scheduleData[day] || [];
 
-            // Update stats
             document.getElementById('todayJobs').textContent = scheduleData.today.length || 0;
             const totalWeek = scheduleData.today.length + scheduleData.tomorrow.length + scheduleData.wed.length + scheduleData.thu.length + scheduleData.fri.length;
             document.getElementById('weekJobs').textContent = totalWeek || 0;
@@ -256,7 +299,6 @@
             container.innerHTML = html;
         }
 
-        // ===== DAY TABS =====
         document.querySelectorAll('.day-tab').forEach(tab => {
             tab.addEventListener('click', function() {
                 document.querySelectorAll('.day-tab').forEach(t => t.classList.remove('active'));
@@ -266,7 +308,14 @@
             });
         });
 
-        // ===== INIT =====
+        function handleLogout(event) {
+            event.preventDefault();
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('userRole');
+            localStorage.removeItem('userEmail');
+            window.location.href = 'login.html';
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             const role = localStorage.getItem('userRole');
             if (role !== 'provider') {
@@ -275,5 +324,7 @@
             renderSchedule('today');
         });
     </script>
+    <script src="../js/chatbot.js"></script>
+
 </body>
 </html>

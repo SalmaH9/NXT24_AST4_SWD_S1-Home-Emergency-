@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Complete Profile - Fixora</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/provider-verification.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+</head>
+<body>
+
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar nav-locked" id="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-wrench"></i>
+                <span>Fix<span class="logo-highlight">ora</span></span>
+            </div>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="provider-dashboard.html" onclick="return blockNav(event)"><i class="fas fa-gauge-high"></i> Dashboard</a></li>
+                <li><a href="orders.html" onclick="return blockNav(event)"><i class="fas fa-list-check"></i> Orders</a></li>
+                <li><a href="schedule.html" onclick="return blockNav(event)"><i class="fas fa-calendar-days"></i> Schedule</a></li>
+                <li><a href="profile.html" onclick="return blockNav(event)"><i class="fas fa-user-gear"></i> Profile</a></li>
+                <li id="authLink"><a href="login.html" onclick="handleLogout(event)"><i class="fas fa-right-from-bracket"></i> Logout</a></li>
+            </ul>
+            <div class="nav-actions">
+                <button id="theme-toggle" class="theme-btn">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <div class="hamburger" id="hamburger">
+                    <i class="fas fa-bars"></i>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Lock Overlay -->
+    <div class="nav-locked-overlay" id="lockOverlay">
+        <div class="lock-message">
+            <i class="fas fa-lock"></i>
+            <h3>Complete Verification First</h3>
+            <p>You must complete your profile verification before accessing other pages.</p>
+        </div>
+    </div>
+
+    <!-- ===== MAIN ===== -->
+    <main class="main-content">
+        <div class="verification-container">
+
+            <h1 class="page-title" style="font-size: 1.8rem; margin-bottom: 32px;">
+                <i class="fas fa-id-card"></i> Complete Your Profile
+            </h1>
+
+            <!-- Warning -->
+            <div class="warning-box" id="warningBox">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p><strong>Verification Required:</strong> You must complete all steps and get approved before you can start receiving service requests. This usually takes 1-2 business days.</p>
+            </div>
+
+            <!-- Progress Steps -->
+            <div class="progress-steps">
+                <div class="progress-line" id="progressLine" style="width: 0%;"></div>
+                <div class="step active" data-step="1">
+                    <div class="step-circle">1</div>
+                    <span class="step-label">Personal Info</span>
+                </div>
+                <div class="step" data-step="2">
+                    <div class="step-circle">2</div>
+                    <span class="step-label">Specialty</span>
+                </div>
+                <div class="step" data-step="3">
+                    <div class="step-circle">3</div>
+                    <span class="step-label">Documents</span>
+                </div>
+                <div class="step" data-step="4">
+                    <div class="step-circle">4</div>
+                    <span class="step-label">Review</span>
+                </div>
+            </div>
+
+            <!-- ===== STEP 1: PERSONAL INFO ===== -->
+            <div class="step-content active" id="step1">
+                <div class="form-card">
+                    <h3><i class="fas fa-user"></i> Personal Information</h3>
+                    <p class="subtitle">Tell us more about yourself</p>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Full Name <span class="required">*</span></label>
+                            <input type="text" id="vFullName" placeholder="Your full name" />
+                        </div>
+                        <div class="form-group">
+                            <label>Date of Birth <span class="required">*</span></label>
+                            <input type="date" id="vDob" />
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>National ID Number <span class="required">*</span></label>
+                            <input type="text" id="vNationalId" placeholder="14-digit National ID" maxlength="14" />
+                            <p class="hint">Enter your 14-digit National ID number</p>
+                        </div>
+                        <div class="form-group">
+                            <label>Country <span class="required">*</span></label>
+                            <select id="vCountry">
+                                <option value="">Select country</option>
+                                <option value="EG">Egypt</option>
+                                <option value="SA">Saudi Arabia</option>
+                                <option value="AE">United Arab Emirates</option>
+                                <option value="KW">Kuwait</option>
+                                <option value="QA">Qatar</option>
+                                <option value="BH">Bahrain</option>
+                                <option value="OM">Oman</option>
+                                <option value="JO">Jordan</option>
+                                <option value="US">United States</option>
+                                <option value="GB">United Kingdom</option>
+                                <option value="FR">France</option>
+                                <option value="DE">Germany</option>
+                                <option value="IT">Italy</option>
+                                <option value="ES">Spain</option>
+                                <option value="CA">Canada</option>
+                                <option value="AU">Australia</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>City <span class="required">*</span></label>
+                        <input type="text" id="vCity" placeholder="Your city" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Full Address <span class="required">*</span></label>
+                        <input type="text" id="vAddress" placeholder="Street, District, City" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Bio / About You</label>
+                        <textarea id="vBio" placeholder="Tell customers about your experience and skills..."></textarea>
+                        <p class="hint">This will be shown on your public profile</p>
+                    </div>
+                </div>
+
+                <div class="step-nav">
+                    <div></div>
+                    <button class="btn-step btn-next" onclick="nextStep(2)">
+                        Next <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ===== STEP 2: SPECIALTY ===== -->
+            <div class="step-content" id="step2">
+                <div class="form-card">
+                    <h3><i class="fas fa-tools"></i> Your Specialty</h3>
+                    <p class="subtitle">Select the services you can provide (choose all that apply)</p>
+
+                    <label style="display: block; font-weight: 600; font-size: 0.85rem; color: var(--text-primary); margin-bottom: 12px;">
+                        Service Categories <span class="required">*</span>
+                    </label>
+                    <div class="specialty-tags" id="specialtyTags">
+                        <button type="button" class="specialty-tag" data-value="plumbing">
+                            <i class="fas fa-faucet"></i> Plumbing
+                        </button>
+                        <button type="button" class="specialty-tag" data-value="electrical">
+                            <i class="fas fa-bolt"></i> Electrical
+                        </button>
+                        <button type="button" class="specialty-tag" data-value="ac-repair">
+                            <i class="fas fa-snowflake"></i> AC Repair
+                        </button>
+                        <button type="button" class="specialty-tag" data-value="carpentry">
+                            <i class="fas fa-hammer"></i> Carpentry
+                        </button>
+                        <button type="button" class="specialty-tag" data-value="painting">
+                            <i class="fas fa-paint-roller"></i> Painting
+                        </button>
+                        <button type="button" class="specialty-tag" data-value="masonry">
+                            <i class="fas fa-trowel"></i> Masonry
+                        </button>
+                        <button type="button" class="specialty-tag" data-value="cleaning">
+                            <i class="fas fa-broom"></i> Cleaning
+                        </button>
+                        <button type="button" class="specialty-tag" data-value="gardening">
+                            <i class="fas fa-leaf"></i> Gardening
+                        </button>
+                        <button type="button" class="specialty-tag" data-value="appliance">
+                            <i class="fas fa-tv"></i> Appliance Repair
+                        </button>
+                        <button type="button" class="specialty-tag" data-value="pest-control">
+                            <i class="fas fa-bug"></i> Pest Control
+                        </button>
+                    </div>
+
+                    <div class="form-row" style="margin-top: 24px;">
+                        <div class="form-group">
+                            <label>Years of Experience <span class="required">*</span></label>
+                            <select id="vExperience">
+                                <option value="">Select</option>
+                                <option>Less than 1 year</option>
+                                <option>1-2 years</option>
+                                <option>3-5 years</option>
+                                <option>5-10 years</option>
+                                <option>10+ years</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Hourly Rate (EGP) <span class="required">*</span></label>
+                            <input type="number" id="vRate" placeholder="e.g. 100" min="10" />
+                            <p class="hint">This is your base rate. Final price depends on the job.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-nav">
+                    <button class="btn-step btn-prev" onclick="prevStep(1)">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                    <button class="btn-step btn-next" onclick="nextStep(3)">
+                        Next <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ===== STEP 3: DOCUMENTS ===== -->
+            <div class="step-content" id="step3">
+                <div class="form-card">
+                    <h3><i class="fas fa-file-upload"></i> Verification Documents</h3>
+                    <p class="subtitle">Upload the required documents for verification</p>
+
+                    <!-- ID Upload -->
+                    <div style="margin-bottom: 24px;">
+                        <label style="display: block; font-weight: 600; font-size: 0.85rem; color: var(--text-primary); margin-bottom: 10px;">
+                            National ID / Iqama (Front) <span class="required">*</span>
+                        </label>
+                        <div class="file-upload" id="idUpload">
+                            <input type="file" id="idFile" accept=".jpg,.jpeg,.png,.pdf" onchange="handleFileSelect(this, 'idPreview')" />
+                            <i class="fas fa-id-card"></i>
+                            <h4>Upload ID Document</h4>
+                            <p>Drag & drop or click to browse</p>
+                            <p class="file-types">JPG, PNG, PDF up to 5MB</p>
+                        </div>
+                        <div class="file-preview" id="idPreview">
+                            <i class="fas fa-file-image"></i>
+                            <div class="file-info">
+                                <div class="file-name" id="idFileName">document.jpg</div>
+                                <div class="file-size" id="idFileSize">2.4 MB</div>
+                            </div>
+                            <button type="button" class="remove-file" onclick="removeFile('idFile', 'idPreview')">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Criminal Record -->
+                    <div style="margin-bottom: 24px;">
+                        <label style="display: block; font-weight: 600; font-size: 0.85rem; color: var(--text-primary); margin-bottom: 10px;">
+                            Criminal Background Check <span class="required">*</span>
+                        </label>
+                        <div class="file-upload" id="criminalUpload">
+                            <input type="file" id="criminalFile" accept=".jpg,.jpeg,.png,.pdf" onchange="handleFileSelect(this, 'criminalPreview')" />
+                            <i class="fas fa-shield-alt"></i>
+                            <h4>Upload Background Check</h4>
+                            <p>Drag & drop or click to browse</p>
+                            <p class="file-types">JPG, PNG, PDF up to 5MB</p>
+                        </div>
+                        <div class="file-preview" id="criminalPreview">
+                            <i class="fas fa-file-pdf"></i>
+                            <div class="file-info">
+                                <div class="file-name" id="criminalFileName">background.pdf</div>
+                                <div class="file-size" id="criminalFileSize">1.8 MB</div>
+                            </div>
+                            <button type="button" class="remove-file" onclick="removeFile('criminalFile', 'criminalPreview')">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Business License (Optional) -->
+                    <div>
+                        <label style="display: block; font-weight: 600; font-size: 0.85rem; color: var(--text-primary); margin-bottom: 10px;">
+                            Business License (Optional)
+                        </label>
+                        <div class="file-upload" id="licenseUpload">
+                            <input type="file" id="licenseFile" accept=".jpg,.jpeg,.png,.pdf" onchange="handleFileSelect(this, 'licensePreview')" />
+                            <i class="fas fa-certificate"></i>
+                            <h4>Upload Business License</h4>
+                            <p>For companies or registered businesses</p>
+                            <p class="file-types">JPG, PNG, PDF up to 5MB</p>
+                        </div>
+                        <div class="file-preview" id="licensePreview">
+                            <i class="fas fa-file-pdf"></i>
+                            <div class="file-info">
+                                <div class="file-name" id="licenseFileName">license.pdf</div>
+                                <div class="file-size" id="licenseFileSize">3.1 MB</div>
+                            </div>
+                            <button type="button" class="remove-file" onclick="removeFile('licenseFile', 'licensePreview')">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-nav">
+                    <button class="btn-step btn-prev" onclick="prevStep(2)">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                    <button class="btn-step btn-next" onclick="nextStep(4)">
+                        Next <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ===== STEP 4: REVIEW ===== -->
+            <div class="step-content" id="step4">
+                <div class="form-card">
+                    <h3><i class="fas fa-clipboard-check"></i> Review Your Information</h3>
+                    <p class="subtitle">Please verify all details before submitting</p>
+
+                    <div style="margin-bottom: 24px;">
+                        <h4 style="color: var(--text-primary); font-size: 1rem; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-user" style="color: var(--accent);"></i> Personal Info
+                        </h4>
+                        <div style="background: var(--bg-primary); border-radius: 12px; padding: 16px;">
+                            <div class="detail-item" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border);">
+                                <span style="color: var(--text-secondary);">Full Name</span>
+                                <span style="color: var(--text-primary); font-weight: 600;" id="reviewName">--</span>
+                            </div>
+                            <div class="detail-item" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border);">
+                                <span style="color: var(--text-secondary);">National ID</span>
+                                <span style="color: var(--text-primary); font-weight: 600;" id="reviewId">--</span>
+                            </div>
+                            <div class="detail-item" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border);">
+                                <span style="color: var(--text-secondary);">Country</span>
+                                <span style="color: var(--text-primary); font-weight: 600;" id="reviewCountry">--</span>
+                            </div>
+                            <div class="detail-item" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border);">
+                                <span style="color: var(--text-secondary);">City</span>
+                                <span style="color: var(--text-primary); font-weight: 600;" id="reviewCity">--</span>
+                            </div>
+                            <div class="detail-item" style="display: flex; justify-content: space-between; padding: 8px 0;">
+                                <span style="color: var(--text-secondary);">Experience</span>
+                                <span style="color: var(--text-primary); font-weight: 600;" id="reviewExp">--</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 24px;">
+                        <h4 style="color: var(--text-primary); font-size: 1rem; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-tools" style="color: var(--accent);"></i> Specialty
+                        </h4>
+                        <div style="background: var(--bg-primary); border-radius: 12px; padding: 16px;">
+                            <div class="detail-item" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border);">
+                                <span style="color: var(--text-secondary);">Services</span>
+                                <span style="color: var(--text-primary); font-weight: 600;" id="reviewServices">--</span>
+                            </div>
+                            <div class="detail-item" style="display: flex; justify-content: space-between; padding: 8px 0;">
+                                <span style="color: var(--text-secondary);">Hourly Rate</span>
+                                <span style="color: var(--text-primary); font-weight: 600;" id="reviewRate">--</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 style="color: var(--text-primary); font-size: 1rem; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-file-alt" style="color: var(--accent);"></i> Documents
+                        </h4>
+                        <div style="background: var(--bg-primary); border-radius: 12px; padding: 16px;">
+                            <div class="detail-item" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border);">
+                                <span style="color: var(--text-secondary);">ID Document</span>
+                                <span style="color: #48bb78; font-weight: 600;" id="reviewIdDoc"><i class="fas fa-check-circle"></i> Uploaded</span>
+                            </div>
+                            <div class="detail-item" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border);">
+                                <span style="color: var(--text-secondary);">Background Check</span>
+                                <span style="color: #48bb78; font-weight: 600;" id="reviewBgDoc"><i class="fas fa-check-circle"></i> Uploaded</span>
+                            </div>
+                            <div class="detail-item" style="display: flex; justify-content: space-between; padding: 8px 0;">
+                                <span style="color: var(--text-secondary);">Business License</span>
+                                <span style="color: var(--text-light); font-weight: 600;" id="reviewLicense">--</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-nav">
+                    <button class="btn-step btn-prev" onclick="prevStep(3)">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                    <button class="btn-step btn-submit" onclick="submitVerification()">
+                        <i class="fas fa-paper-plane"></i> Submit for Review
+                    </button>
+                </div>
+            </div>
+
+            <!-- ===== SIMULATE ADMIN APPROVAL (FOR DEVELOPMENT ONLY) ===== -->
+            <div style="margin-top: 32px; padding: 20px; background: #fef3c7; border: 2px dashed #f59e0b; border-radius: 12px; text-align: center; display: none;" id="adminSimulation">
+                <i class="fas fa-user-shield" style="font-size: 2rem; color: #f59e0b; margin-bottom: 8px;"></i>
+                <h4 style="color: #92400e; margin-bottom: 4px;">🔧 Development Mode: Admin Simulation</h4>
+                <p style="color: #92400e; font-size: 0.85rem; margin-bottom: 12px;">This button simulates admin approval for testing purposes only.</p>
+                <button onclick="simulateAdminApproval()" style="padding: 10px 24px; background: #f59e0b; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">
+                    <i class="fas fa-check"></i> Simulate Admin Approval
+                </button>
+            </div>
+
+            <!-- ===== SUCCESS STATE ===== -->
+            <div class="success-state" id="successState">
+                <div class="success-icon">
+                    <i class="fas fa-check"></i>
+                </div>
+                <div class="status-badge pending">
+                    <i class="fas fa-clock"></i> Pending Approval
+                </div>
+                <h2>Application Submitted!</h2>
+                <p>Your profile has been submitted for review. Our team will verify your documents and approve your account within 1-2 business days.</p>
+                <a href="provider-dashboard.html" class="btn-step btn-next" style="text-decoration: none;">
+                    <i class="fas fa-home"></i> Go to Dashboard
+                </a>
+                <br><br>
+                <!-- ✅ زر محاكاة الموافقة يظهر أيضاً في حالة النجاح -->
+                <button onclick="simulateAdminApproval()" style="padding: 10px 24px; background: #f59e0b; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; margin-top: 12px;">
+                    <i class="fas fa-check"></i> 🔧 Simulate Admin Approval
+                </button>
+            </div>
+
+            <!-- ===== WAITING STATE ===== -->
+            <div id="waitingState" style="display:none; text-align:center; padding:60px 20px;">
+                <div style="width:80px;height:80px;border-radius:50%;background:#dbeafe;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:2.5rem;color:#1e40af;">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <h2 style="color:var(--text-primary);">Verification in Progress</h2>
+                <p style="color:var(--text-secondary);max-width:400px;margin:8px auto 20px;">
+                    Your documents are being reviewed by our team. This usually takes 1-2 business days.
+                    You will be notified once your account is approved.
+                </p>
+                <button onclick="simulateAdminApproval()" style="padding: 10px 24px; background: #3b82f6; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; margin-top: 12px;">
+                    <i class="fas fa-check"></i> 🔧 Simulate Admin Approval
+                </button>
+                <br><br>
+                <a href="login.html" onclick="handleLogout(event)" class="btn-step btn-prev" style="text-decoration:none;display:inline-block;">
+                    <i class="fas fa-arrow-left"></i> Back to Login
+                </a>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer">
+        <p>© 2026 <strong>Fixora</strong> — Professional Home Repair Services</p>
+        <p class="footer-update">Last updated: <span id="footer-date"></span></p>
+    </footer>
+
+    <script src="../js/script.js"></script>
+    <script src="../js/provider-verification.js"></script>
+    <script src="../js/chatbot.js"></script>
+
+</body>
+</html>

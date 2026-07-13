@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Subscription - Fixora</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/subscription.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+</head>
+<body>
+
+    <!-- Mobile Toggle -->
+    <button class="sidebar-toggle" id="sidebar-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <div class="page-wrapper">
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-wrench"></i>
+                    <span>Fix<span class="logo-highlight">ora</span></span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <!-- الروابط يتم إضافتها ديناميكياً بواسطة JavaScript -->
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <button id="theme-toggle" class="theme-btn-sidebar">
+                    <i class="fas fa-moon"></i> Dark Mode
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN -->
+        <div class="main-area">
+
+            <main class="main-content">
+                <div class="subscription-container">
+
+                    <!-- Header -->
+                    <div class="subscription-header">
+                        <h1 class="page-title">
+                            <i class="fas fa-crown" style="color: #f6ad55;"></i> Subscription Plans
+                        </h1>
+                        <p class="page-subtitle">Choose the plan that fits your business needs and start accepting service requests</p>
+                    </div>
+
+                    <!-- Current Subscription Status -->
+                    <div class="current-status" id="currentStatus">
+                        <div class="status-card">
+                            <div class="status-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="status-info">
+                                <h4>Current Plan: <span id="currentPlan">Free</span></h4>
+                                <p id="currentStatusText">You are currently on the Free plan. Upgrade to unlock more features.</p>
+                                <span class="status-badge" id="statusBadge">Active</span>
+                            </div>
+                            <div class="status-expiry">
+                                <span id="expiryDate">Expires: Never</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Plans Grid -->
+                    <div class="plans-grid" id="plansGrid">
+
+                        <!-- Plan 1: Free -->
+                        <div class="plan-card" data-plan="free">
+                            <div class="plan-header">
+                                <h3>Free</h3>
+                                <div class="plan-price">
+                                    <span class="price">0</span>
+                                    <span class="currency">EGP</span>
+                                    <span class="period">/ month</span>
+                                </div>
+                            </div>
+                            <div class="plan-features">
+                                <ul>
+                                    <li><i class="fas fa-check"></i> View service requests</li>
+                                    <li><i class="fas fa-check"></i> Basic profile</li>
+                                    <li><i class="fas fa-check"></i> 1 active request at a time</li>
+                                    <li><i class="fas fa-times"></i> Accept service requests</li>
+                                    <li><i class="fas fa-times"></i> Priority support</li>
+                                    <li><i class="fas fa-times"></i> Featured listing</li>
+                                </ul>
+                            </div>
+                            <div class="plan-actions">
+                                <button class="btn-plan current" disabled>Current Plan</button>
+                            </div>
+                        </div>
+
+                        <!-- Plan 2: Pro -->
+                        <div class="plan-card popular" data-plan="pro">
+                            <div class="popular-badge">Most Popular</div>
+                            <div class="plan-header">
+                                <h3>Pro</h3>
+                                <div class="plan-price">
+                                    <span class="price">50</span>
+                                    <span class="currency">EGP</span>
+                                    <span class="period">/ month</span>
+                                </div>
+                            </div>
+                            <div class="plan-features">
+                                <ul>
+                                    <li><i class="fas fa-check"></i> View service requests</li>
+                                    <li><i class="fas fa-check"></i> Professional profile</li>
+                                    <li><i class="fas fa-check"></i> Unlimited active requests</li>
+                                    <li><i class="fas fa-check"></i> Accept service requests</li>
+                                    <li><i class="fas fa-check"></i> Priority support</li>
+                                    <li><i class="fas fa-times"></i> Featured listing</li>
+                                </ul>
+                            </div>
+                            <div class="plan-actions">
+                                <button class="btn-plan" onclick="selectPlan('pro')">Upgrade to Pro</button>
+                            </div>
+                        </div>
+
+                        <!-- Plan 3: Premium -->
+                        <div class="plan-card" data-plan="premium">
+                            <div class="plan-header">
+                                <h3>Premium</h3>
+                                <div class="plan-price">
+                                    <span class="price">100</span>
+                                    <span class="currency">EGP</span>
+                                    <span class="period">/ month</span>
+                                </div>
+                            </div>
+                            <div class="plan-features">
+                                <ul>
+                                    <li><i class="fas fa-check"></i> View service requests</li>
+                                    <li><i class="fas fa-check"></i> Premium profile with badge</li>
+                                    <li><i class="fas fa-check"></i> Unlimited active requests</li>
+                                    <li><i class="fas fa-check"></i> Accept service requests</li>
+                                    <li><i class="fas fa-check"></i> Priority support</li>
+                                    <li><i class="fas fa-check"></i> Featured listing</li>
+                                </ul>
+                            </div>
+                            <div class="plan-actions">
+                                <button class="btn-plan" onclick="selectPlan('premium')">Upgrade to Premium</button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Plan Comparison Table -->
+                    <div class="comparison-section">
+                        <h2><i class="fas fa-table"></i> Plan Comparison</h2>
+                        <div class="comparison-table-wrapper">
+                            <table class="comparison-table">
+                                <thead>
+                                    <tr>
+                                        <th>Features</th>
+                                        <th>Free</th>
+                                        <th>Pro</th>
+                                        <th>Premium</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>View Requests</td>
+                                        <td><i class="fas fa-check green"></i></td>
+                                        <td><i class="fas fa-check green"></i></td>
+                                        <td><i class="fas fa-check green"></i></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Accept Requests</td>
+                                        <td><i class="fas fa-times red"></i></td>
+                                        <td><i class="fas fa-check green"></i></td>
+                                        <td><i class="fas fa-check green"></i></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Active Requests Limit</td>
+                                        <td>1</td>
+                                        <td>Unlimited</td>
+                                        <td>Unlimited</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Profile Badge</td>
+                                        <td>None</td>
+                                        <td>Pro</td>
+                                        <td>Premium</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Priority Support</td>
+                                        <td><i class="fas fa-times red"></i></td>
+                                        <td><i class="fas fa-check green"></i></td>
+                                        <td><i class="fas fa-check green"></i></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Featured Listing</td>
+                                        <td><i class="fas fa-times red"></i></td>
+                                        <td><i class="fas fa-times red"></i></td>
+                                        <td><i class="fas fa-check green"></i></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Monthly Price</td>
+                                        <td><strong>Free</strong></td>
+                                        <td><strong>50 EGP</strong></td>
+                                        <td><strong>100 EGP</strong></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Payment Modal -->
+                    <div class="modal-overlay" id="paymentModal">
+                        <div class="modal-content" style="max-width: 450px;">
+                            <div class="modal-header">
+                                <h3><i class="fas fa-credit-card" style="color: var(--accent);"></i> Complete Payment</h3>
+                                <button class="modal-close" onclick="closePaymentModal()"><i class="fas fa-times"></i></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="payment-summary">
+                                    <p>You are upgrading to: <strong id="paymentPlan">Pro</strong></p>
+                                    <p>Price: <strong id="paymentPrice">50 EGP</strong></p>
+                                    <p>Billing: <strong>Monthly</strong></p>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Card Number</label>
+                                    <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19" oninput="formatCardNumber(this)" />
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group" style="flex:1;">
+                                        <label>Expiry Date</label>
+                                        <input type="text" id="cardExpiry" placeholder="MM/YY" maxlength="5" oninput="formatCardExpiry(this)" />
+                                    </div>
+                                    <div class="form-group" style="flex:1;">
+                                        <label>CVV</label>
+                                        <input type="password" id="cardCvv" placeholder="***" maxlength="4" />
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Cardholder Name</label>
+                                    <input type="text" id="cardName" placeholder="John Doe" />
+                                </div>
+
+                                <div class="payment-total">
+                                    <span>Total:</span>
+                                    <span id="paymentTotal">50 EGP</span>
+                                </div>
+
+                                <button class="btn-pay" onclick="processPayment()">
+                                    <i class="fas fa-lock"></i> Pay Now
+                                </button>
+                                <p class="secure-note"><i class="fas fa-shield-alt"></i> Your payment is secure and encrypted</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Success State -->
+                    <div class="subscription-success" id="subscriptionSuccess" style="display:none;">
+                        <div class="success-icon">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <h2>Subscription Activated! 🎉</h2>
+                        <p>Your <span id="successPlan">Pro</span> plan has been activated successfully. You can now start accepting service requests.</p>
+                        <div class="success-actions">
+                            <a href="provider-dashboard.html" class="btn-primary">
+                                <i class="fas fa-gauge-high"></i> Dashboard
+                            </a>
+                            <a href="orders.html" class="btn-secondary">
+                                <i class="fas fa-list-check"></i> View Orders
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </main>
+
+            <footer class="footer">
+                <p>© 2026 <strong>Fixora</strong> — Professional Home Repair Services</p>
+                <p class="footer-update">Last updated: <span id="footer-date"></span></p>
+            </footer>
+        </div>
+    </div>
+
+    <script src="../js/script.js"></script>
+    <script src="../js/subscription.js"></script>
+    <script src="../js/chatbot.js"></script>
+</body>
+</html>

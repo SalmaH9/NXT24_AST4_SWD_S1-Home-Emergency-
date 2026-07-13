@@ -143,30 +143,44 @@
 </head>
 <body>
 
-    <!-- ===== NAVBAR ===== -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="logo">
-                <i class="fas fa-wrench"></i>
-                <span>Fix<span class="logo-highlight">ora</span></span>
-            </div>
-            <ul class="nav-links" id="navLinks">
-                <li><a href="customer-dashboard.html"><i class="fas fa-gauge-high"></i> Dashboard</a></li>
-                <li><a href="book-service.html"><i class="fas fa-plus-circle"></i> Book Service</a></li>
-                <li><a href="my-orders.html"><i class="fas fa-clock-rotate-left"></i> My Orders</a></li>
-                <li><a href="customer-profile.html" class="active"><i class="fas fa-user"></i> Profile</a></li>
-                <li id="authLink"><a href="login.html" onclick="handleLogout(event)"><i class="fas fa-right-from-bracket"></i> Logout</a></li>
-            </ul>
-            <div class="nav-actions">
-                <button id="theme-toggle" class="theme-btn">
-                    <i class="fas fa-moon"></i>
-                </button>
-                <div class="hamburger" id="hamburger">
-                    <i class="fas fa-bars"></i>
+    <!-- Mobile Toggle -->
+    <button class="sidebar-toggle" id="sidebar-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <div class="page-wrapper">
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-wrench"></i>
+                    <span>Fix<span class="logo-highlight">ora</span></span>
                 </div>
             </div>
-        </div>
-    </nav>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="services.html"><i class="fas fa-tools"></i> Services</a></li>
+                    <li><a href="post-request.html"><i class="fas fa-plus-circle"></i> Post Request</a></li>
+                    <li><a href="select-technician.html"><i class="fas fa-handshake"></i> Offers</a></li>
+                    <li><a href="customer-dashboard.html"><i class="fas fa-gauge-high"></i> Dashboard</a></li>
+                    <li><a href="my-orders.html"><i class="fas fa-list-check"></i> My Orders</a></li>
+                    <li><a href="customer-profile.html" class="active"><i class="fas fa-user"></i> Profile</a></li>
+                    <li><a href="about.html"><i class="fas fa-circle-info"></i> About</a></li>
+                    <li><a href="contact.html"><i class="fas fa-envelope"></i> Contact</a></li>
+                    <li id="authLink"><a href="login.html" onclick="handleLogout(event)"><i class="fas fa-right-from-bracket"></i> Logout</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <button id="theme-toggle" class="theme-btn-sidebar">
+                    <i class="fas fa-moon"></i> Dark Mode
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN -->
+        <div class="main-area">
 
     <!-- ===== MAIN ===== -->
     <main class="main-content">
@@ -251,13 +265,15 @@
         </div>
     </main>
 
-    <!-- ===== FOOTER ===== -->
-    <footer class="footer">
-        <p>© 2026 <strong>Fixora</strong> — Professional Home Repair Services</p>
-        <p class="footer-update">Last updated: <span id="footer-date"></span></p>
-    </footer>
+            <footer class="footer">
+                <p>© 2026 <strong>Fixora</strong> — Professional Home Repair Services</p>
+                <p class="footer-update">Last updated: <span id="footer-date"></span></p>
+            </footer>
+        </div>
+    </div>
 
     <script src="../js/script.js"></script>
+    <script src="../js/chatbot.js"></script>
     <script>
         function saveProfile(event) {
             event.preventDefault();

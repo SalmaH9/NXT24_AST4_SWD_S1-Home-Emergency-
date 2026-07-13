@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Service Execution - Fixora</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/execution.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+</head>
+<body>
+
+    <!-- Mobile Toggle -->
+    <button class="sidebar-toggle" id="sidebar-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <div class="page-wrapper">
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-wrench"></i>
+                    <span>Fix<span class="logo-highlight">ora</span></span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="customer-dashboard.html"><i class="fas fa-gauge-high"></i> Dashboard</a></li>
+                    <li><a href="my-orders.html"><i class="fas fa-list-check"></i> My Orders</a></li>
+                    <li><a href="customer-profile.html"><i class="fas fa-user"></i> Profile</a></li>
+                    <li style="margin-top: 16px; border-top: 1px solid var(--border); padding-top: 12px;">
+                        <a href="../index.html" onclick="handleLogout(event)" style="color: #ef4444; font-weight: 600;">
+                            <i class="fas fa-sign-out-alt" style="margin-right: 10px;"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <button id="theme-toggle" class="theme-btn-sidebar">
+                    <i class="fas fa-moon"></i> Dark Mode
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN -->
+        <div class="main-area">
+
+            <main class="main-content">
+                <div class="execution-container">
+
+                    <!-- Status Banner -->
+                    <div class="status-banner">
+                        <div>
+                            <div class="order-id">
+                                <i class="fas fa-clipboard-list"></i> 
+                                <span id="orderId">#REQ-001</span>
+                            </div>
+                            <div style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 4px;">
+                                <i class="fas fa-tag"></i> <span id="orderCategory">Plumbing</span>
+                            </div>
+                        </div>
+                        <div>
+                            <span class="status-badge pending" id="orderStatus">
+                                <i class="fas fa-clock"></i> Pending Approval
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="execution-grid">
+
+                        <!-- LEFT COLUMN: Examination Report -->
+                        <div class="execution-card">
+                            <h3><i class="fas fa-file-medical"></i> Examination Report</h3>
+
+                            <div class="report-section">
+                                <span class="label"><i class="fas fa-magnifying-glass"></i> Diagnosis</span>
+                                <p class="value" id="reportDiagnosis">The PVC pipe under the kitchen sink has a 2cm crack due to corrosion. The rubber gasket is completely worn out.</p>
+                            </div>
+
+                            <div class="report-section">
+                                <span class="label"><i class="fas fa-lightbulb"></i> Suggested Solution</span>
+                                <p class="value" id="reportSolution">Replace the cracked PVC pipe section (approximately 30cm) with new piping. Install new rubber gasket and apply pipe sealant.</p>
+                            </div>
+
+                            <div class="report-section">
+                                <span class="label"><i class="fas fa-box-open"></i> Materials Needed</span>
+                                <p class="value" id="reportMaterials">PVC pipe 1/2 inch (30cm), Rubber gasket, Pipe sealant, Teflon tape</p>
+                            </div>
+
+                            <!-- Price Box -->
+                            <div class="price-box">
+                                <div class="price-row">
+                                    <span class="label">🔍 Examination Fee</span>
+                                    <span class="value paid" id="examFee">100 EGP <span style="font-size: 0.75rem; color: #48bb78;">(Paid)</span></span>
+                                </div>
+                                <div class="price-row total">
+                                    <span class="label">🔧 Repair Cost</span>
+                                    <span class="value pending" id="repairCost">500 EGP <span style="font-size: 0.75rem; color: #f6ad55;">(Pending)</span></span>
+                                </div>
+                            </div>
+
+                            <!-- Timer -->
+                            <div class="timer-display" id="timerDisplay" style="display:none;">
+                                <span class="time" id="executionTimer">00:00:00</span>
+                                <span class="label"><i class="fas fa-stopwatch"></i> Execution Time</span>
+                            </div>
+                        </div>
+
+                        <!-- RIGHT COLUMN: Technician & Actions -->
+                        <div class="execution-card">
+                            <h3><i class="fas fa-user-tie"></i> Technician</h3>
+
+                            <div class="tech-info">
+                                <div class="tech-avatar">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div class="tech-details">
+                                    <h4 id="techName">Ahmed Al-Rashid</h4>
+                                    <p class="rating">★★★★★ 4.9 (128 reviews)</p>
+                                    <p><i class="fas fa-briefcase"></i> <span id="techExp">8 years experience</span></p>
+                                </div>
+                            </div>
+
+                            <!-- Map / Tracking -->
+                            <div style="margin-top: 16px;">
+                                <h4 style="color: var(--text-primary); font-size: 0.9rem; margin-bottom: 8px;">
+                                    <i class="fas fa-location-dot" style="color: var(--accent);"></i> Live Tracking
+                                </h4>
+                                <div class="map-placeholder" id="mapPlaceholder">
+                                    <i class="fas fa-map-location-dot"></i>
+                                    <h4>Technician Location</h4>
+                                    <p id="techLocation">📍 En route to your location</p>
+                                    <div class="eta" id="techEta">⏱️ Estimated arrival: 12 minutes</div>
+                                </div>
+                            </div>
+
+                            <!-- Actions -->
+                            <div style="margin-top: 16px;">
+                                <h4 style="color: var(--text-primary); font-size: 0.9rem; margin-bottom: 8px;">
+                                    <i class="fas fa-gavel"></i> Your Decision
+                                </h4>
+                                <div class="actions-grid" id="actionButtons">
+                                    <button class="btn-action btn-chat" onclick="openChat()">
+                                        <i class="fas fa-comment"></i> Chat
+                                    </button>
+                                    <button class="btn-action btn-call" onclick="callTechnician()">
+                                        <i class="fas fa-phone"></i> Call
+                                    </button>
+                                    <button class="btn-action btn-accept btn-full" onclick="acceptRepair()">
+                                        <i class="fas fa-check"></i> Accept Repair & Start
+                                    </button>
+                                    <button class="btn-action btn-reject btn-full" onclick="rejectRepair()">
+                                        <i class="fas fa-xmark"></i> Reject Repair (Pay Examination Only)
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Complete Service Button (shown when in-progress) -->
+                            <div style="margin-top: 16px; display: none;" id="completeSection">
+                                <button class="btn-action btn-accept btn-full" onclick="completeService()" style="background: linear-gradient(135deg, #48bb78, #38a169);">
+                                    <i class="fas fa-check-circle"></i> Complete Service
+                                </button>
+                                <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 8px; text-align: center;">
+                                    Only click when the service is fully completed.
+                                </p>
+                            </div>
+
+                            <!-- Rejection Note -->
+                            <div class="rejection-note" id="rejectionNote" style="display:none;">
+                                <i class="fas fa-circle-info"></i>
+                                <p>
+                                    <strong>You have rejected the repair cost.</strong><br />
+                                    You will pay only the <span class="highlight">examination fee (100 EGP)</span>.
+                                    The request remains <span class="highlight">open</span> for other technicians to submit new examinations.
+                                </p>
+                            </div>
+
+                            <!-- Reopen Section -->
+                            <div class="reopen-section" id="reopenSection" style="display:none;">
+                                <button class="btn-reopen" onclick="reopenRequest()">
+                                    <i class="fas fa-rotate-right"></i> Request New Technician
+                                </button>
+                                <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 8px;">
+                                    A new technician will review the previous examination and submit a new report.
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Completed State -->
+                    <div class="completed-state" id="completedState">
+                        <div class="icon">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <h2>Service Completed! ✅</h2>
+                        <p>The repair has been successfully completed. Thank you for choosing Fixora!</p>
+                        <div class="actions">
+                            <a href="rating.html" class="btn-action btn-accept">
+                                <i class="fas fa-star"></i> Rate Technician
+                            </a>
+                            <a href="customer-dashboard.html" class="btn-action btn-call" style="text-decoration: none;">
+                                <i class="fas fa-gauge-high"></i> Dashboard
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </main>
+
+            <footer class="footer">
+                <p>© 2026 <strong>Fixora</strong> — Professional Home Repair Services</p>
+                <p class="footer-update">Last updated: <span id="footer-date"></span></p>
+            </footer>
+        </div>
+    </div>
+
+    <script src="../js/script.js"></script>
+    <script src="../js/execution.js"></script>
+    <script src="../js/chatbot.js"></script>
+
+</body>
+</html>

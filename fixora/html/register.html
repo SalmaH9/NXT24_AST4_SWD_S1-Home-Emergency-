@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login - Fixora</title>
+    <title>Sign Up - Fixora</title>
+    <link rel="stylesheet" href="../css/register.css" />
+    <link rel="stylesheet" href="../css/style.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <style>
@@ -29,7 +31,7 @@
         }
 
         /* ==========================================
-           خلفية زاهية - ألوان مشرقة
+           VIBRANT BACKGROUND
            ========================================== */
         .vibrant-bg {
             position: fixed;
@@ -42,39 +44,36 @@
             overflow: hidden;
         }
 
-        /* ===== 1. دوائر كبيرة زاهية ===== */
         .vibrant-bg .circle {
             position: absolute;
             border-radius: 50%;
-            opacity: 0.15;
+            opacity: 0.12;
             animation: vibrantFloat 22s ease-in-out infinite;
         }
 
         .vibrant-bg .circle:nth-child(1) {
             width: 500px;
             height: 500px;
-            background: radial-gradient(circle, #ff6b6b, #ee5a24);
+            background: radial-gradient(circle, #667eea, #764ba2);
             top: -200px;
             right: -150px;
             animation-duration: 28s;
-            opacity: 0.12;
         }
 
         .vibrant-bg .circle:nth-child(2) {
             width: 400px;
             height: 400px;
-            background: radial-gradient(circle, #a17413, #ad912b);
+            background: radial-gradient(circle, #f093fb, #f5576c);
             bottom: -150px;
             left: -120px;
             animation-duration: 24s;
             animation-delay: 2s;
-            opacity: 0.1;
         }
 
         .vibrant-bg .circle:nth-child(3) {
             width: 350px;
             height: 350px;
-            background: radial-gradient(circle, #48dbfb, #0abde3);
+            background: radial-gradient(circle, #4facfe, #00f2fe);
             top: 30%;
             right: -5%;
             animation-duration: 20s;
@@ -85,7 +84,7 @@
         .vibrant-bg .circle:nth-child(4) {
             width: 300px;
             height: 300px;
-            background: radial-gradient(circle, #ff9ff3, #f368e0);
+            background: radial-gradient(circle, #43e97b, #38f9d7);
             bottom: 20%;
             left: -5%;
             animation-duration: 26s;
@@ -93,232 +92,80 @@
             opacity: 0.1;
         }
 
-        .vibrant-bg .circle:nth-child(5) {
-            width: 250px;
-            height: 250px;
-            background: radial-gradient(circle, #54a0ff, #2e86de);
-            top: 10%;
-            left: 40%;
-            animation-duration: 18s;
-            animation-delay: 3s;
-            opacity: 0.09;
-        }
-
-        .vibrant-bg .circle:nth-child(6) {
-            width: 200px;
-            height: 200px;
-            background: radial-gradient(circle, #ff6b6b, #ee5a24);
-            bottom: 30%;
-            right: 20%;
-            animation-duration: 22s;
-            animation-delay: 5s;
-            opacity: 0.07;
-        }
-
-        /* ===== 2. جسيمات متلألئة ===== */
         .vibrant-bg .sparkle {
             position: absolute;
             border-radius: 50%;
-            background: white;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
             animation: sparkleFloat 12s ease-in-out infinite;
         }
 
-        .vibrant-bg .sparkle:nth-child(7) {
+        .vibrant-bg .sparkle:nth-child(5) {
             width: 6px;
             height: 6px;
             top: 15%;
             left: 10%;
             animation-duration: 10s;
-            animation-delay: 0s;
-            background: #ff6b6b;
-            box-shadow: 0 0 20px rgba(255, 107, 107, 0.4);
+            background: #667eea;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.4);
         }
 
-        .vibrant-bg .sparkle:nth-child(8) {
+        .vibrant-bg .sparkle:nth-child(6) {
             width: 8px;
             height: 8px;
             top: 70%;
             right: 15%;
             animation-duration: 14s;
             animation-delay: 2s;
-            background: #67bfd1;
-            box-shadow: 0 0 20px rgba(254, 202, 87, 0.4);
+            background: #f5576c;
+            box-shadow: 0 0 20px rgba(245, 87, 108, 0.4);
         }
 
-        .vibrant-bg .sparkle:nth-child(9) {
+        .vibrant-bg .sparkle:nth-child(7) {
             width: 5px;
             height: 5px;
             top: 40%;
             left: 85%;
             animation-duration: 11s;
             animation-delay: 4s;
-            background: #48dbfb;
-            box-shadow: 0 0 20px rgba(72, 219, 251, 0.4);
+            background: #4facfe;
+            box-shadow: 0 0 20px rgba(79, 172, 254, 0.4);
         }
 
-        .vibrant-bg .sparkle:nth-child(10) {
+        .vibrant-bg .sparkle:nth-child(8) {
             width: 7px;
             height: 7px;
             top: 80%;
             left: 20%;
             animation-duration: 13s;
             animation-delay: 1s;
-            background: #82557c;
-            box-shadow: 0 0 20px rgba(255, 159, 243, 0.4);
+            background: #43e97b;
+            box-shadow: 0 0 20px rgba(67, 233, 123, 0.4);
         }
 
-        .vibrant-bg .sparkle:nth-child(11) {
-            width: 4px;
-            height: 4px;
-            top: 25%;
-            right: 30%;
-            animation-duration: 9s;
-            animation-delay: 3s;
-            background: #54a0ff;
-            box-shadow: 0 0 20px rgba(84, 160, 255, 0.4);
-        }
-
-        .vibrant-bg .sparkle:nth-child(12) {
-            width: 9px;
-            height: 9px;
-            top: 55%;
-            left: 50%;
-            animation-duration: 15s;
-            animation-delay: 5s;
-            background: #ff6b6b;
-            box-shadow: 0 0 20px rgba(255, 107, 107, 0.4);
-        }
-
-        .vibrant-bg .sparkle:nth-child(13) {
-            width: 5px;
-            height: 5px;
-            top: 10%;
-            right: 50%;
-            animation-duration: 12s;
-            animation-delay: 2.5s;
-            background: #feca57;
-            box-shadow: 0 0 20px rgba(254, 202, 87, 0.4);
-        }
-
-        .vibrant-bg .sparkle:nth-child(14) {
-            width: 6px;
-            height: 6px;
-            top: 65%;
-            left: 70%;
-            animation-duration: 16s;
-            animation-delay: 4.5s;
-            background: #48dbfb;
-            box-shadow: 0 0 20px rgba(72, 219, 251, 0.4);
-        }
-
-        /* ===== 3. بقع ضوئية ===== */
-        .vibrant-bg .glow {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(60px);
-            opacity: 0.08;
-            animation: glowFloat 15s ease-in-out infinite;
-        }
-
-        .vibrant-bg .glow:nth-child(15) {
-            width: 200px;
-            height: 200px;
-            background: #ff6b6b;
-            top: 20%;
-            left: 5%;
-            animation-duration: 18s;
-        }
-
-        .vibrant-bg .glow:nth-child(16) {
-            width: 150px;
-            height: 150px;
-            background: #48dbfb;
-            bottom: 15%;
-            right: 10%;
-            animation-duration: 14s;
-            animation-delay: 3s;
-        }
-
-        .vibrant-bg .glow:nth-child(17) {
-            width: 180px;
-            height: 180px;
-            background: #ff9ff3;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            animation-duration: 20s;
-            animation-delay: 5s;
-        }
-
-        /* ===== حركات ===== */
         @keyframes vibrantFloat {
-            0% {
-                transform: translate(0, 0) scale(1) rotate(0deg);
-                opacity: 0.08;
-            }
-            25% {
-                transform: translate(40px, -30px) scale(1.15) rotate(45deg);
-                opacity: 0.15;
-            }
-            50% {
-                transform: translate(-25px, 25px) scale(0.85) rotate(90deg);
-                opacity: 0.08;
-            }
-            75% {
-                transform: translate(20px, -15px) scale(1.08) rotate(135deg);
-                opacity: 0.12;
-            }
-            100% {
-                transform: translate(0, 0) scale(1) rotate(180deg);
-                opacity: 0.08;
-            }
+            0% { transform: translate(0, 0) scale(1) rotate(0deg); opacity: 0.08; }
+            25% { transform: translate(40px, -30px) scale(1.15) rotate(45deg); opacity: 0.15; }
+            50% { transform: translate(-25px, 25px) scale(0.85) rotate(90deg); opacity: 0.08; }
+            75% { transform: translate(20px, -15px) scale(1.08) rotate(135deg); opacity: 0.12; }
+            100% { transform: translate(0, 0) scale(1) rotate(180deg); opacity: 0.08; }
         }
 
         @keyframes sparkleFloat {
-            0%, 100% {
-                transform: translate(0, 0) scale(1);
-                opacity: 0.3;
-            }
-            25% {
-                transform: translate(30px, -25px) scale(1.8);
-                opacity: 1;
-            }
-            50% {
-                transform: translate(-20px, 20px) scale(0.5);
-                opacity: 0.2;
-            }
-            75% {
-                transform: translate(15px, -10px) scale(1.5);
-                opacity: 0.8;
-            }
-        }
-
-        @keyframes glowFloat {
-            0% {
-                transform: translate(0, 0) scale(1);
-                opacity: 0.05;
-            }
-            50% {
-                transform: translate(30px, -30px) scale(1.3);
-                opacity: 0.12;
-            }
-            100% {
-                transform: translate(-20px, 20px) scale(0.8);
-                opacity: 0.05;
-            }
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.3; }
+            25% { transform: translate(30px, -25px) scale(1.8); opacity: 1; }
+            50% { transform: translate(-20px, 20px) scale(0.5); opacity: 0.2; }
+            75% { transform: translate(15px, -10px) scale(1.5); opacity: 0.8; }
         }
 
         /* ==========================================
-           CONTAINER - شفاف مع خلفية زاهية
+           REGISTER CONTAINER
            ========================================== */
-        .login-container {
+        .register-container {
             background: rgba(255, 255, 255, 0.25);
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
             border-radius: 32px;
             padding: 50px 45px;
-            max-width: 440px;
+            max-width: 520px;
             width: 100%;
             border: 1px solid rgba(255, 255, 255, 0.4);
             box-shadow: 0 30px 80px rgba(0, 0, 0, 0.06), 
@@ -330,23 +177,17 @@
         }
 
         @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(30px) scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
+            from { opacity: 0; transform: translateY(30px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
         /* ===== HEADER ===== */
-        .login-header {
+        .register-header {
             text-align: center;
             margin-bottom: 34px;
         }
 
-        .login-header .logo-wrapper {
+        .register-header .logo-wrapper {
             width: 72px;
             height: 72px;
             background: rgba(255, 255, 255, 0.4);
@@ -363,15 +204,11 @@
         }
 
         @keyframes logoPulse {
-            0%, 100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.02);
-            }
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
         }
 
-        .login-header .logo-wrapper i {
+        .register-header .logo-wrapper i {
             font-size: 2.2rem;
             background: linear-gradient(135deg, #667eea, #764ba2);
             -webkit-background-clip: text;
@@ -379,7 +216,7 @@
             background-clip: text;
         }
 
-        .login-header h1 {
+        .register-header h1 {
             font-size: 2rem;
             font-weight: 800;
             color: #1a202c;
@@ -387,17 +224,12 @@
             letter-spacing: -0.5px;
         }
 
-        .login-header p {
+        .register-header p {
             color: rgba(26, 32, 44, 0.5);
             font-size: 0.95rem;
         }
 
-        /* ===== FORM ===== */
-        .login-form {
-            position: relative;
-        }
-
-        /* Role Selector */
+        /* ===== ROLE SELECTOR ===== */
         .role-selector {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -464,9 +296,9 @@
             display: none;
         }
 
-        /* Form Groups */
+        /* ===== FORM GROUPS ===== */
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
 
         .form-group label {
@@ -539,47 +371,40 @@
             background: rgba(255, 255, 255, 0.1);
         }
 
-        /* Form Options */
-        .form-options {
+        /* ===== TERMS ===== */
+        .terms-check {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 26px;
-            flex-wrap: wrap;
-            gap: 8px;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 24px;
         }
 
-        .form-options label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.85rem;
-            color: rgba(26, 32, 44, 0.5);
-            cursor: pointer;
-        }
-
-        .form-options label input[type="checkbox"] {
-            accent-color: #667eea;
+        .terms-check input[type="checkbox"] {
             width: 18px;
             height: 18px;
+            accent-color: #667eea;
+            margin-top: 2px;
             cursor: pointer;
         }
 
-        .form-options a {
-            color: #667eea;
-            text-decoration: none;
+        .terms-check label {
             font-size: 0.85rem;
-            font-weight: 600;
-            transition: 0.3s;
+            color: rgba(26, 32, 44, 0.5);
+            line-height: 1.5;
         }
 
-        .form-options a:hover {
-            color: #5a67d8;
+        .terms-check label a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .terms-check label a:hover {
             text-decoration: underline;
         }
 
-        /* Login Button */
-        .btn-login {
+        /* ===== REGISTER BUTTON ===== */
+        .btn-register {
             width: 100%;
             padding: 18px;
             background: linear-gradient(135deg, #667eea, #764ba2);
@@ -600,16 +425,16 @@
             overflow: hidden;
         }
 
-        .btn-login:hover {
+        .btn-register:hover {
             transform: translateY(-3px);
             box-shadow: 0 12px 40px rgba(102, 126, 234, 0.2);
         }
 
-        .btn-login:active {
+        .btn-register:active {
             transform: scale(0.98);
         }
 
-        .btn-login::after {
+        .btn-register::after {
             content: '';
             position: absolute;
             top: -50%;
@@ -627,15 +452,11 @@
         }
 
         @keyframes shimmerBtn {
-            0% {
-                transform: translateX(-100%) rotate(45deg);
-            }
-            100% {
-                transform: translateX(100%) rotate(45deg);
-            }
+            0% { transform: translateX(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) rotate(45deg); }
         }
 
-        /* Divider */
+        /* ===== DIVIDER ===== */
         .divider {
             display: flex;
             align-items: center;
@@ -658,7 +479,7 @@
             white-space: nowrap;
         }
 
-        /* Social Login */
+        /* ===== SOCIAL LOGIN ===== */
         .social-login {
             display: flex;
             gap: 14px;
@@ -689,30 +510,30 @@
             background: rgba(255, 255, 255, 0.3);
         }
 
-        /* Footer */
-        .login-footer {
+        /* ===== FOOTER ===== */
+        .register-footer {
             text-align: center;
             margin-top: 26px;
         }
 
-        .login-footer p {
+        .register-footer p {
             color: rgba(26, 32, 44, 0.35);
             font-size: 0.9rem;
         }
 
-        .login-footer a {
+        .register-footer a {
             color: #667eea;
             text-decoration: none;
             font-weight: 700;
             transition: 0.3s;
         }
 
-        .login-footer a:hover {
+        .register-footer a:hover {
             color: #5a67d8;
             text-decoration: underline;
         }
 
-        /* Error Message */
+        /* ===== ERROR MESSAGE ===== */
         .error-message {
             background: rgba(229, 62, 62, 0.06);
             color: #e53e3e;
@@ -733,33 +554,54 @@
         }
 
         @keyframes shake {
-            0%, 100% {
-                transform: translateX(0);
-            }
-            25% {
-                transform: translateX(-8px);
-            }
-            75% {
-                transform: translateX(8px);
-            }
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
         }
 
-        /* ==========================================
-           RESPONSIVE
-           ========================================== */
+        /* ===== PROVIDER NOTE ===== */
+        .provider-note {
+            background: rgba(102, 126, 234, 0.08);
+            border: 1px solid rgba(102, 126, 234, 0.15);
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 20px;
+            display: none;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .provider-note.show {
+            display: flex;
+        }
+
+        .provider-note i {
+            color: #667eea;
+            font-size: 1.1rem;
+            margin-top: 2px;
+        }
+
+        .provider-note p {
+            font-size: 0.85rem;
+            color: rgba(26, 32, 44, 0.6);
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        /* ===== RESPONSIVE ===== */
         @media (max-width: 480px) {
-            .login-container {
+            .register-container {
                 padding: 32px 24px;
                 border-radius: 24px;
             }
-            .login-header h1 {
+            .register-header h1 {
                 font-size: 1.6rem;
             }
-            .login-header .logo-wrapper {
+            .register-header .logo-wrapper {
                 width: 60px;
                 height: 60px;
             }
-            .login-header .logo-wrapper i {
+            .register-header .logo-wrapper i {
                 font-size: 1.8rem;
             }
             .role-selector {
@@ -772,60 +614,42 @@
             .role-option i {
                 font-size: 1.6rem;
             }
-            .form-options {
-                flex-direction: column;
-                align-items: flex-start;
-            }
         }
     </style>
 </head>
 <body>
 
-    <!-- ===== خلفية زاهية ===== -->
+    <!-- ===== VIBRANT BACKGROUND ===== -->
     <div class="vibrant-bg">
-        <!-- دوائر كبيرة -->
         <div class="circle"></div>
         <div class="circle"></div>
         <div class="circle"></div>
         <div class="circle"></div>
-        <div class="circle"></div>
-        <div class="circle"></div>
-
-        <!-- جسيمات متلألئة -->
         <div class="sparkle"></div>
         <div class="sparkle"></div>
         <div class="sparkle"></div>
         <div class="sparkle"></div>
-        <div class="sparkle"></div>
-        <div class="sparkle"></div>
-        <div class="sparkle"></div>
-        <div class="sparkle"></div>
-
-        <!-- بقع ضوئية -->
-        <div class="glow"></div>
-        <div class="glow"></div>
-        <div class="glow"></div>
     </div>
 
-    <!-- ===== CONTAINER ===== -->
-    <div class="login-container">
+    <!-- ===== REGISTER CONTAINER ===== -->
+    <div class="register-container">
 
         <!-- Header -->
-        <div class="login-header">
+        <div class="register-header">
             <div class="logo-wrapper">
                 <i class="fas fa-wrench"></i>
             </div>
-            <h1>Welcome Back</h1>
-            <p>Sign in to manage your repairs</p>
+            <h1>Create Account</h1>
+            <p>Join Fixora and get things fixed</p>
         </div>
 
-        <!-- Login Form -->
-        <form class="login-form" id="loginForm" onsubmit="handleLogin(event)">
+        <!-- Register Form -->
+        <form class="register-form" id="registerForm" onsubmit="handleRegister(event)">
 
             <!-- Error Message -->
             <div class="error-message" id="errorMessage">
                 <i class="fas fa-circle-exclamation"></i>
-                <span id="errorText">Invalid email or password</span>
+                <span id="errorText">Something went wrong</span>
             </div>
 
             <!-- Role Selector -->
@@ -840,8 +664,23 @@
                     <input type="radio" name="role" value="provider" />
                     <i class="fas fa-user-tie"></i>
                     <span class="role-title">Provider</span>
-                    <span class="role-desc">Manage Repairs</span>
+                    <span class="role-desc">Offer Services</span>
                 </label>
+            </div>
+
+            <!-- Provider Note -->
+            <div class="provider-note" id="providerNote">
+                <i class="fas fa-info-circle"></i>
+                <p>As a provider, you'll need to complete your profile and upload verification documents after registration.</p>
+            </div>
+
+            <!-- Full Name -->
+            <div class="form-group">
+                <label for="fullName">Full Name</label>
+                <div class="input-wrapper">
+                    <input type="text" id="fullName" placeholder="John Doe" required />
+                    <i class="fas fa-user input-icon"></i>
+                </div>
             </div>
 
             <!-- Email -->
@@ -853,11 +692,20 @@
                 </div>
             </div>
 
+            <!-- Phone -->
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <div class="input-wrapper">
+                    <input type="tel" id="phone" placeholder="+966 50 123 4567" required />
+                    <i class="fas fa-phone input-icon"></i>
+                </div>
+            </div>
+
             <!-- Password -->
             <div class="form-group">
                 <label for="password">Password</label>
                 <div class="input-wrapper">
-                    <input type="password" id="password" placeholder="••••••••" required />
+                    <input type="password" id="password" placeholder="••••••••" required minlength="8" />
                     <i class="fas fa-lock input-icon"></i>
                     <button type="button" class="password-toggle" id="togglePassword">
                         <i class="fas fa-eye"></i>
@@ -865,23 +713,31 @@
                 </div>
             </div>
 
-            <!-- Options -->
-            <div class="form-options">
-                <label>
-                    <input type="checkbox" id="rememberMe" checked />
-                    Remember me
-                </label>
-                <a href="#">Forgot password?</a>
+            <!-- Confirm Password -->
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <div class="input-wrapper">
+                    <input type="password" id="confirmPassword" placeholder="••••••••" required />
+                    <i class="fas fa-lock input-icon"></i>
+                </div>
             </div>
 
-            <!-- Login Button -->
-            <button type="submit" class="btn-login">
-                <i class="fas fa-arrow-right-to-bracket"></i> Sign In
+            <!-- Terms -->
+            <div class="terms-check">
+                <input type="checkbox" id="agreeTerms" required />
+                <label for="agreeTerms">
+                    I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+                </label>
+            </div>
+
+            <!-- Register Button -->
+            <button type="submit" class="btn-register">
+                <i class="fas fa-user-plus"></i> Create Account
             </button>
 
             <!-- Divider -->
             <div class="divider">
-                <span>or continue with</span>
+                <span>or sign up with</span>
             </div>
 
             <!-- Social Login -->
@@ -893,28 +749,32 @@
         </form>
 
         <!-- Footer -->
-        <div class="login-footer">
-            <p>Don't have an account? <a href="register.html">Sign Up</a></p>
+        <div class="register-footer">
+            <p>Already have an account? <a href="login.html">Sign In</a></p>
         </div>
 
     </div>
+
     <script>
         // ==========================================
         // ROLE SELECTOR
         // ==========================================
         const customerRole = document.getElementById('customerRole');
         const providerRole = document.getElementById('providerRole');
+        const providerNote = document.getElementById('providerNote');
 
         customerRole.addEventListener('click', function() {
             this.classList.add('active');
             providerRole.classList.remove('active');
             document.querySelector('input[name="role"][value="customer"]').checked = true;
+            providerNote.classList.remove('show');
         });
 
         providerRole.addEventListener('click', function() {
             this.classList.add('active');
             customerRole.classList.remove('active');
             document.querySelector('input[name="role"][value="provider"]').checked = true;
+            providerNote.classList.add('show');
         });
 
         // ==========================================
@@ -932,72 +792,71 @@
         });
 
         // ==========================================
-        // HANDLE LOGIN
+        // HANDLE REGISTER
         // ==========================================
-        function handleLogin(event) {
+        function handleRegister(event) {
             event.preventDefault();
 
-            const email = document.getElementById('email').value;
+            const fullName = document.getElementById('fullName').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const phone = document.getElementById('phone').value.trim();
             const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
             const errorMessage = document.getElementById('errorMessage');
             const errorText = document.getElementById('errorText');
-            const rememberMe = document.getElementById('rememberMe').checked;
-
             const role = document.querySelector('input[name="role"]:checked').value;
 
-            if (email === '' || password === '') {
+            // Validation
+            if (fullName === '' || email === '' || phone === '' || password === '') {
                 errorText.textContent = 'Please fill in all fields';
                 errorMessage.classList.add('show');
                 return;
             }
 
-            const validCustomer = email === 'demo@fixora.com' && password === 'password123';
-            const validProvider = email === 'provider@fixora.com' && password === 'provider123';
-
-            if (validCustomer || validProvider) {
-                errorMessage.classList.remove('show');
-
-                localStorage.setItem('isLoggedIn', 'true');
-                localStorage.setItem('userRole', role);
-                localStorage.setItem('userEmail', email);
-
-                if (rememberMe) {
-                    localStorage.setItem('rememberMe', 'true');
-                }
-
-                if (role === 'customer') {
-                    window.location.href = 'customer-dashboard.html';
-                } else if (role === 'provider') {
-                    window.location.href = 'provider-dashboard.html';
-                }
-            } else {
-                errorText.textContent = 'Invalid credentials. Try: demo@fixora.com / password123 or provider@fixora.com / provider123';
+            if (password.length < 8) {
+                errorText.textContent = 'Password must be at least 8 characters';
                 errorMessage.classList.add('show');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                errorText.textContent = 'Passwords do not match';
+                errorMessage.classList.add('show');
+                return;
+            }
+
+            // Simulate registration success
+            errorMessage.classList.remove('show');
+
+            // Store user data
+            localStorage.setItem('isLoggedIn', 'true');
+            localStorage.setItem('userRole', role);
+            localStorage.setItem('userEmail', email);
+            localStorage.setItem('userName', fullName);
+            localStorage.setItem('userPhone', phone);
+            localStorage.setItem('isVerified', 'false'); // Provider needs verification
+
+            // Show success and redirect
+            alert('✅ Account created successfully!');
+
+            if (role === 'customer') {
+                window.location.href = 'customer-dashboard.html';
+            } else if (role === 'provider') {
+                // Provider goes to verification page first
+                window.location.href = 'provider-verification.html';
             }
         }
 
         // ==========================================
         // REAL-TIME VALIDATION
         // ==========================================
-        document.querySelectorAll('#loginForm input').forEach(input => {
+        document.querySelectorAll('#registerForm input').forEach(input => {
             input.addEventListener('input', () => {
                 document.getElementById('errorMessage').classList.remove('show');
             });
         });
-
-        // ==========================================
-        // AUTO-FILL REMEMBERED EMAIL
-        // ==========================================
-        window.addEventListener('DOMContentLoaded', function() {
-            if (localStorage.getItem('rememberMe') === 'true') {
-                const email = localStorage.getItem('userEmail');
-                if (email) {
-                    document.getElementById('email').value = email;
-                    document.getElementById('rememberMe').checked = true;
-                }
-            }
-        });
     </script>
+    <script src="../js/chatbot.js"></script>
 
 </body>
 </html>

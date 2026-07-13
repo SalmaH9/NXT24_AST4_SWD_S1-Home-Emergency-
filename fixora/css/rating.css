@@ -1,0 +1,529 @@
+/* ==========================================
+   RATING.CSS - Rating & Review Page Styles
+   ========================================== */
+
+.rating-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* ===== Header ===== */
+.rating-header {
+    margin-bottom: 28px;
+}
+
+.rating-header .page-title {
+    margin-bottom: 4px;
+}
+
+.rating-header .page-subtitle {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+}
+
+/* ===== Order Info Card ===== */
+.order-info-card {
+    background: var(--bg-card);
+    border-radius: var(--radius-sm);
+    padding: 20px 24px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    margin-bottom: 24px;
+}
+
+.order-info-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.order-info-header .order-id {
+    font-weight: 700;
+    color: var(--text-primary);
+    font-size: 1.05rem;
+}
+
+.order-info-header .order-id i {
+    color: var(--accent);
+}
+
+.order-info-header .order-status {
+    padding: 4px 16px;
+    border-radius: 60px;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.order-info-header .order-status.completed {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.order-info-body {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.order-info-body span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.order-info-body span i {
+    color: var(--accent);
+}
+
+/* ===== Rating Card ===== */
+.rating-card {
+    background: var(--bg-card);
+    border-radius: var(--radius-sm);
+    padding: 28px 32px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    margin-bottom: 24px;
+}
+
+.rating-card h3 {
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.rating-card h3 i {
+    color: var(--accent);
+}
+
+.rating-card .subtitle {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin-bottom: 20px;
+}
+
+.rating-card .subtitle span {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* ===== Star Rating ===== */
+.star-rating {
+    margin-bottom: 24px;
+}
+
+.star-rating .rating-label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.stars {
+    display: flex;
+    gap: 8px;
+    font-size: 2.2rem;
+    cursor: pointer;
+}
+
+.stars i {
+    transition: all 0.2s ease;
+    color: #d1d5db;
+}
+
+.stars i:hover {
+    transform: scale(1.15);
+}
+
+.stars i.active {
+    color: #f6ad55;
+}
+
+.stars i.active:hover {
+    transform: scale(1.1);
+}
+
+.rating-text {
+    display: block;
+    margin-top: 8px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.rating-text.high {
+    color: #48bb78;
+}
+.rating-text.medium {
+    color: #f6ad55;
+}
+.rating-text.low {
+    color: #ef4444;
+}
+
+/* ===== Rating Categories ===== */
+.rating-categories {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding: 16px;
+    background: var(--bg-primary);
+    border-radius: 12px;
+}
+
+.category-item label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+}
+
+.category-stars {
+    display: flex;
+    gap: 4px;
+    font-size: 1.3rem;
+    cursor: pointer;
+}
+
+.category-stars i {
+    transition: all 0.2s ease;
+    color: #d1d5db;
+}
+
+.category-stars i:hover {
+    transform: scale(1.15);
+}
+
+.category-stars i.active {
+    color: #f6ad55;
+}
+
+/* ===== Review Text ===== */
+.review-text-area {
+    margin-bottom: 20px;
+}
+
+.review-text-area label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+}
+
+.review-text-area textarea {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    font-size: 0.95rem;
+    font-family: 'Inter', sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    transition: var(--transition);
+    outline: none;
+    resize: vertical;
+    min-height: 100px;
+}
+
+.review-text-area textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.12);
+}
+
+.review-text-area .hint {
+    font-size: 0.8rem;
+    color: var(--text-light);
+    margin-top: 4px;
+}
+
+/* ===== Photos ===== */
+.review-photos {
+    margin-bottom: 0;
+}
+
+.review-photos label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+}
+
+.photo-upload {
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    padding: 24px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--transition);
+    background: var(--bg-primary);
+    position: relative;
+    overflow: hidden;
+}
+
+.photo-upload:hover {
+    border-color: var(--accent);
+    background: rgba(102, 126, 234, 0.03);
+}
+
+.photo-upload input[type="file"] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.photo-upload i {
+    font-size: 2rem;
+    color: var(--accent);
+    margin-bottom: 8px;
+}
+
+.photo-upload p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.photo-upload .file-types {
+    font-size: 0.75rem;
+    color: var(--text-light);
+    display: block;
+    margin-top: 4px;
+}
+
+.photo-preview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.photo-preview-item {
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    aspect-ratio: 1;
+    border: 2px solid var(--border);
+}
+
+.photo-preview-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.photo-preview-item .remove-photo {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(239, 68, 68, 0.9);
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    transition: 0.3s;
+}
+
+.photo-preview-item .remove-photo:hover {
+    transform: scale(1.1);
+    background: #ef4444;
+}
+
+/* ===== Actions ===== */
+.rating-actions {
+    display: flex;
+    gap: 16px;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    margin-top: 8px;
+}
+
+.btn-skip {
+    padding: 14px 32px;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 1rem;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    transition: var(--transition);
+    background: transparent;
+    color: var(--text-secondary);
+    border: 2px solid var(--border);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-skip:hover {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+.btn-submit-rating {
+    padding: 14px 32px;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 1rem;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    transition: var(--transition);
+    background: var(--gradient-primary);
+    color: white;
+    border: none;
+    box-shadow: 0 8px 30px rgba(102, 126, 234, 0.35);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-submit-rating:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(102, 126, 234, 0.5);
+}
+
+.btn-submit-rating:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* ===== Success State ===== */
+.rating-success {
+    text-align: center;
+    padding: 60px 20px;
+    animation: fadeInUp 0.6s ease;
+}
+
+.rating-success .success-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #48bb78, #38a169);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    font-size: 2.5rem;
+    color: white;
+    box-shadow: 0 12px 40px rgba(72, 187, 120, 0.35);
+    animation: scaleIn 0.5s ease 0.2s both;
+}
+
+@keyframes scaleIn {
+    from { transform: scale(0); }
+    to { transform: scale(1); }
+}
+
+.rating-success h2 {
+    color: var(--text-primary);
+    font-size: 1.8rem;
+    margin-bottom: 8px;
+}
+
+.rating-success p {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    max-width: 400px;
+    margin: 0 auto 24px;
+    line-height: 1.7;
+}
+
+.rating-success .success-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.rating-success .success-actions .btn-primary,
+.rating-success .success-actions .btn-secondary {
+    padding: 12px 28px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.rating-success .success-actions .btn-primary {
+    background: var(--gradient-primary);
+    color: white;
+}
+
+.rating-success .success-actions .btn-secondary {
+    background: transparent;
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+}
+
+.rating-success .success-actions .btn-secondary:hover {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+}
+
+/* ===== Animations ===== */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+    .rating-categories {
+        grid-template-columns: 1fr;
+    }
+    .rating-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .btn-skip,
+    .btn-submit-rating {
+        justify-content: center;
+    }
+    .rating-card {
+        padding: 20px;
+    }
+    .stars {
+        font-size: 1.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .rating-container {
+        padding: 12px;
+    }
+    .order-info-body {
+        flex-direction: column;
+        gap: 6px;
+    }
+    .stars {
+        font-size: 1.5rem;
+    }
+    .category-stars {
+        font-size: 1.1rem;
+    }
+}

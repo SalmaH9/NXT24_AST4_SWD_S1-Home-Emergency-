@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Select Technician - Fixora</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/select-technician.css?v=2" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+<base target="_blank">
+</head>
+<body>
+    <!-- Mobile Toggle -->
+    <button class="sidebar-toggle" id="sidebar-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <div class="page-wrapper">
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-wrench"></i>
+                    <span>Fix<span class="logo-highlight">ora</span></span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="services.html"><i class="fas fa-tools"></i> Services</a></li>
+                    <li><a href="post-request.html"><i class="fas fa-plus-circle"></i> Post Request</a></li>
+                    <li><a href="select-technician.html" class="active"><i class="fas fa-handshake"></i> Offers</a></li>
+                    <li><a href="customer-dashboard.html"><i class="fas fa-gauge-high"></i> Dashboard</a></li>
+                    <li><a href="my-orders.html"><i class="fas fa-list-check"></i> My Orders</a></li>
+                    <li><a href="customer-profile.html"><i class="fas fa-user"></i> Profile</a></li>
+                    <li><a href="about.html"><i class="fas fa-circle-info"></i> About</a></li>
+                    <li><a href="contact.html"><i class="fas fa-envelope"></i> Contact</a></li>
+                    <li id="authLink"><a href="login.html" onclick="handleLogout(event)"><i class="fas fa-right-from-bracket"></i> Logout</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <button id="theme-toggle" class="theme-btn-sidebar">
+                    <i class="fas fa-moon"></i> Dark Mode
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN -->
+        <div class="main-area">
+
+    <!-- ===== MAIN ===== -->
+    <main class="main-content">
+        <div class="select-container">
+
+            <!-- Request Summary Banner -->
+            <div class="request-summary" id="requestSummary">
+                <div class="summary-header">
+                    <div class="summary-badge" id="summaryCategory">
+                        <i class="fas fa-faucet"></i> Plumbing
+                    </div>
+                    <div class="summary-urgency" id="summaryUrgency">
+                        <i class="fas fa-fire"></i> Urgent
+                    </div>
+                </div>
+                <p class="summary-desc" id="summaryDesc">Kitchen sink leaking from pipe under counter...</p>
+                <div class="summary-meta">
+                    <span><i class="fas fa-location-dot"></i> <span id="summaryLocation">Cairo</span></span>
+                    <span><i class="fas fa-users"></i> <span id="summaryTechs">1</span> technician needed</span>
+                    <span><i class="fas fa-clock"></i> Posted <span id="summaryTime">just now</span></span>
+                </div>
+            </div>
+
+            <h1 class="page-title">
+                <i class="fas fa-handshake"></i> Technician Offers
+            </h1>
+            <p class="page-subtitle">Compare bids and select the best technician for your job</p>
+
+            <!-- Filters -->
+            <div class="filter-bar">
+                <div class="filter-group">
+                    <label>Sort by:</label>
+                    <select id="sortBy" onchange="sortBids()">
+                        <option value="price-low">Price: Low to High</option>
+                        <option value="price-high">Price: High to Low</option>
+                        <option value="rating">Highest Rated</option>
+                        <option value="experience">Most Experienced</option>
+                        <option value="nearest">Nearest First</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Max Price:</label>
+                    <input type="range" id="priceRange" min="50" max="2000" value="2000" oninput="filterByPrice(this.value)" />
+                    <span id="priceLabel">2000 EGP</span>
+                </div>
+                <div class="filter-tags" id="filterTags">
+                    <button class="filter-tag active" onclick="filterByCategory('all')">All</button>
+                    <button class="filter-tag" onclick="filterByCategory('top-rated')">Top Rated</button>
+                    <button class="filter-tag" onclick="filterByCategory('verified')">Verified</button>
+                    <button class="filter-tag" onclick="filterByCategory('available-now')">Available Now</button>
+                </div>
+            </div>
+
+            <!-- Bids Count -->
+            <div class="bids-header">
+                <h3><i class="fas fa-gavel"></i> <span id="bidsCount">0</span> Offers Received</h3>
+                <button class="btn-reopen" id="reopenBtn" onclick="reopenRequest()" style="display:none;">
+                    <i class="fas fa-rotate-right"></i> Re-open Request
+                </button>
+            </div>
+
+            <!-- Technician Bids Grid -->
+            <div class="bids-grid" id="bidsGrid">
+                <!-- Bids injected by JS -->
+            </div>
+
+            <!-- Empty State -->
+            <div class="empty-state" id="emptyState" style="display:none;">
+                <i class="fas fa-inbox"></i>
+                <h3>No Offers Yet</h3>
+                <p>Technicians are reviewing your request. Check back soon!</p>
+            </div>
+
+            <!-- Selected Technicians Panel -->
+            <div class="selected-panel" id="selectedPanel" style="display:none;">
+                <div class="selected-header">
+                    <h4><i class="fas fa-check-circle"></i> Selected Technicians (<span id="selectedCount">0</span>)</h4>
+                    <span class="selected-total" id="selectedTotal">0 EGP</span>
+                </div>
+                <div class="selected-list" id="selectedList"></div>
+                <button class="btn-confirm" onclick="confirmSelection()">
+                    <i class="fas fa-check"></i> Confirm Selection
+                </button>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- ===== MODAL: TECHNICIAN PROFILE ===== -->
+    <div class="modal-overlay" id="techModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
+            <div class="modal-header">
+                <div class="modal-avatar" id="modalAvatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="modal-info">
+                    <h3 id="modalName">Technician Name</h3>
+                    <div class="modal-rating" id="modalRating">
+                        <i class="fas fa-star"></i> 4.9 (120 reviews)
+                    </div>
+                    <div class="modal-badges" id="modalBadges">
+                        <span class="badge verified"><i class="fas fa-shield-check"></i> Verified</span>
+                        <span class="badge pro"><i class="fas fa-crown"></i> Pro</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="modal-section">
+                    <h4><i class="fas fa-user"></i> About</h4>
+                    <p id="modalBio">Experienced plumber with 10+ years in residential and commercial plumbing.</p>
+                </div>
+                <div class="modal-section">
+                    <h4><i class="fas fa-tools"></i> Specialties</h4>
+                    <div class="modal-tags" id="modalTags"></div>
+                </div>
+                <div class="modal-section">
+                    <h4><i class="fas fa-clock"></i> Availability</h4>
+                    <p id="modalAvailability">Available today after 2PM</p>
+                </div>
+                <div class="modal-section">
+                    <h4><i class="fas fa-chart-line"></i> Stats</h4>
+                    <div class="modal-stats">
+                        <div class="modal-stat">
+                            <span class="stat-num" id="modalJobs">450</span>
+                            <span class="stat-label">Jobs Done</span>
+                        </div>
+                        <div class="modal-stat">
+                            <span class="stat-num" id="modalExp">10+</span>
+                            <span class="stat-label">Years Exp</span>
+                        </div>
+                        <div class="modal-stat">
+                            <span class="stat-num" id="modalResponse">15m</span>
+                            <span class="stat-label">Avg Response</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-section">
+                    <h4><i class="fas fa-comments"></i> Recent Reviews</h4>
+                    <div class="modal-reviews" id="modalReviews"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="modal-price" id="modalPrice">150 EGP</div>
+                <button class="btn-select-modal" id="modalSelectBtn" onclick="selectFromModal()">
+                    <i class="fas fa-check"></i> Select This Technician
+                </button>
+            </div>
+        </div>
+    </div>
+
+            <footer class="footer">
+                <p>© 2026 <strong>Fixora</strong> — Professional Home Repair Services</p>
+                <p class="footer-update">Last updated: <span id="footer-date"></span></p>
+            </footer>
+        </div>
+    </div>
+    <script src="../js/script.js"></script>
+    <script src="../js/select-technician.js?v=2"></script>
+    <script src="../js/chatbot.js"></script>
+</body>
+</html>

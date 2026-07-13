@@ -58,7 +58,7 @@ function setupScrollToTop() {
     scrollBtn.id = 'scrollToTop';
     scrollBtn.style.cssText = `
         position: fixed;
-        bottom: 30px;
+        bottom: 100px;
         right: 30px;
         width: 50px;
         height: 50px;
@@ -121,13 +121,28 @@ function setupFooterTracking() {
             const href = this.getAttribute('href');
             const text = this.textContent.trim() || 'link';
             console.log(`🔗 Footer link clicked: "${text}" → ${href}`);
-            // هنا تقدر تضيف كود تحليلات (مثل Google Analytics)
         });
     });
 }
 
 // ==========================================
-// 7. تهيئة الفوتر بالكامل
+// 7. 🆕 تحميل Chatbot (Floating)
+// ==========================================
+function loadChatbot() {
+    // تجنب تحميله مرتين
+    if (document.getElementById('floatingChatbot')) return;
+    if (document.getElementById('chatbotFloatingStyles')) return;
+
+    const script = document.createElement('script');
+    script.src = '../js/chatbot.js';
+    script.id = 'chatbotScript';
+    document.body.appendChild(script);
+    
+    console.log('🤖 Chatbot loaded successfully!');
+}
+
+// ==========================================
+// 8. تهيئة الفوتر بالكامل
 // ==========================================
 function initFooter() {
     // تحديث التاريخ
@@ -148,11 +163,14 @@ function initFooter() {
     // إعداد تتبع الروابط
     setupFooterTracking();
     
+    // 🆕 تحميل Chatbot
+    loadChatbot();
+    
     console.log('✅ Footer initialized successfully!');
 }
 
 // ==========================================
-// 8. تشغيل الكود عند تحميل الصفحة
+// 9. تشغيل الكود عند تحميل الصفحة
 // ==========================================
 document.addEventListener('DOMContentLoaded', function() {
     initFooter();

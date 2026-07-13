@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Examination Report - Fixora</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/examination.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+</head>
+<body>
+
+    <!-- Mobile Toggle -->
+    <button class="sidebar-toggle" id="sidebar-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <div class="page-wrapper">
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-wrench"></i>
+                    <span>Fix<span class="logo-highlight">ora</span></span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <!-- الروابط يتم إضافتها ديناميكياً بواسطة JavaScript -->
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <button id="theme-toggle" class="theme-btn-sidebar">
+                    <i class="fas fa-moon"></i> Dark Mode
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN -->
+        <div class="main-area">
+
+            <main class="main-content">
+                <div class="exam-container">
+
+                    <!-- Request Info Banner -->
+                    <div class="request-banner" id="requestBanner">
+                        <div class="banner-main">
+                            <div class="banner-id">
+                                <i class="fas fa-clipboard-list"></i>
+                                <span id="reqId">#REQ-001</span>
+                            </div>
+                            <div class="banner-status" id="reqStatus">
+                                <i class="fas fa-clock"></i> Awaiting Examination
+                            </div>
+                        </div>
+                        <div class="banner-details">
+                            <span><i class="fas fa-tag"></i> <span id="reqCategory">Plumbing</span></span>
+                            <span><i class="fas fa-location-dot"></i> <span id="reqLocation">Cairo</span></span>
+                            <span><i class="fas fa-user"></i> <span id="reqCustomer">Customer</span></span>
+                        </div>
+                        <p class="banner-desc" id="reqDesc">Kitchen sink leaking from pipe under counter...</p>
+                    </div>
+
+                    <!-- ===== TECHNICIAN VIEW: Write Report ===== -->
+                    <div class="exam-view" id="techView" style="display:none;">
+                        <h2 class="page-title">
+                            <i class="fas fa-file-medical"></i> Write Examination Report
+                        </h2>
+
+                        <!-- Previous Examinations (for reference) -->
+                        <div class="prev-exams" id="prevExams" style="display:none;">
+                            <div class="prev-header">
+                                <h3><i class="fas fa-history"></i> Previous Examinations</h3>
+                                <span class="prev-count" id="prevCount">0 previous reports</span>
+                            </div>
+                            <div class="prev-list" id="prevList"></div>
+                        </div>
+
+                        <!-- New Report Form -->
+                        <div class="form-card">
+                            <h3><i class="fas fa-magnifying-glass"></i> Problem Diagnosis</h3>
+                            <p class="subtitle">What did you find during your inspection?</p>
+
+                            <div class="form-group">
+                                <label>Problem Diagnosis <span class="required">*</span></label>
+                                <textarea id="diagnosis" rows="4" placeholder="Describe the root cause of the problem... e.g., 'The PVC pipe under the sink has a crack approximately 2cm long, causing water leakage. The gasket is also worn out.'"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Suggested Solution <span class="required">*</span></label>
+                                <textarea id="solution" rows="4" placeholder="Describe the fix you recommend... e.g., 'Replace the cracked PVC pipe section and install a new rubber gasket. Estimated time: 1 hour.'"></textarea>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Initial Price Estimate (EGP) <span class="required">*</span></label>
+                                    <input type="number" id="initialPrice" placeholder="e.g. 250" min="10" />
+                                    <p class="hint">This is the estimated cost. Final price may change after execution.</p>
+                                </div>
+                                <div class="form-group">
+                                    <label>Estimated Time</label>
+                                    <select id="estTime">
+                                        <option value="">Select</option>
+                                        <option>Under 1 hour</option>
+                                        <option>1-2 hours</option>
+                                        <option>2-4 hours</option>
+                                        <option>Half day</option>
+                                        <option>Full day</option>
+                                        <option>Multiple days</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Materials Needed</label>
+                                <textarea id="materials" rows="3" placeholder="List any materials/parts needed... e.g., 'PVC pipe 1/2 inch, Rubber gasket, Pipe sealant'"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Upload Inspection Photos</label>
+                                <div class="media-upload" id="examMediaUpload">
+                                    <input type="file" id="examPhotos" multiple accept="image/*" onchange="handleExamPhotos(this)" />
+                                    <i class="fas fa-camera"></i>
+                                    <h4>Add Photos</h4>
+                                    <p>Document the problem for the customer</p>
+                                    <p class="file-types">JPG, PNG up to 5MB each</p>
+                                </div>
+                                <div class="media-preview-grid" id="examPhotoGrid"></div>
+                            </div>
+                        </div>
+
+                        <div class="step-nav">
+                            <button class="btn-step btn-prev" onclick="window.history.back()">
+                                <i class="fas fa-arrow-left"></i> Back
+                            </button>
+                            <button class="btn-step btn-submit" onclick="submitExamination()">
+                                <i class="fas fa-paper-plane"></i> Submit Report
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- ===== CUSTOMER VIEW: Review Report ===== -->
+                    <div class="exam-view" id="customerView" style="display:none;">
+                        <h2 class="page-title">
+                            <i class="fas fa-file-contract"></i> Examination Report
+                        </h2>
+
+                        <!-- Technician Info -->
+                        <div class="tech-info-card" id="techInfoCard">
+                            <div class="tech-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="tech-details">
+                                <h4 id="reportTechName">Technician Name</h4>
+                                <div class="tech-meta">
+                                    <span class="stars" id="reportTechRating">★★★★★ 4.9</span>
+                                    <span id="reportTechExp">10 years exp</span>
+                                </div>
+                            </div>
+                            <div class="report-date" id="reportDate">
+                                <i class="fas fa-calendar"></i> Today
+                            </div>
+                        </div>
+
+                        <!-- Report Content -->
+                        <div class="report-card">
+                            <div class="report-section">
+                                <h4><i class="fas fa-magnifying-glass"></i> Diagnosis</h4>
+                                <p id="reportDiagnosis">--</p>
+                            </div>
+
+                            <div class="report-section">
+                                <h4><i class="fas fa-lightbulb"></i> Suggested Solution</h4>
+                                <p id="reportSolution">--</p>
+                            </div>
+
+                            <div class="report-section">
+                                <h4><i class="fas fa-box-open"></i> Materials Needed</h4>
+                                <p id="reportMaterials">--</p>
+                            </div>
+
+                            <div class="report-section">
+                                <h4><i class="fas fa-images"></i> Inspection Photos</h4>
+                                <div class="report-photos" id="reportPhotos"></div>
+                            </div>
+
+                            <div class="report-price-box">
+                                <div class="price-row">
+                                    <span class="label">Estimated Time</span>
+                                    <span class="value" id="reportEstTime">--</span>
+                                </div>
+                                <div class="price-row total">
+                                    <span class="label">Initial Price Estimate</span>
+                                    <span class="value" id="reportPrice">-- EGP</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Decision Buttons -->
+                        <div class="decision-box" id="decisionBox">
+                            <h4><i class="fas fa-gavel"></i> Your Decision</h4>
+                            <p>Do you accept this examination and want to proceed with the service?</p>
+                            <div class="decision-actions">
+                                <button class="btn-reject" onclick="rejectExamination()">
+                                    <i class="fas fa-xmark"></i> Reject & Keep Open
+                                </button>
+                                <button class="btn-accept" onclick="acceptExamination()">
+                                    <i class="fas fa-check"></i> Accept & Proceed
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Rejection Note -->
+                        <div class="rejection-note" id="rejectionNote" style="display:none;">
+                            <i class="fas fa-circle-info"></i>
+                            <p><strong>Request remains open.</strong> Other technicians can still submit examinations. You can review new offers anytime.</p>
+                        </div>
+                    </div>
+
+                    <!-- ===== EXAMINATION HISTORY (for new technicians) ===== -->
+                    <div class="exam-view" id="historyView" style="display:none;">
+                        <h2 class="page-title">
+                            <i class="fas fa-book-open"></i> Examination History
+                        </h2>
+                        <p class="page-subtitle">Review previous examinations for this request</p>
+
+                        <div class="history-list" id="historyList"></div>
+
+                        <!-- Chat with previous technician -->
+                        <div class="chat-section" id="techChatSection">
+                            <h3><i class="fas fa-comments"></i> Chat with Previous Technician</h3>
+                            <div class="chat-box" id="techChatBox">
+                                <div class="chat-messages" id="techChatMessages"></div>
+                                <div class="chat-input">
+                                    <input type="text" id="techChatInput" placeholder="Ask about the previous examination..." />
+                                    <button onclick="sendTechChatMessage()"><i class="fas fa-paper-plane"></i></button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="step-nav">
+                            <button class="btn-step btn-prev" onclick="window.history.back()">
+                                <i class="fas fa-arrow-left"></i> Back
+                            </button>
+                            <button class="btn-step btn-next" onclick="showTechView()">
+                                <i class="fas fa-pen-to-square"></i> Write New Report
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- ===== ACCEPTED STATE ===== -->
+                    <div class="exam-view" id="acceptedView" style="display:none;">
+                        <div class="success-state">
+                            <div class="success-icon">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <h2>Examination Accepted!</h2>
+                            <p>The technician will now proceed with the service execution. You can track progress in real-time.</p>
+                            <div class="success-actions">
+                                <a href="execution.html" class="btn-step btn-next">
+                                    <i class="fas fa-location-dot"></i> Track Technician
+                                </a>
+                                <a href="customer-dashboard.html" class="btn-step btn-prev" style="text-decoration:none;">
+                                    <i class="fas fa-gauge-high"></i> Dashboard
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </main>
+
+            <footer class="footer">
+                <p>&copy; 2026 <strong>Fixora</strong> &mdash; Professional Home Repair Services</p>
+                <p class="footer-update">Last updated: <span id="footer-date"></span></p>
+            </footer>
+        </div>
+    </div>
+
+    <script src="../js/script.js"></script>
+    <script src="../js/examination.js"></script>
+    <script src="../js/chatbot.js"></script>
+
+</body>
+</html>

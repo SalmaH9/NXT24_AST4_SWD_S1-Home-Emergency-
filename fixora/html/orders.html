@@ -8,337 +8,285 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <style>
-        /* ===== STATUS BADGES ===== */
-        .status-badge {
-            padding: 4px 14px;
-            border-radius: 60px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            display: inline-block;
-        }
+        .status-badge { padding: 4px 14px; border-radius: 60px; font-size: 0.75rem; font-weight: 700; display: inline-block; }
         .status-pending { background: #fef3c7; color: #b45309; }
+        .status-selected { background: #dbeafe; color: #1e40af; }
+        .status-examined { background: #e0e7ff; color: #4338ca; }
         .status-progress { background: #dbeafe; color: #1e40af; }
-        .status-scheduled { background: #e0e7ff; color: #4338ca; }
+        .status-accepted { background: #d1fae5; color: #065f46; }
         .status-completed { background: #d1fae5; color: #065f46; }
         .status-cancelled { background: #fee2e2; color: #991b1b; }
-
-        .action-btn {
-            padding: 6px 16px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: var(--transition);
-            font-family: 'Inter', sans-serif;
-        }
+        .action-btn { padding: 6px 16px; border: none; border-radius: 8px; font-weight: 600; font-size: 0.8rem; cursor: pointer; transition: var(--transition); font-family: 'Inter', sans-serif; }
         .action-btn:hover { transform: scale(1.05); }
         .btn-accept { background: var(--accent); color: white; }
+        .btn-examine { background: #f6ad55; color: white; }
         .btn-complete { background: #48bb78; color: white; }
         .btn-start { background: var(--accent); color: white; }
-        .btn-cancel { background: #ef4444; color: white; }
         .btn-done { background: #9ca3af; color: white; cursor: default; }
-
-        .filter-bar {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin-bottom: 24px;
-        }
-        .filter-btn {
-            padding: 8px 20px;
-            border: 2px solid var(--border);
-            border-radius: 60px;
-            background: var(--bg-primary);
-            color: var(--text-secondary);
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.85rem;
-            transition: var(--transition);
-            font-family: 'Inter', sans-serif;
-        }
-        .filter-btn:hover,
-        .filter-btn.active {
-            border-color: var(--accent);
-            color: var(--accent);
-            background: rgba(102, 126, 234, 0.08);
-        }
-        .filter-btn.active {
-            background: var(--accent);
-            color: white;
-        }
-
-        .table-wrapper {
-            overflow-x: auto;
-        }
-        .orders-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .orders-table th {
-            text-align: left;
-            padding: 12px;
-            color: var(--text-secondary);
-            font-weight: 600;
-            font-size: 0.85rem;
-            border-bottom: 2px solid var(--border);
-        }
-        .orders-table td {
-            padding: 14px 12px;
-            color: var(--text-secondary);
-            border-bottom: 1px solid var(--border);
-        }
-        .orders-table tr:hover {
-            background: var(--bg-primary);
-        }
-        .orders-table .order-id {
-            color: var(--text-primary);
-            font-weight: 700;
-        }
-        .orders-table .customer-name {
-            color: var(--text-primary);
-            font-weight: 600;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: var(--text-light);
-        }
-        .empty-state i {
-            font-size: 3rem;
-            color: var(--border);
-            margin-bottom: 16px;
-        }
+        .filter-bar { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 24px; }
+        .filter-btn { padding: 8px 20px; border: 2px solid var(--border); border-radius: 60px; background: var(--bg-primary); color: var(--text-secondary); cursor: pointer; font-weight: 600; font-size: 0.85rem; transition: var(--transition); font-family: 'Inter', sans-serif; }
+        .filter-btn:hover, .filter-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(102, 126, 234, 0.08); }
+        .filter-btn.active { background: var(--accent); color: white; }
+        .table-wrapper { overflow-x: auto; }
+        .orders-table { width: 100%; border-collapse: collapse; }
+        .orders-table th { text-align: left; padding: 12px; color: var(--text-secondary); font-weight: 600; font-size: 0.85rem; border-bottom: 2px solid var(--border); }
+        .orders-table td { padding: 14px 12px; color: var(--text-secondary); border-bottom: 1px solid var(--border); }
+        .orders-table tr:hover { background: var(--bg-primary); }
+        .orders-table .order-id { color: var(--text-primary); font-weight: 700; }
+        .orders-table .customer-name { color: var(--text-primary); font-weight: 600; }
+        .empty-state { text-align: center; padding: 60px 20px; color: var(--text-light); }
+        .empty-state i { font-size: 3rem; color: var(--border); margin-bottom: 16px; }
     </style>
 </head>
 <body>
 
-    <!-- ===== NAVBAR ===== -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="logo">
-                <i class="fas fa-wrench"></i>
-                <span>Fix<span class="logo-highlight">ora</span></span>
+    <button class="sidebar-toggle" id="sidebar-toggle"><i class="fas fa-bars"></i></button>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <div class="page-wrapper">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-wrench"></i>
+                    <span>Fix<span class="logo-highlight">ora</span></span>
+                </div>
             </div>
-            <ul class="nav-links" id="navLinks">
-                <li><a href="provider-dashboard.html"><i class="fas fa-gauge-high"></i> Dashboard</a></li>
-                <li><a href="orders.html" class="active"><i class="fas fa-list-check"></i> Orders</a></li>
-                <li><a href="schedule.html"><i class="fas fa-calendar-days"></i> Schedule</a></li>
-                <li><a href="profile.html"><i class="fas fa-user-gear"></i> Profile</a></li>
-                <li id="authLink"><a href="login.html" onclick="handleLogout(event)"><i class="fas fa-right-from-bracket"></i> Logout</a></li>
-            </ul>
-            <div class="nav-actions">
-                <button id="theme-toggle" class="theme-btn">
-                    <i class="fas fa-moon"></i>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="provider-dashboard.html"><i class="fas fa-gauge-high"></i> Dashboard</a></li>
+                    <li><a href="orders.html" class="active"><i class="fas fa-list-check"></i> Orders</a></li>
+                    <li><a href="schedule.html"><i class="fas fa-calendar-days"></i> Schedule</a></li>
+                    <li><a href="examination.html"><i class="fas fa-file-medical"></i> Examination</a></li>
+                    <li><a href="profile.html"><i class="fas fa-user-gear"></i> Profile</a></li>
+                    <li style="margin-top: 16px; border-top: 1px solid var(--border); padding-top: 12px;">
+                        <a href="index.html" onclick="handleLogout(event)" style="color: #ef4444; font-weight: 600;">
+                            <i class="fas fa-sign-out-alt" style="margin-right: 10px;"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <button class="theme-btn-sidebar" id="theme-toggle-sidebar">
+                    <i class="fas fa-moon"></i> Dark Mode
                 </button>
-                <div class="hamburger" id="hamburger">
-                    <i class="fas fa-bars"></i>
+            </div>
+        </aside>
+
+        <div class="main-area">
+            <main class="main-content">
+                <div class="container">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 24px;">
+                        <h1 class="page-title" style="margin-bottom: 0;">
+                            <i class="fas fa-list-check"></i> Orders
+                        </h1>
+                        <span style="color: var(--text-secondary); font-weight: 500;">
+                            <i class="fas fa-clock"></i> Total: <span id="orderCount">0</span> orders
+                        </span>
+                    </div>
+
+                    <div class="filter-bar">
+                        <button class="filter-btn active" data-filter="all">All</button>
+                        <button class="filter-btn" data-filter="pending">Pending</button>
+                        <button class="filter-btn" data-filter="selected">Selected</button>
+                        <button class="filter-btn" data-filter="examined">Examined</button>
+                        <button class="filter-btn" data-filter="in-progress">In Progress</button>
+                        <button class="filter-btn" data-filter="completed">Completed</button>
+                    </div>
+
+                    <div style="background: var(--bg-card); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); border: 1px solid var(--border);">
+                        <div class="table-wrapper">
+                            <table class="orders-table" id="ordersTable">
+                                <thead>
+                                    <tr><th>Order ID</th><th>Customer</th><th>Service</th><th>Status</th><th>Date</th><th>Action</th></tr>
+                                </thead>
+                                <tbody id="ordersBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
-    </nav>
+            </main>
 
-    <!-- ===== MAIN ===== -->
-    <main class="main-content">
-        <div class="container">
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 24px;">
-                <h1 class="page-title" style="margin-bottom: 0;">
-                    <i class="fas fa-list-check"></i> Orders
-                </h1>
-                <span style="color: var(--text-secondary); font-weight: 500;">
-                    <i class="fas fa-clock"></i> Total: <span id="orderCount">0</span> orders
-                </span>
-            </div>
-
-            <!-- Filter Bar -->
-            <div class="filter-bar">
-                <button class="filter-btn active" data-filter="all">All</button>
-                <button class="filter-btn" data-filter="pending">Pending</button>
-                <button class="filter-btn" data-filter="in-progress">In Progress</button>
-                <button class="filter-btn" data-filter="scheduled">Scheduled</button>
-                <button class="filter-btn" data-filter="completed">Completed</button>
-            </div>
-
-            <!-- Orders Table -->
-            <div style="background: var(--bg-card); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); border: 1px solid var(--border);">
-                <div class="table-wrapper">
-                    <table class="orders-table" id="ordersTable">
-                        <thead>
-                            <tr>
-                                <th>Order ID</th>
-                                <th>Customer</th>
-                                <th>Service</th>
-                                <th>Status</th>
-                                <th>Date</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="ordersBody">
-                            <!-- Rows will be inserted by JavaScript -->
-                        </tbody>
-                    </table>
+            <footer class="footer">
+                <div class="footer-container">
+                    <div class="footer-grid">
+                        <div class="footer-col">
+                            <div class="footer-logo"><i class="fas fa-wrench"></i><span>Fix<span class="logo-highlight">ora</span></span></div>
+                            <p class="footer-desc">Connecting homeowners with trusted service providers.</p>
+                        </div>
+                        <div class="footer-col">
+                            <h4>Quick Links</h4>
+                            <ul>
+                                <li><a href="provider-dashboard.html">Dashboard</a></li>
+                                <li><a href="orders.html">Orders</a></li>
+                                <li><a href="schedule.html">Schedule</a></li>
+                            </ul>
+                        </div>
+                        <div class="footer-col">
+                            <h4>Contact</h4>
+                            <ul class="footer-contact">
+                                <li><i class="fas fa-phone"></i><a href="tel:+18001234567">+1 (800) 123-4567</a></li>
+                                <li><i class="fas fa-envelope"></i><a href="mailto:support@fixora.com">support@fixora.com</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="footer-bottom">
+                        <p>© 2026 <strong>Fixora</strong>. All rights reserved.</p>
+                        <div class="footer-bottom-links">
+                            <a href="#">Privacy Policy</a>
+                            <a href="#">Terms of Service</a>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            </footer>
         </div>
-    </main>
-
-    <!-- ===== FOOTER ===== -->
-    <footer class="footer">
-        <p>© 2026 <strong>Fixora</strong> — Professional Home Repair Services</p>
-        <p class="footer-update">Last updated: <span id="footer-date"></span></p>
-    </footer>
+    </div>
 
     <script src="../js/script.js"></script>
+    <script src="../js/footer.js"></script>
     <script>
-        // ===== ORDERS DATA =====
-        let orders = [
+        var orders = [
             { id: '#ORD-001', customer: 'Ahmed Al-Saud', service: 'Plumbing', status: 'pending', date: '2026-07-08' },
-            { id: '#ORD-002', customer: 'Fatima Al-Zahra', service: 'Electrical', status: 'in-progress', date: '2026-07-07' },
-            { id: '#ORD-003', customer: 'Mohammed Al-Otaibi', service: 'AC Repair', status: 'scheduled', date: '2026-07-09' },
+            { id: '#ORD-002', customer: 'Fatima Al-Zahra', service: 'Electrical', status: 'selected', date: '2026-07-07' },
+            { id: '#ORD-003', customer: 'Mohammed Al-Otaibi', service: 'AC Repair', status: 'examined', date: '2026-07-09' },
             { id: '#ORD-004', customer: 'Nora Al-Fahd', service: 'Carpentry', status: 'completed', date: '2026-07-06' },
-            { id: '#ORD-005', customer: 'Sultan Al-Ghamdi', service: 'Painting', status: 'pending', date: '2026-07-08' },
-            { id: '#ORD-006', customer: 'Maha Al-Saud', service: 'Plumbing', status: 'scheduled', date: '2026-07-10' },
+            { id: '#ORD-005', customer: 'Sultan Al-Ghamdi', service: 'Painting', status: 'in-progress', date: '2026-07-08' },
+            { id: '#ORD-006', customer: 'Maha Al-Saud', service: 'Plumbing', status: 'selected', date: '2026-07-10' },
             { id: '#ORD-007', customer: 'Faisal Al-Otaibi', service: 'Electrical', status: 'completed', date: '2026-07-05' },
             { id: '#ORD-008', customer: 'Layla Al-Zahra', service: 'AC Repair', status: 'pending', date: '2026-07-08' },
         ];
+        var currentFilter = 'all';
 
-        let currentFilter = 'all';
-
-        // ===== RENDER ORDERS =====
-        function renderOrders(filter = 'all') {
-            const tbody = document.getElementById('ordersBody');
-            const filtered = filter === 'all' ? orders : orders.filter(o => o.status === filter);
-            
+        function renderOrders(filter) {
+            filter = filter || 'all';
+            var tbody = document.getElementById('ordersBody');
+            var filtered = filter === 'all' ? orders : orders.filter(function(o) { return o.status === filter; });
             document.getElementById('orderCount').textContent = filtered.length;
-
+            
             if (filtered.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="6">
-                            <div class="empty-state">
-                                <i class="fas fa-inbox"></i>
-                                <p style="font-weight: 600; color: var(--text-secondary);">No orders found</p>
-                            </div>
-                        </td>
-                    </tr>
-                `;
+                tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><i class="fas fa-inbox"></i><p style="font-weight: 600; color: var(--text-secondary);">No orders found</p></div></td></tr>`;
                 return;
             }
-
-            let html = '';
-            filtered.forEach(order => {
-                const statusClass = {
-                    'pending': 'status-pending',
+            
+            var html = '';
+            filtered.forEach(function(order) {
+                var statusClass = { 
+                    'pending': 'status-pending', 
+                    'selected': 'status-selected',
+                    'examined': 'status-examined',
                     'in-progress': 'status-progress',
-                    'scheduled': 'status-scheduled',
-                    'completed': 'status-completed',
-                    'cancelled': 'status-cancelled'
+                    'accepted': 'status-accepted',
+                    'completed': 'status-completed', 
+                    'cancelled': 'status-cancelled' 
                 }[order.status] || 'status-pending';
 
-                const statusLabels = {
-                    'pending': 'Pending',
+                var statusLabels = { 
+                    'pending': 'Pending', 
+                    'selected': 'Selected',
+                    'examined': 'Examined',
                     'in-progress': 'In Progress',
-                    'scheduled': 'Scheduled',
-                    'completed': '✅ Completed',
-                    'cancelled': '❌ Cancelled'
+                    'accepted': 'Accepted',
+                    'completed': '✅ Completed', 
+                    'cancelled': '❌ Cancelled' 
                 };
 
-                const actionHtml = getActionHtml(order);
-
-                html += `
-                    <tr>
-                        <td class="order-id">${order.id}</td>
-                        <td class="customer-name">${order.customer}</td>
-                        <td><i class="fas ${getServiceIcon(order.service)}" style="color: var(--accent);"></i> ${order.service}</td>
-                        <td><span class="status-badge ${statusClass}">${statusLabels[order.status] || order.status}</span></td>
-                        <td>${order.date}</td>
-                        <td>${actionHtml}</td>
-                    </tr>
-                `;
+                var actionHtml = getActionHtml(order);
+                html += `<tr><td class="order-id">${order.id}</td><td class="customer-name">${order.customer}</td><td><i class="fas ${getServiceIcon(order.service)}" style="color: var(--accent);"></i> ${order.service}</td><td><span class="status-badge ${statusClass}">${statusLabels[order.status] || order.status}</span></td><td>${order.date}</td><td>${actionHtml}</td></tr>`;
             });
-
             tbody.innerHTML = html;
         }
 
-        // ===== GET ACTION BUTTON =====
         function getActionHtml(order) {
-            const actions = {
+            var actions = {
                 'pending': `<button class="action-btn btn-accept" onclick="acceptOrder('${order.id}')">Accept</button>`,
+                'selected': `<button class="action-btn btn-examine" onclick="examineOrder('${order.id}')">Examine</button>`,
+                'examined': `<button class="action-btn btn-accept" onclick="reviewExamination('${order.id}')">Review</button>`,
                 'in-progress': `<button class="action-btn btn-complete" onclick="completeOrder('${order.id}')">Complete</button>`,
-                'scheduled': `<button class="action-btn btn-start" onclick="startOrder('${order.id}')">Start</button>`,
+                'accepted': `<button class="action-btn btn-start" onclick="startOrder('${order.id}')">Start</button>`,
                 'completed': `<button class="action-btn btn-done" disabled>✓ Done</button>`,
                 'cancelled': `<button class="action-btn btn-done" disabled>✗ Cancelled</button>`
             };
             return actions[order.status] || actions.pending;
         }
 
-        // ===== SERVICE ICON =====
         function getServiceIcon(service) {
-            const icons = {
-                'Plumbing': 'fa-faucet',
-                'Electrical': 'fa-bolt',
-                'AC Repair': 'fa-snowflake',
-                'Carpentry': 'fa-hammer',
-                'Painting': 'fa-paint-roller',
-                'Masonry': 'fa-trowel'
-            };
+            var icons = { 'Plumbing': 'fa-faucet', 'Electrical': 'fa-bolt', 'AC Repair': 'fa-snowflake', 'Carpentry': 'fa-hammer', 'Painting': 'fa-paint-roller', 'Masonry': 'fa-trowel' };
             return icons[service] || 'fa-wrench';
         }
 
-        // ===== ORDER ACTIONS =====
-        function acceptOrder(orderId) {
-            if (confirm(`Accept order ${orderId}?`)) {
-                const order = orders.find(o => o.id === orderId);
-                if (order) {
-                    order.status = 'in-progress';
-                    renderOrders(currentFilter);
-                    alert(`✅ Order ${orderId} accepted!`);
-                }
-            }
+        function acceptOrder(orderId) { 
+            if (confirm('Accept order ' + orderId + '?')) { 
+                var order = orders.find(function(o) { return o.id === orderId; }); 
+                if (order) { 
+                    order.status = 'selected'; 
+                    renderOrders(currentFilter); 
+                    alert('✅ Order ' + orderId + ' accepted! Technician will be assigned.'); 
+                } 
+            } 
         }
 
-        function completeOrder(orderId) {
-            if (confirm(`Mark order ${orderId} as complete?`)) {
-                const order = orders.find(o => o.id === orderId);
-                if (order) {
-                    order.status = 'completed';
-                    renderOrders(currentFilter);
-                    alert(`✅ Order ${orderId} completed!`);
-                }
-            }
+        function examineOrder(orderId) { 
+            if (confirm('Start examination for order ' + orderId + '?')) { 
+                var order = orders.find(function(o) { return o.id === orderId; }); 
+                if (order) { 
+                    order.status = 'examined'; 
+                    renderOrders(currentFilter); 
+                    alert('🔍 Examination started! Submit your report.'); 
+                    window.location.href = 'examination.html';
+                } 
+            } 
         }
 
-        function startOrder(orderId) {
-            if (confirm(`Start working on order ${orderId}?`)) {
-                const order = orders.find(o => o.id === orderId);
-                if (order) {
-                    order.status = 'in-progress';
-                    renderOrders(currentFilter);
-                    alert(`🔧 Order ${orderId} started!`);
-                }
-            }
+        function reviewExamination(orderId) { 
+            window.location.href = 'examination.html';
         }
 
-        // ===== FILTER BUTTONS =====
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                currentFilter = this.dataset.filter;
-                renderOrders(currentFilter);
+        function startOrder(orderId) { 
+            if (confirm('Start working on order ' + orderId + '?')) { 
+                var order = orders.find(function(o) { return o.id === orderId; }); 
+                if (order) { 
+                    order.status = 'in-progress'; 
+                    renderOrders(currentFilter); 
+                    alert('🔧 Order ' + orderId + ' started!'); 
+                } 
+            } 
+        }
+
+        function completeOrder(orderId) { 
+            if (confirm('Mark order ' + orderId + ' as complete?')) { 
+                var order = orders.find(function(o) { return o.id === orderId; }); 
+                if (order) { 
+                    order.status = 'completed'; 
+                    renderOrders(currentFilter); 
+                    alert('✅ Order ' + orderId + ' completed!'); 
+                } 
+            } 
+        }
+
+        document.querySelectorAll('.filter-btn').forEach(function(btn) {
+            btn.addEventListener('click', function() { 
+                document.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); }); 
+                this.classList.add('active'); 
+                currentFilter = this.dataset.filter; 
+                renderOrders(currentFilter); 
             });
         });
 
-        // ===== INIT =====
+        function handleLogout(event) { 
+            event.preventDefault(); 
+            localStorage.removeItem('isLoggedIn'); 
+            localStorage.removeItem('userRole'); 
+            localStorage.removeItem('userEmail'); 
+            localStorage.removeItem('currentExecution');
+            window.location.href = 'index.html'; 
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
-            // Check if provider is logged in
-            const role = localStorage.getItem('userRole');
-            if (role !== 'provider') {
-                window.location.href = 'login.html';
-            }
+            var role = localStorage.getItem('userRole');
+            if (role !== 'provider') { window.location.href = 'login.html'; }
             renderOrders('all');
         });
     </script>
+        <script src="../js/chatbot.js"></script>
+
 </body>
 </html>
