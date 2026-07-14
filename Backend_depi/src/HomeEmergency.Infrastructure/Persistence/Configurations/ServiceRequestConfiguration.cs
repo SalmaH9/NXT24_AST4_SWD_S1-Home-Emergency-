@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -41,7 +41,7 @@ public class ServiceRequestConfiguration : IEntityTypeConfiguration<ServiceReque
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne(x => x.Category)
-            .WithMany()
+            .WithMany(c => c.ServiceRequests)
             .HasForeignKey(x => x.CategoryId)
             .OnDelete(DeleteBehavior.Restrict);
 

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HomeEmergency.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260714063231_Backend2Final")]
+    [Migration("20260714184254_Backend2Final")]
     partial class Backend2Final
     {
         /// <inheritdoc />
