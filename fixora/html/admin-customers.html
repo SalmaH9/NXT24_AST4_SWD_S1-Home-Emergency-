@@ -576,8 +576,144 @@
 
         </div>
     </div>
-<script src="../js/footer.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../js/tokenManager.js"></script>
+    <script src="../js/loading.js"></script>
+    <script src="../js/errorHandler.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/signalr.js"></script>
+    <script src="../js/script.js"></script>
+    <script src="../js/footer.js"></script>
     <script>
+        // ==========================================
+        // CHECK LOGIN & LOAD CUSTOMERS
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', async function() {
+            if (!Auth.checkAuth(['Admin'])) {
+                return;
+            }
+            await loadCustomers();
+        });
+
+        async function loadCustomers() {
+            try {
+                const response = await api.get('admin/users/search?roleFilter=Customer&pageSize=100');
+                const list = response.items || [];
+                renderCustomers(list);
+            } catch (err) {
+                console.error("Failed to load customers:", err);
+            }
+        }
+
+        function renderCustomers(customers) {
+            const tbody = document.querySelector('tbody');
+            if (!tbody) return;
+
+            if (customers.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align:center;padding:20px;color:var(--text-light);">
+                            No customers found.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = customers.map(user => {
+                const isSuspended = user.status.toLowerCase() === 'suspended';
+                const statusClass = isSuspended ? 'status-inactive' : 'status-active';
+                const joinedDate = new Date(user.createdAt).toLocaleDateString('en-US', {
+                    year: 'numeric', month: 'short', day: 'numeric'
+                });
+
+                const warnBtnHtml = `<button class="action-btn edit" style="background:#f59e0b;" onclick="warnUser('${user.id}', '${user.fullName}')" title="Issue Warning"><i class="fas fa-triangle-exclamation"></i></button>`;
+
+                const suspendBtnHtml = isSuspended
+                    ? `<button class="action-btn approve" onclick="unsuspendUser('${user.id}', '${user.fullName}')" title="Unsuspend"><i class="fas fa-user-check"></i></button>`
+                    : `<button class="action-btn reject" onclick="suspendUser('${user.id}', '${user.fullName}')" title="Suspend"><i class="fas fa-user-slash"></i></button>`;
+
+                return `
+                    <tr>
+                        <td class="customer-name">${user.fullName}</td>
+                        <td>${user.email}</td>
+                        <td>${user.phoneNumber || 'N/A'}</td>
+                        <td><span class="status-badge ${statusClass}">${user.status}</span></td>
+                        <td>${joinedDate}</td>
+                        <td>
+                            <div style="display:flex;gap:6px;">
+                                ${warnBtnHtml}
+                                ${suspendBtnHtml}
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // ==========================================
+        // USER ACTIONS
+        // ==========================================
+        async function suspendUser(userId, name) {
+            const reason = prompt(`⚠️ Enter suspension reason for ${name}:`);
+            if (reason === null) return;
+            if (!reason.trim()) {
+                alert("Reason is required to suspend a user.");
+                return;
+            }
+
+            try {
+                await api.put(`admin/users/${userId}/suspend`, { reason: reason });
+                ErrorHandler.showNotification("Success", `${name} has been suspended successfully.`, "success");
+                await loadCustomers();
+            } catch (err) {
+                console.error("Failed to suspend user:", err);
+            }
+        }
+
+        async function unsuspendUser(userId, name) {
+            if (!confirm(`✅ Are you sure you want to unsuspend ${name}?`)) return;
+
+            try {
+                await api.put(`admin/users/${userId}/unsuspend`);
+                ErrorHandler.showNotification("Success", `${name} has been unsuspended successfully.`, "success");
+                await loadCustomers();
+            } catch (err) {
+                console.error("Failed to unsuspend user:", err);
+            }
+        }
+
+        async function warnUser(userId, name) {
+            const title = prompt(`📢 Enter Warning Title for ${name}:`);
+            if (title === null) return;
+            if (!title.trim()) {
+                alert("Title is required.");
+                return;
+            }
+
+            const reason = prompt(`📝 Enter Warning Description/Reason:`);
+            if (reason === null) return;
+            if (!reason.trim()) {
+                alert("Description is required.");
+                return;
+            }
+
+            const severity = prompt(`⚡ Enter Severity Level (Low, Medium, High):`, "Low");
+            if (severity === null) return;
+
+            try {
+                await api.post(`admin/users/${userId}/warnings`, {
+                    title: title,
+                    reason: reason,
+                    severityLevel: severity
+                });
+                ErrorHandler.showNotification("Success", `Compliance warning issued to ${name}.`, "success");
+            } catch (err) {
+                console.error("Failed to create warning:", err);
+            }
+        }
+
         // ==========================================
         // SIDEBAR TOGGLE
         // ==========================================
@@ -590,8 +726,8 @@
             sidebarOverlay.classList.toggle('open');
         }
 
-        sidebarToggle.addEventListener('click', toggleSidebar);
-        sidebarOverlay.addEventListener('click', toggleSidebar);
+        if (sidebarToggle) sidebarToggle.addEventListener('click', toggleSidebar);
+        if (sidebarOverlay) sidebarOverlay.addEventListener('click', toggleSidebar);
 
         // ==========================================
         // THEME TOGGLE
@@ -601,43 +737,25 @@
 
         if (localStorage.getItem('adminTheme') === 'dark') {
             body.classList.add('dark-mode');
-            themeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+            if (themeToggle) themeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
         }
 
-        themeToggle.addEventListener('click', function() {
-            body.classList.toggle('dark-mode');
-            if (body.classList.contains('dark-mode')) {
-                localStorage.setItem('adminTheme', 'dark');
-                this.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
-            } else {
-                localStorage.setItem('adminTheme', 'light');
-                this.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
-            }
-        });
-
-        // ==========================================
-        // FUNCTIONS
-        // ==========================================
-        function addCustomer() {
-            alert('📝 Add new customer form would open here');
-        }
-
-        function editCustomer(name) {
-            alert(`✏️ Edit customer: ${name}`);
-        }
-
-        function deleteCustomer(name) {
-            if (confirm(`⚠️ Are you sure you want to delete ${name}?`)) {
-                alert(`🗑️ ${name} has been deleted`);
-            }
+        if (themeToggle) {
+            themeToggle.addEventListener('click', function() {
+                body.classList.toggle('dark-mode');
+                if (body.classList.contains('dark-mode')) {
+                    localStorage.setItem('adminTheme', 'dark');
+                    this.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+                } else {
+                    localStorage.setItem('adminTheme', 'light');
+                    this.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
+                }
+            });
         }
 
         function handleLogout(event) {
             event.preventDefault();
-            localStorage.removeItem('isLoggedIn');
-            localStorage.removeItem('userRole');
-            localStorage.removeItem('userEmail');
-            window.location.href = 'index.html';
+            Auth.logout();
         }
     </script>
 

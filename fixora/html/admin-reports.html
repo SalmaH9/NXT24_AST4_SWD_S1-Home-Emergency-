@@ -440,11 +440,13 @@
                         </div>
                     </div>
 
-                    <!-- ===== EMPTY STATE ===== -->
-                    <div class="table-container" style="text-align: center; padding: 40px;">
-                        <i class="fas fa-file-circle-plus" style="font-size: 3rem; color: var(--text-light); margin-bottom: 16px;"></i>
-                        <h3 style="color: var(--text-primary); margin-bottom: 8px;">Select a Report</h3>
-                        <p style="color: var(--text-secondary);">Click on any report card above to generate detailed statistics</p>
+                    <!-- ===== REPORT CONTAINER ===== -->
+                    <div class="table-container" id="reportContainer" style="padding: 30px; text-align: left;">
+                        <div style="text-align: center; padding: 20px;">
+                            <i class="fas fa-file-circle-plus" style="font-size: 3rem; color: var(--text-light); margin-bottom: 16px;"></i>
+                            <h3 style="color: var(--text-primary); margin-bottom: 8px;">Select a Report</h3>
+                            <p style="color: var(--text-secondary);">Click on any report card above to generate detailed statistics</p>
+                        </div>
                     </div>
 
                 </div>
@@ -458,7 +460,231 @@
         </div>
     </div>
 
+    <script src="../js/config.js"></script>
+    <script src="../js/tokenManager.js"></script>
+    <script src="../js/loading.js"></script>
+    <script src="../js/errorHandler.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/signalr.js"></script>
+    <script src="../js/script.js"></script>
+    <script src="../js/footer.js"></script>
     <script>
+        // ==========================================
+        // CHECK LOGIN
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', function() {
+            Auth.checkAuth(['Admin']);
+        });
+
+        // ==========================================
+        // GENERATE REPORTS
+        // ==========================================
+        async function generateReport(type) {
+            const container = document.getElementById('reportContainer');
+            if (!container) return;
+
+            container.innerHTML = `
+                <div style="text-align:center;padding:40px;">
+                    <i class="fas fa-spinner fa-spin" style="font-size:3rem;color:var(--primary);margin-bottom:16px;"></i>
+                    <h3 style="color:var(--text-primary);">Generating ${type} Report...</h3>
+                </div>
+            `;
+
+            try {
+                if (type === 'Customers') {
+                    const data = await api.get('admin/analytics/users');
+                    renderUsersReport(container, data);
+                } else if (type === 'Providers') {
+                    const data = await api.get('admin/analytics/ratings');
+                    renderRatingsReport(container, data);
+                } else if (type === 'Orders') {
+                    const data = await api.get('admin/analytics/service-demand');
+                    renderOrdersReport(container, data);
+                } else if (type === 'Revenue') {
+                    const data = await api.get('admin/analytics/advertisements');
+                    renderRevenueReport(container, data);
+                }
+            } catch (err) {
+                console.error("Failed to generate report:", err);
+                container.innerHTML = `
+                    <div style="text-align:center;padding:40px;color:#ef4444;">
+                        <i class="fas fa-circle-xmark" style="font-size:3rem;margin-bottom:16px;"></i>
+                        <h3>Failed to Generate Report</h3>
+                        <p style="margin-top:8px;">${err.message || 'An error occurred while calling analytics services.'}</p>
+                    </div>
+                `;
+            }
+        }
+
+        function renderUsersReport(container, data) {
+            let html = `
+                <h2 style="color:var(--text-primary);margin-bottom:20px;border-bottom:2px solid var(--border-color);padding-bottom:10px;">
+                    <i class="fas fa-users"></i> Users Growth & Registrations
+                </h2>
+            `;
+
+            // User Registrations
+            html += `<h3 style="color:var(--text-primary);margin-top:20px;margin-bottom:10px;">New Registrations Timeline</h3>`;
+            html += `
+                <table style="width:100%;margin-bottom:30px;">
+                    <thead>
+                        <tr><th>Period / Label</th><th>New Signups</th></tr>
+                    </thead>
+                    <tbody>
+            `;
+            if (data.registrations && data.registrations.length > 0) {
+                data.registrations.forEach(pt => {
+                    html += `<tr><td>${pt.label}</td><td><strong>${pt.value}</strong></td></tr>`;
+                });
+            } else {
+                html += `<tr><td colspan="2" style="text-align:center;color:var(--text-light);">No data available</td></tr>`;
+            }
+            html += `</tbody></table>`;
+
+            // Roles Distribution
+            html += `<h3 style="color:var(--text-primary);margin-bottom:10px;">Users by Roles</h3>`;
+            html += `
+                <table style="width:100%;margin-bottom:30px;">
+                    <thead>
+                        <tr><th>Role</th><th>Total Users</th></tr>
+                    </thead>
+                    <tbody>
+            `;
+            if (data.roles && data.roles.length > 0) {
+                data.roles.forEach(pt => {
+                    html += `<tr><td>${pt.label}</td><td><strong>${pt.value}</strong></td></tr>`;
+                });
+            } else {
+                html += `<tr><td colspan="2" style="text-align:center;color:var(--text-light);">No data available</td></tr>`;
+            }
+            html += `</tbody></table>`;
+
+            container.innerHTML = html;
+        }
+
+        function renderRatingsReport(container, data) {
+            let html = `
+                <h2 style="color:var(--text-primary);margin-bottom:20px;border-bottom:2px solid var(--border-color);padding-bottom:10px;">
+                    <i class="fas fa-user-tie"></i> Providers Performance & Ratings
+                </h2>
+                <div style="background:var(--card-bg);padding:16px;border-radius:8px;margin-bottom:24px;border:1px solid var(--border-color);">
+                    <p style="font-size:1.1rem;color:var(--text-secondary);">Average Platform Rating: <strong style="color:var(--primary);font-size:1.4rem;">${data.averageRating || 'N/A'} ★</strong></p>
+                </div>
+            `;
+
+            // Distribution
+            html += `<h3 style="color:var(--text-primary);margin-bottom:10px;">Stars Distribution</h3>`;
+            html += `
+                <table style="width:100%;margin-bottom:30px;">
+                    <thead>
+                        <tr><th>Stars</th><th>Count</th></tr>
+                    </thead>
+                    <tbody>
+            `;
+            if (data.distribution && data.distribution.length > 0) {
+                data.distribution.forEach(pt => {
+                    html += `<tr><td>${pt.label} Stars</td><td><strong>${pt.value}</strong></td></tr>`;
+                });
+            } else {
+                html += `<tr><td colspan="2" style="text-align:center;color:var(--text-light);">No data available</td></tr>`;
+            }
+            html += `</tbody></table>`;
+
+            // Low rated providers
+            html += `<h3 style="color:var(--text-primary);margin-bottom:10px;">Flagged Providers (Low Ratings)</h3>`;
+            html += `
+                <table style="width:100%;">
+                    <thead>
+                        <tr><th>Provider ID / Name</th><th>Average Rating</th><th>Total Reviews</th></tr>
+                    </thead>
+                    <tbody>
+            `;
+            if (data.lowRatedUsers && data.lowRatedUsers.length > 0) {
+                data.lowRatedUsers.forEach(user => {
+                    html += `<tr><td>${user.fullName || user.userId}</td><td style="color:#ef4444;font-weight:bold;">${user.averageRating} ★</td><td>${user.ratingsCount} reviews</td></tr>`;
+                });
+            } else {
+                html += `<tr><td colspan="3" style="text-align:center;color:var(--text-light);">No flagged low-rated providers.</td></tr>`;
+            }
+            html += `</tbody></table>`;
+
+            container.innerHTML = html;
+        }
+
+        function renderOrdersReport(container, data) {
+            let html = `
+                <h2 style="color:var(--text-primary);margin-bottom:20px;border-bottom:2px solid var(--border-color);padding-bottom:10px;">
+                    <i class="fas fa-clipboard-list"></i> Service Demand Analytics
+                </h2>
+            `;
+
+            html += `<h3 style="color:var(--text-primary);margin-top:20px;margin-bottom:10px;">Requests by Category / Month</h3>`;
+            html += `
+                <table style="width:100%;">
+                    <thead>
+                        <tr><th>Category Label</th><th>Requests Volume</th></tr>
+                    </thead>
+                    <tbody>
+            `;
+            if (data && data.length > 0) {
+                data.forEach(pt => {
+                    html += `<tr><td>${pt.label}</td><td><strong>${pt.value}</strong></td></tr>`;
+                });
+            } else {
+                html += `<tr><td colspan="2" style="text-align:center;color:var(--text-light);">No demand data available</td></tr>`;
+            }
+            html += `</tbody></table>`;
+
+            container.innerHTML = html;
+        }
+
+        function renderRevenueReport(container, data) {
+            let html = `
+                <h2 style="color:var(--text-primary);margin-bottom:20px;border-bottom:2px solid var(--border-color);padding-bottom:10px;">
+                    <i class="fas fa-dollar-sign"></i> Advertisements & Subscriptions Revenue
+                </h2>
+            `;
+
+            // Status counts
+            html += `<h3 style="color:var(--text-primary);margin-top:20px;margin-bottom:10px;">Advertisement Placements Status</h3>`;
+            html += `
+                <table style="width:100%;margin-bottom:30px;">
+                    <thead>
+                        <tr><th>Status</th><th>Count</th></tr>
+                    </thead>
+                    <tbody>
+            `;
+            if (data.statusCounts && data.statusCounts.length > 0) {
+                data.statusCounts.forEach(pt => {
+                    html += `<tr><td>${pt.label}</td><td><strong>${pt.value}</strong></td></tr>`;
+                });
+            } else {
+                html += `<tr><td colspan="2" style="text-align:center;color:var(--text-light);">No data available</td></tr>`;
+            }
+            html += `</tbody></table>`;
+
+            // Ads by Category
+            html += `<h3 style="color:var(--text-primary);margin-bottom:10px;">Active Ads by Service Category</h3>`;
+            html += `
+                <table style="width:100%;">
+                    <thead>
+                        <tr><th>Category</th><th>Count</th></tr>
+                    </thead>
+                    <tbody>
+            `;
+            if (data.activeAdsByCategory && data.activeAdsByCategory.length > 0) {
+                data.activeAdsByCategory.forEach(pt => {
+                    html += `<tr><td>${pt.label}</td><td><strong>${pt.value}</strong></td></tr>`;
+                });
+            } else {
+                html += `<tr><td colspan="2" style="text-align:center;color:var(--text-light);">No active ads found</td></tr>`;
+            }
+            html += `</tbody></table>`;
+
+            container.innerHTML = html;
+        }
+
         // ==========================================
         // SIDEBAR TOGGLE
         // ==========================================
@@ -471,8 +697,8 @@
             sidebarOverlay.classList.toggle('open');
         }
 
-        sidebarToggle.addEventListener('click', toggleSidebar);
-        sidebarOverlay.addEventListener('click', toggleSidebar);
+        if (sidebarToggle) sidebarToggle.addEventListener('click', toggleSidebar);
+        if (sidebarOverlay) sidebarOverlay.addEventListener('click', toggleSidebar);
 
         // ==========================================
         // THEME TOGGLE
@@ -482,35 +708,26 @@
 
         if (localStorage.getItem('adminTheme') === 'dark') {
             body.classList.add('dark-mode');
-            themeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+            if (themeToggle) themeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
         }
 
-        themeToggle.addEventListener('click', function() {
-            body.classList.toggle('dark-mode');
-            if (body.classList.contains('dark-mode')) {
-                localStorage.setItem('adminTheme', 'dark');
-                this.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
-            } else {
-                localStorage.setItem('adminTheme', 'light');
-                this.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
-            }
-        });
-
-        // ==========================================
-        // FUNCTIONS
-        // ==========================================
-        function generateReport(type) {
-            alert(`📊 Generating ${type} Report...\n\nThis would open a detailed report with charts and statistics.`);
+        if (themeToggle) {
+            themeToggle.addEventListener('click', function() {
+                body.classList.toggle('dark-mode');
+                if (body.classList.contains('dark-mode')) {
+                    localStorage.setItem('adminTheme', 'dark');
+                    this.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+                } else {
+                    localStorage.setItem('adminTheme', 'light');
+                    this.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
+                }
+            });
         }
 
         function handleLogout(event) {
             event.preventDefault();
-            localStorage.removeItem('isLoggedIn');
-            localStorage.removeItem('userRole');
-            localStorage.removeItem('userEmail');
-            window.location.href = 'index.html';
+            Auth.logout();
         }
     </script>
-
 </body>
 </html>

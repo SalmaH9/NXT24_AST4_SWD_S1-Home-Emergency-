@@ -624,6 +624,97 @@
                             </div>
                         </div>
 
+                        <!-- Category Management -->
+                        <div class="settings-card" style="grid-column: span 1;">
+                            <h3><i class="fas fa-list"></i> Category Management</h3>
+                            <div style="max-height: 200px; overflow-y: auto; margin-bottom: 16px; border: 1px solid var(--border-color); border-radius: 6px;">
+                                <table style="width: 100%; border-collapse: collapse;">
+                                    <thead>
+                                        <tr style="background: var(--border-color); font-size: 0.85rem;">
+                                            <th style="padding: 6px;">Name</th>
+                                            <th style="padding: 6px; text-align: right;">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="categoriesList">
+                                        <tr><td colspan="2" style="text-align:center;padding:10px;">Loading categories...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="settings-group">
+                                <label id="categoryFormLabel">Add New Category</label>
+                                <input type="hidden" id="categoryId" />
+                                <input type="text" id="categoryName" placeholder="Category Name" style="margin-bottom: 8px;" />
+                                <textarea id="categoryDesc" placeholder="Description" rows="2" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text-primary); font-family: inherit; margin-bottom: 8px; resize: none;"></textarea>
+                                <div style="display:flex; gap:8px;">
+                                    <button class="btn-save" onclick="saveCategory()" style="padding: 8px 12px; font-size: 0.9rem; flex:1;">
+                                        <i class="fas fa-save"></i> Save
+                                    </button>
+                                    <button class="btn-save" onclick="resetCategoryForm()" style="padding: 8px 12px; font-size: 0.9rem; background:#4b5563;">
+                                        Cancel
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Subscription Plans -->
+                        <div class="settings-card" style="grid-column: span 1;">
+                            <h3><i class="fas fa-gem"></i> Subscription Plans</h3>
+                            <div style="max-height: 200px; overflow-y: auto; margin-bottom: 16px; border: 1px solid var(--border-color); border-radius: 6px;">
+                                <table style="width: 100%; border-collapse: collapse;">
+                                    <thead>
+                                        <tr style="background: var(--border-color); font-size: 0.85rem;">
+                                            <th style="padding: 6px;">Plan</th>
+                                            <th style="padding: 6px;">Price</th>
+                                            <th style="padding: 6px; text-align: right;">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="plansList">
+                                        <tr><td colspan="3" style="text-align:center;padding:10px;">Loading plans...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="settings-group">
+                                <label id="planFormLabel">Add New Plan</label>
+                                <input type="hidden" id="planId" />
+                                <input type="text" id="planName" placeholder="Plan Name" style="margin-bottom: 8px;" />
+                                <input type="text" id="planDesc" placeholder="Description" style="margin-bottom: 8px;" />
+                                <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                                    <input type="number" id="planPrice" placeholder="Price (SAR)" style="flex: 1;" />
+                                    <input type="number" id="planDuration" placeholder="Duration (Days)" style="flex: 1;" />
+                                </div>
+                                <div style="display:flex; gap:8px;">
+                                    <button class="btn-save" onclick="savePlan()" style="padding: 8px 12px; font-size: 0.9rem; flex:1;">
+                                        <i class="fas fa-save"></i> Save
+                                    </button>
+                                    <button class="btn-save" onclick="resetPlanForm()" style="padding: 8px 12px; font-size: 0.9rem; background:#4b5563;">
+                                        Cancel
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- System Announcements -->
+                        <div class="settings-card" style="grid-column: span 1;">
+                            <h3><i class="fas fa-bullhorn"></i> System Announcement</h3>
+                            <div class="settings-group">
+                                <label>Target User ID (GUID)</label>
+                                <input type="text" id="announcementUserId" placeholder="User GUID" />
+                            </div>
+                            <div class="settings-group">
+                                <label>Announcement Title</label>
+                                <input type="text" id="announcementTitle" placeholder="Title" />
+                            </div>
+                            <div class="settings-group">
+                                <label>Message Body</label>
+                                <textarea id="announcementBody" placeholder="Type message..." rows="3" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text-primary); font-family: inherit; resize: none;"></textarea>
+                            </div>
+                            <div class="settings-group" style="margin-top: 12px;">
+                                <button class="btn-save" onclick="sendAnnouncement()" style="padding: 10px 16px;">
+                                    <i class="fas fa-paper-plane"></i> Send Notification
+                                </button>
+                            </div>
+                        </div>
+
                     </div>
 
                 </div>
@@ -637,9 +728,249 @@
         </div>
     </div>
 
+    <script src="../js/config.js"></script>
+    <script src="../js/tokenManager.js"></script>
+    <script src="../js/loading.js"></script>
+    <script src="../js/errorHandler.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/signalr.js"></script>
+    <script src="../js/script.js"></script>
+    <script src="../js/footer.js"></script>
     <script>
         // ==========================================
-        // SIDEBAR TOGGLE
+        // CHECK LOGIN & INITIAL LOAD
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', async function() {
+            if (!Auth.checkAuth(['Admin'])) {
+                return;
+            }
+            await loadCategories();
+            await loadPlans();
+        });
+
+        // ==========================================
+        // CATEGORY OPERATIONS
+        // ==========================================
+        async function loadCategories() {
+            try {
+                const list = await api.get('categories');
+                const tbody = document.getElementById('categoriesList');
+                if (!tbody) return;
+
+                if (!list || list.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="2" style="text-align:center;padding:10px;">No categories</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = list.map(cat => {
+                    const editBtn = `<button class="action-btn edit" style="padding:2px 6px;font-size:0.8rem;" onclick="editCategoryForm('${cat.id}', '${cat.name}', '${cat.description || ''}')"><i class="fas fa-edit"></i></button>`;
+                    const deleteBtn = `<button class="action-btn reject" style="padding:2px 6px;font-size:0.8rem;" onclick="deleteCategory('${cat.id}')"><i class="fas fa-trash"></i></button>`;
+                    
+                    return `
+                        <tr>
+                            <td style="padding:6px;font-size:0.9rem;"><strong>${cat.name}</strong></td>
+                            <td style="padding:6px;text-align:right;">
+                                <div style="display:inline-flex;gap:4px;">
+                                    ${editBtn}
+                                    ${deleteBtn}
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (err) {
+                console.error("Failed to load categories:", err);
+            }
+        }
+
+        async function saveCategory() {
+            const id = document.getElementById('categoryId').value;
+            const name = document.getElementById('categoryName').value;
+            const desc = document.getElementById('categoryDesc').value;
+
+            if (!name.trim()) {
+                alert("Category name is required.");
+                return;
+            }
+
+            try {
+                if (id) {
+                    // Update
+                    await api.put(`admin/categories/${id}`, { name: name, description: desc });
+                    ErrorHandler.showNotification("Success", "Category updated successfully.", "success");
+                } else {
+                    // Create
+                    await api.post('admin/categories', { name: name, description: desc });
+                    ErrorHandler.showNotification("Success", "Category created successfully.", "success");
+                }
+                resetCategoryForm();
+                await loadCategories();
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function editCategoryForm(id, name, desc) {
+            document.getElementById('categoryId').value = id;
+            document.getElementById('categoryName').value = name;
+            document.getElementById('categoryDesc').value = desc;
+            document.getElementById('categoryFormLabel').textContent = "Edit Category";
+        }
+
+        function resetCategoryForm() {
+            document.getElementById('categoryId').value = "";
+            document.getElementById('categoryName').value = "";
+            document.getElementById('categoryDesc').value = "";
+            document.getElementById('categoryFormLabel').textContent = "Add New Category";
+        }
+
+        async function deleteCategory(id) {
+            if (!confirm("⚠️ Are you sure you want to delete this category?")) return;
+
+            try {
+                await api.delete(`admin/categories/${id}`);
+                ErrorHandler.showNotification("Success", "Category deleted successfully.", "success");
+                await loadCategories();
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // ==========================================
+        // SUBSCRIPTION PLANS OPERATIONS
+        // ==========================================
+        async function loadPlans() {
+            try {
+                const list = await api.get('subscriptions');
+                const tbody = document.getElementById('plansList');
+                if (!tbody) return;
+
+                if (!list || list.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;padding:10px;">No plans</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = list.map(plan => {
+                    const editBtn = `<button class="action-btn edit" style="padding:2px 6px;font-size:0.8rem;" onclick="editPlanForm('${plan.id}', '${plan.name}', '${plan.description || ''}', ${plan.price}, ${plan.durationInDays})"><i class="fas fa-edit"></i></button>`;
+                    const deleteBtn = `<button class="action-btn reject" style="padding:2px 6px;font-size:0.8rem;" onclick="deletePlan('${plan.id}')"><i class="fas fa-trash"></i></button>`;
+
+                    return `
+                        <tr>
+                            <td style="padding:6px;font-size:0.9rem;"><strong>${plan.name}</strong></td>
+                            <td style="padding:6px;font-size:0.9rem;">SAR ${plan.price}</td>
+                            <td style="padding:6px;text-align:right;">
+                                <div style="display:inline-flex;gap:4px;">
+                                    ${editBtn}
+                                    ${deleteBtn}
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (err) {
+                console.error("Failed to load plans:", err);
+            }
+        }
+
+        async function savePlan() {
+            const id = document.getElementById('planId').value;
+            const name = document.getElementById('planName').value;
+            const desc = document.getElementById('planDesc').value;
+            const price = parseFloat(document.getElementById('planPrice').value || "0");
+            const duration = parseInt(document.getElementById('planDuration').value || "0");
+
+            if (!name.trim()) {
+                alert("Plan name is required.");
+                return;
+            }
+
+            try {
+                const payload = {
+                    name: name,
+                    description: desc,
+                    price: price,
+                    durationInDays: duration,
+                    isActive: true
+                };
+
+                if (id) {
+                    await api.put(`admin/subscriptions/${id}`, payload);
+                    ErrorHandler.showNotification("Success", "Subscription plan updated.", "success");
+                } else {
+                    await api.post('admin/subscriptions', payload);
+                    ErrorHandler.showNotification("Success", "Subscription plan created.", "success");
+                }
+                resetPlanForm();
+                await loadPlans();
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function editPlanForm(id, name, desc, price, duration) {
+            document.getElementById('planId').value = id;
+            document.getElementById('planName').value = name;
+            document.getElementById('planDesc').value = desc;
+            document.getElementById('planPrice').value = price;
+            document.getElementById('planDuration').value = duration;
+            document.getElementById('planFormLabel').textContent = "Edit Plan";
+        }
+
+        function resetPlanForm() {
+            document.getElementById('planId').value = "";
+            document.getElementById('planName').value = "";
+            document.getElementById('planDesc').value = "";
+            document.getElementById('planPrice').value = "";
+            document.getElementById('planDuration').value = "";
+            document.getElementById('planFormLabel').textContent = "Add New Plan";
+        }
+
+        async function deletePlan(id) {
+            if (!confirm("⚠️ Are you sure you want to deactivate/delete this plan?")) return;
+
+            try {
+                await api.delete(`admin/subscriptions/${id}`);
+                ErrorHandler.showNotification("Success", "Subscription plan deactivated.", "success");
+                await loadPlans();
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // ==========================================
+        // SEND SYSTEM ANNOUNCEMENT
+        // ==========================================
+        async function sendAnnouncement() {
+            const userId = document.getElementById('announcementUserId').value;
+            const title = document.getElementById('announcementTitle').value;
+            const body = document.getElementById('announcementBody').value;
+
+            if (!userId.trim() || !title.trim() || !body.trim()) {
+                alert("User ID, Title, and Message Body are all required.");
+                return;
+            }
+
+            try {
+                await api.post('admin/notifications', {
+                    userId: userId,
+                    title: title,
+                    body: body,
+                    referenceType: 0 // None
+                });
+                ErrorHandler.showNotification("Success", "System announcement notification sent successfully.", "success");
+                
+                // Clear fields
+                document.getElementById('announcementUserId').value = "";
+                document.getElementById('announcementTitle').value = "";
+                document.getElementById('announcementBody').value = "";
+            } catch (err) {
+                console.error("Failed to send announcement:", err);
+            }
+        }
+
+        // ==========================================
+        // SIDEBAR & THEME
         // ==========================================
         const sidebarToggle = document.getElementById('sidebarToggle');
         const sidebar = document.getElementById('sidebar');
@@ -650,46 +981,38 @@
             sidebarOverlay.classList.toggle('open');
         }
 
-        sidebarToggle.addEventListener('click', toggleSidebar);
-        sidebarOverlay.addEventListener('click', toggleSidebar);
+        if (sidebarToggle) sidebarToggle.addEventListener('click', toggleSidebar);
+        if (sidebarOverlay) sidebarOverlay.addEventListener('click', toggleSidebar);
 
-        // ==========================================
-        // THEME TOGGLE
-        // ==========================================
         const themeToggle = document.getElementById('themeToggle');
-        const body = document.body;
+        const bodyEl = document.body;
 
         if (localStorage.getItem('adminTheme') === 'dark') {
-            body.classList.add('dark-mode');
-            themeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+            bodyEl.classList.add('dark-mode');
+            if (themeToggle) themeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
         }
 
-        themeToggle.addEventListener('click', function() {
-            body.classList.toggle('dark-mode');
-            if (body.classList.contains('dark-mode')) {
-                localStorage.setItem('adminTheme', 'dark');
-                this.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
-            } else {
-                localStorage.setItem('adminTheme', 'light');
-                this.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
-            }
-        });
+        if (themeToggle) {
+            themeToggle.addEventListener('click', function() {
+                bodyEl.classList.toggle('dark-mode');
+                if (bodyEl.classList.contains('dark-mode')) {
+                    localStorage.setItem('adminTheme', 'dark');
+                    this.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+                } else {
+                    localStorage.setItem('adminTheme', 'light');
+                    this.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
+                }
+            });
+        }
 
-        // ==========================================
-        // FUNCTIONS
-        // ==========================================
         function saveSettings() {
-            alert('✅ Settings saved successfully!');
+            ErrorHandler.showNotification("Success", "General settings saved successfully.", "success");
         }
 
         function handleLogout(event) {
             event.preventDefault();
-            localStorage.removeItem('isLoggedIn');
-            localStorage.removeItem('userRole');
-            localStorage.removeItem('userEmail');
-            window.location.href = 'index.html';
+            Auth.logout();
         }
     </script>
-
 </body>
 </html>

@@ -569,8 +569,110 @@
 
         </div>
     </div>
-<script src="../js/footer.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../js/tokenManager.js"></script>
+    <script src="../js/loading.js"></script>
+    <script src="../js/errorHandler.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/signalr.js"></script>
+    <script src="../js/script.js"></script>
+    <script src="../js/footer.js"></script>
     <script>
+        let categoriesMap = {};
+
+        // ==========================================
+        // CHECK LOGIN & LOAD ORDERS
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', async function() {
+            if (!Auth.checkAuth(['Admin'])) {
+                return;
+            }
+            await loadCategories();
+            await loadOrders();
+        });
+
+        async function loadCategories() {
+            try {
+                const list = await api.get('categories');
+                (list || []).forEach(cat => {
+                    categoriesMap[cat.id] = cat.name;
+                });
+            } catch (err) {
+                console.error("Failed to load categories map:", err);
+            }
+        }
+
+        async function loadOrders() {
+            try {
+                const list = await api.get('service-requests');
+                renderOrders(list || []);
+            } catch (err) {
+                console.error("Failed to load orders:", err);
+            }
+        }
+
+        function renderOrders(orders) {
+            const tbody = document.querySelector('tbody');
+            if (!tbody) return;
+
+            if (orders.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align:center;padding:20px;color:var(--text-light);">
+                            No service requests found on the platform.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = orders.map(order => {
+                const shortId = `#${order.id.substring(0, 8)}`;
+                const categoryName = categoriesMap[order.categoryId] || 'Unknown';
+                const createdDate = new Date(order.createdAt).toLocaleDateString();
+                
+                // Map status badges
+                let badgeClass = 'status-pending';
+                if (order.status === 'Completed') badgeClass = 'status-completed';
+                else if (order.status === 'InProgress' || order.status === 'ExecutionStarted') badgeClass = 'status-progress';
+                else if (order.status === 'Cancelled') badgeClass = 'status-cancelled';
+
+                return `
+                    <tr>
+                        <td class="order-id">${shortId}</td>
+                        <td>${order.customerName || order.customerId}</td>
+                        <td>${categoryName}</td>
+                        <td>${order.providerName || 'Not Assigned'}</td>
+                        <td><span class="status-badge ${badgeClass}">${order.status}</span></td>
+                        <td>${createdDate}</td>
+                        <td>
+                            <button class="action-btn view" onclick="viewOrder('${order.id}')" title="View Details"><i class="fas fa-eye"></i></button>
+                            <button class="action-btn delete" onclick="deleteOrder('${order.id}')" title="Cancel/Delete Request"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function viewOrder(orderId) {
+            window.location.href = `order-details.html?id=${orderId}`;
+        }
+
+        async function deleteOrder(orderId) {
+            if (!confirm(`⚠️ Are you sure you want to cancel/delete service request ${orderId.substring(0, 8)}?`)) {
+                return;
+            }
+
+            try {
+                await api.delete(`service-requests/${orderId}`);
+                ErrorHandler.showNotification("Success", "Service request has been cancelled/deleted successfully.", "success");
+                await loadOrders();
+            } catch (err) {
+                console.error("Failed to delete order:", err);
+            }
+        }
+
         // ==========================================
         // SIDEBAR TOGGLE
         // ==========================================
@@ -583,8 +685,8 @@
             sidebarOverlay.classList.toggle('open');
         }
 
-        sidebarToggle.addEventListener('click', toggleSidebar);
-        sidebarOverlay.addEventListener('click', toggleSidebar);
+        if (sidebarToggle) sidebarToggle.addEventListener('click', toggleSidebar);
+        if (sidebarOverlay) sidebarOverlay.addEventListener('click', toggleSidebar);
 
         // ==========================================
         // THEME TOGGLE
@@ -594,39 +696,25 @@
 
         if (localStorage.getItem('adminTheme') === 'dark') {
             body.classList.add('dark-mode');
-            themeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+            if (themeToggle) themeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
         }
 
-        themeToggle.addEventListener('click', function() {
-            body.classList.toggle('dark-mode');
-            if (body.classList.contains('dark-mode')) {
-                localStorage.setItem('adminTheme', 'dark');
-                this.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
-            } else {
-                localStorage.setItem('adminTheme', 'light');
-                this.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
-            }
-        });
-
-        // ==========================================
-        // FUNCTIONS
-        // ==========================================
-        function viewOrder(orderId) {
-            alert(`📋 View details for ${orderId}`);
-        }
-
-        function deleteOrder(orderId) {
-            if (confirm(`⚠️ Are you sure you want to delete ${orderId}?`)) {
-                alert(`🗑️ ${orderId} has been deleted`);
-            }
+        if (themeToggle) {
+            themeToggle.addEventListener('click', function() {
+                body.classList.toggle('dark-mode');
+                if (body.classList.contains('dark-mode')) {
+                    localStorage.setItem('adminTheme', 'dark');
+                    this.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+                } else {
+                    localStorage.setItem('adminTheme', 'light');
+                    this.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
+                }
+            });
         }
 
         function handleLogout(event) {
             event.preventDefault();
-            localStorage.removeItem('isLoggedIn');
-            localStorage.removeItem('userRole');
-            localStorage.removeItem('userEmail');
-            window.location.href = 'index.html';
+            Auth.logout();
         }
     </script>
 

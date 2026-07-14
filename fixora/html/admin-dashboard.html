@@ -609,7 +609,7 @@
                     </div>
 
                     <!-- ===== RECENT ACTIVITY ===== -->
-                    <div class="activity-section">
+                    <div class="activity-section" id="activityList">
                         <h3><i class="fas fa-clock-rotate-left"></i> Recent Activity</h3>
 
                         <div class="activity-item">
@@ -672,29 +672,136 @@
 
         </div>
     </div>
-<script src="../js/footer.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../js/tokenManager.js"></script>
+    <script src="../js/loading.js"></script>
+    <script src="../js/errorHandler.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/signalr.js"></script>
+    <script src="../js/script.js"></script>
+    <script src="../js/footer.js"></script>
     <script>
         // ==========================================
-        // CHECK ADMIN LOGIN
+        // CHECK ADMIN LOGIN & LOAD DASHBOARD DATA
         // ==========================================
-        document.addEventListener('DOMContentLoaded', function() {
-            const role = localStorage.getItem('userRole');
-            
-            // If not admin, redirect to login
-            if (role !== 'admin') {
-                // For demo, you can comment this out to test
-                // window.location.href = 'login.html';
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Verify roles
+            if (!Auth.checkAuth(['Admin'])) {
+                return;
             }
             
             // Set today's date
             const today = new Date();
             const options = { year: 'numeric', month: 'long', day: 'numeric' };
-            document.getElementById('todayDate').textContent = today.toLocaleDateString('en-US', options);
-            document.getElementById('footerDate').textContent = today.toLocaleDateString('en-US', options);
+            const todayDateEl = document.getElementById('todayDate');
+            if (todayDateEl) todayDateEl.textContent = today.toLocaleDateString('en-US', options);
+            const footerDateEl = document.getElementById('footerDate');
+            if (footerDateEl) footerDateEl.textContent = today.toLocaleDateString('en-US', options);
+
+            await loadDashboardSummary();
+            await loadRecentActivities();
         });
 
+        async function loadDashboardSummary() {
+            try {
+                const summary = await api.get('admin/dashboard/summary');
+                
+                // Fetch service requests to calculate order counts
+                let requests = [];
+                try {
+                    requests = await api.get('service-requests');
+                } catch(e) {
+                    console.error("Failed to load requests count", e);
+                }
+
+                const totalOrders = requests.length;
+                const completedOrders = requests.filter(r => r.status === 'Completed').length;
+                const pendingOrders = totalOrders - completedOrders;
+                
+                // Active subscriptions revenue calculation (e.g. 99 SAR per sub)
+                const revenue = summary.activeSubscriptions * 99;
+
+                // Update DOM elements
+                document.getElementById('totalCustomers').textContent = summary.customers;
+                document.getElementById('totalProviders').textContent = summary.providers;
+                document.getElementById('totalOrders').textContent = totalOrders;
+                document.getElementById('completedOrders').textContent = completedOrders;
+                document.getElementById('pendingOrders').textContent = pendingOrders;
+                document.getElementById('totalRevenue').textContent = `SAR ${revenue.toLocaleString()}`;
+            } catch (err) {
+                console.error("Failed to load dashboard summary:", err);
+            }
+        }
+
+        async function loadRecentActivities() {
+            try {
+                const activities = await api.get('admin/dashboard/recent-activity?pageSize=10');
+                const listEl = document.getElementById('activityList');
+                if (!listEl) return;
+
+                let html = '<h3><i class="fas fa-clock-rotate-left"></i> Recent Activity</h3>';
+                if (!activities || activities.length === 0) {
+                    html += '<div style="padding:20px;text-align:center;color:var(--text-light);">No recent activities found</div>';
+                    listEl.innerHTML = html;
+                    return;
+                }
+
+                activities.forEach(item => {
+                    let iconClass = 'blue';
+                    let iconHtml = '<i class="fas fa-info-circle"></i>';
+                    const desc = item.description.toLowerCase();
+
+                    if (desc.includes('register') || desc.includes('user')) {
+                        iconClass = 'green';
+                        iconHtml = '<i class="fas fa-user-plus"></i>';
+                    } else if (desc.includes('placed') || desc.includes('request') || desc.includes('order')) {
+                        iconClass = 'orange';
+                        iconHtml = '<i class="fas fa-file-signature"></i>';
+                    } else if (desc.includes('complete')) {
+                        iconClass = 'green';
+                        iconHtml = '<i class="fas fa-check-circle"></i>';
+                    } else if (desc.includes('deactivate') || desc.includes('suspend') || desc.includes('warn')) {
+                        iconClass = 'red';
+                        iconHtml = '<i class="fas fa-user-slash"></i>';
+                    } else if (desc.includes('star') || desc.includes('review') || desc.includes('rate')) {
+                        iconClass = 'purple';
+                        iconHtml = '<i class="fas fa-star"></i>';
+                    }
+
+                    const timeAgo = formatTime(item.createdAt);
+
+                    html += `
+                        <div class="activity-item">
+                            <div class="activity-icon ${iconClass}">${iconHtml}</div>
+                            <div class="activity-text">
+                                <span>${item.description}</span>
+                            </div>
+                            <span class="activity-time">${timeAgo}</span>
+                        </div>
+                    `;
+                });
+
+                listEl.innerHTML = html;
+            } catch (err) {
+                console.error("Failed to load recent activities:", err);
+            }
+        }
+
+        function formatTime(isoString) {
+            if (!isoString) return '';
+            var date = new Date(isoString);
+            var now = new Date();
+            var diff = Math.floor((now - date) / (1000 * 60));
+
+            if (diff < 1) return 'Just now';
+            if (diff < 60) return diff + 'm ago';
+            if (diff < 1440) return Math.floor(diff / 60) + 'h ago';
+            return date.toLocaleDateString();
+        }
+
         // ==========================================
-        // SIDEBAR TOGGLE (للجوال)
+        // SIDEBAR TOGGLE
         // ==========================================
         const sidebarToggle = document.getElementById('sidebarToggle');
         const sidebar = document.getElementById('sidebar');
@@ -705,12 +812,8 @@
             sidebarOverlay.classList.toggle('open');
         }
 
-        if (sidebarToggle) {
-            sidebarToggle.addEventListener('click', toggleSidebar);
-        }
-        if (sidebarOverlay) {
-            sidebarOverlay.addEventListener('click', toggleSidebar);
-        }
+        if (sidebarToggle) sidebarToggle.addEventListener('click', toggleSidebar);
+        if (sidebarOverlay) sidebarOverlay.addEventListener('click', toggleSidebar);
 
         // ==========================================
         // THEME TOGGLE
@@ -718,10 +821,9 @@
         const themeToggle = document.getElementById('themeToggle');
         const body = document.body;
 
-        // Check saved theme
         if (localStorage.getItem('adminTheme') === 'dark') {
             body.classList.add('dark-mode');
-            themeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+            if (themeToggle) themeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
         }
 
         if (themeToggle) {
@@ -737,30 +839,10 @@
             });
         }
 
-        // ==========================================
-        // LOGOUT
-        // ==========================================
         function handleLogout(event) {
             event.preventDefault();
-            localStorage.removeItem('isLoggedIn');
-            localStorage.removeItem('userRole');
-            localStorage.removeItem('userEmail');
-            localStorage.removeItem('rememberMe');
-            window.location.href = 'index.html';
-        }
-
-        // ==========================================
-        // UPDATE STATS (للاختبار)
-        // ==========================================
-        function updateStats(customers, providers, orders, completed, pending, revenue) {
-            document.getElementById('totalCustomers').textContent = customers || 156;
-            document.getElementById('totalProviders').textContent = providers || 42;
-            document.getElementById('totalOrders').textContent = orders || 89;
-            document.getElementById('completedOrders').textContent = completed || 64;
-            document.getElementById('pendingOrders').textContent = pending || 25;
-            document.getElementById('totalRevenue').textContent = revenue || 'SAR 12,450';
+            Auth.logout();
         }
     </script>
-
 </body>
 </html>

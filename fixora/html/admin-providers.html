@@ -497,14 +497,35 @@
             <main class="main-content">
                 <div class="container">
 
+                    <!-- ===== PENDING VERIFICATIONS ===== -->
+                    <div class="page-header" style="margin-top: 40px; margin-bottom: 12px;">
+                        <h2 style="color: var(--text-primary); font-size: 1.4rem;">
+                            <i class="fas fa-file-shield"></i> Pending Document Verifications
+                        </h2>
+                    </div>
+                    <div class="table-container" style="margin-bottom: 30px;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>User ID</th>
+                                    <th>Document Type</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pendingDocsList">
+                                <tr>
+                                    <td colspan="4" style="text-align:center;padding:20px;color:var(--text-light);">Loading verifications...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
                     <!-- ===== HEADER ===== -->
                     <div class="page-header">
                         <h1 class="page-title">
                             <i class="fas fa-user-tie"></i> Providers
                         </h1>
-                        <button class="btn-add" onclick="addProvider()">
-                            <i class="fas fa-plus"></i> Add Provider
-                        </button>
                     </div>
 
                     <!-- ===== TABLE ===== -->
@@ -591,7 +612,238 @@
         </div>
     </div>
 
+    <script src="../js/config.js"></script>
+    <script src="../js/tokenManager.js"></script>
+    <script src="../js/loading.js"></script>
+    <script src="../js/errorHandler.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/signalr.js"></script>
+    <script src="../js/script.js"></script>
+    <script src="../js/footer.js"></script>
     <script>
+        // ==========================================
+        // CHECK LOGIN & LOAD DATA
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', async function() {
+            if (!Auth.checkAuth(['Admin'])) {
+                return;
+            }
+            await loadProviders();
+            await loadPendingDocuments();
+        });
+
+        async function loadProviders() {
+            try {
+                const response = await api.get('admin/users/search?roleFilter=Provider&pageSize=100');
+                const list = response.items || [];
+                renderProviders(list);
+            } catch (err) {
+                console.error("Failed to load providers:", err);
+            }
+        }
+
+        function renderProviders(providers) {
+            const tbody = document.querySelector('tbody:not(#pendingDocsList)');
+            if (!tbody) return;
+
+            if (providers.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align:center;padding:20px;color:var(--text-light);">
+                            No providers found.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = providers.map(user => {
+                const isSuspended = user.status.toLowerCase() === 'suspended';
+                const statusClass = isSuspended ? 'status-inactive' : 'status-active';
+                const joinedDate = new Date(user.createdAt).toLocaleDateString('en-US', {
+                    year: 'numeric', month: 'short', day: 'numeric'
+                });
+
+                const warnBtnHtml = `<button class="action-btn edit" style="background:#f59e0b;" onclick="warnUser('${user.id}', '${user.fullName}')" title="Issue Warning"><i class="fas fa-triangle-exclamation"></i></button>`;
+
+                const suspendBtnHtml = isSuspended
+                    ? `<button class="action-btn approve" onclick="unsuspendUser('${user.id}', '${user.fullName}')" title="Unsuspend"><i class="fas fa-user-check"></i></button>`
+                    : `<button class="action-btn reject" onclick="suspendUser('${user.id}', '${user.fullName}')" title="Suspend"><i class="fas fa-user-slash"></i></button>`;
+
+                return `
+                    <tr>
+                        <td class="provider-name">${user.fullName}</td>
+                        <td>${user.email}</td>
+                        <td>Provider Profile</td>
+                        <td><span class="status-badge ${statusClass}">${user.status}</span></td>
+                        <td>${joinedDate}</td>
+                        <td>
+                            <div style="display:flex;gap:6px;">
+                                ${warnBtnHtml}
+                                ${suspendBtnHtml}
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        async function loadPendingDocuments() {
+            try {
+                const list = await api.get('admin/documents/pending');
+                const tbody = document.getElementById('pendingDocsList');
+                if (!tbody) return;
+
+                if (!list || list.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="4" style="text-align:center;padding:20px;color:var(--text-light);">
+                                No pending verification documents.
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                tbody.innerHTML = list.map(doc => {
+                    const downloadBtnHtml = `<button class="action-btn edit" style="background:#3b82f6;" onclick="downloadDoc('${doc.id}', '${doc.documentType}.pdf')" title="Download file"><i class="fas fa-download"></i></button>`;
+                    const approveBtnHtml = `<button class="action-btn approve" onclick="approveDoc('${doc.id}')" title="Approve Document"><i class="fas fa-check"></i></button>`;
+                    const rejectBtnHtml = `<button class="action-btn reject" onclick="rejectDoc('${doc.id}')" title="Reject Document"><i class="fas fa-times"></i></button>`;
+
+                    return `
+                        <tr>
+                            <td>${doc.userId}</td>
+                            <td>${doc.documentType}</td>
+                            <td><span class="status-badge status-pending">${doc.status}</span></td>
+                            <td>
+                                <div style="display:flex;gap:6px;">
+                                    ${downloadBtnHtml}
+                                    ${approveBtnHtml}
+                                    ${rejectBtnHtml}
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (err) {
+                console.error("Failed to load pending verifications:", err);
+            }
+        }
+
+        // ==========================================
+        // DOCUMENT ACTIONS
+        // ==========================================
+        async function downloadDoc(docId, fileName) {
+            try {
+                const response = await fetch(`${CONFIG.API_BASE_URL.replace(/\/$/, '')}/admin/documents/${docId}/download`, {
+                    headers: {
+                        "Authorization": `Bearer ${TokenManager.getAccessToken()}`
+                    }
+                });
+                if (!response.ok) throw new Error("Failed to download file");
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = fileName || 'document.pdf';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(url);
+            } catch (err) {
+                console.error(err);
+                alert("Failed to download document.");
+            }
+        }
+
+        async function approveDoc(docId) {
+            if (!confirm("✅ Are you sure you want to approve this verification document?")) return;
+
+            try {
+                await api.put(`admin/documents/${docId}/approve`);
+                ErrorHandler.showNotification("Success", "Document has been approved successfully.", "success");
+                await loadPendingDocuments();
+                await loadProviders(); // reload providers to reflect any status change
+            } catch (err) {
+                console.error("Failed to approve document:", err);
+            }
+        }
+
+        async function rejectDoc(docId) {
+            const reason = prompt("❌ Enter rejection reason:");
+            if (reason === null) return;
+            if (!reason.trim()) {
+                alert("Rejection reason is required.");
+                return;
+            }
+
+            try {
+                await api.put(`admin/documents/${docId}/reject`, { comment: reason });
+                ErrorHandler.showNotification("Success", "Document has been rejected.", "success");
+                await loadPendingDocuments();
+                await loadProviders();
+            } catch (err) {
+                console.error("Failed to reject document:", err);
+            }
+        }
+
+        // ==========================================
+        // USER SUSPENSION & WARNINGS
+        // ==========================================
+        async function suspendUser(userId, name) {
+            const reason = prompt(`⚠️ Enter suspension reason for ${name}:`);
+            if (reason === null) return;
+            if (!reason.trim()) {
+                alert("Reason is required to suspend a user.");
+                return;
+            }
+
+            try {
+                await api.put(`admin/users/${userId}/suspend`, { reason: reason });
+                ErrorHandler.showNotification("Success", `${name} has been suspended successfully.`, "success");
+                await loadProviders();
+            } catch (err) {
+                console.error("Failed to suspend user:", err);
+            }
+        }
+
+        async function unsuspendUser(userId, name) {
+            if (!confirm(`Are you sure you want to unsuspend ${name}?`)) return;
+
+            try {
+                await api.put(`admin/users/${userId}/unsuspend`);
+                ErrorHandler.showNotification("Success", `${name} has been unsuspended successfully.`, "success");
+                await loadProviders();
+            } catch (err) {
+                console.error("Failed to unsuspend user:", err);
+            }
+        }
+
+        async function warnUser(userId, name) {
+            const title = prompt(`📢 Enter Warning Title for ${name}:`);
+            if (title === null) return;
+            if (!title.trim()) return;
+
+            const reason = prompt(`📝 Enter Warning Description/Reason:`);
+            if (reason === null) return;
+            if (!reason.trim()) return;
+
+            const severity = prompt(`⚡ Enter Severity Level (Low, Medium, High):`, "Low");
+            if (severity === null) return;
+
+            try {
+                await api.post(`admin/users/${userId}/warnings`, {
+                    title: title,
+                    reason: reason,
+                    severityLevel: severity
+                });
+                ErrorHandler.showNotification("Success", `Compliance warning issued to ${name}.`, "success");
+            } catch (err) {
+                console.error("Failed to issue warning:", err);
+            }
+        }
+
         // ==========================================
         // SIDEBAR TOGGLE
         // ==========================================
@@ -604,8 +856,8 @@
             sidebarOverlay.classList.toggle('open');
         }
 
-        sidebarToggle.addEventListener('click', toggleSidebar);
-        sidebarOverlay.addEventListener('click', toggleSidebar);
+        if (sidebarToggle) sidebarToggle.addEventListener('click', toggleSidebar);
+        if (sidebarOverlay) sidebarOverlay.addEventListener('click', toggleSidebar);
 
         // ==========================================
         // THEME TOGGLE
@@ -615,51 +867,26 @@
 
         if (localStorage.getItem('adminTheme') === 'dark') {
             body.classList.add('dark-mode');
-            themeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+            if (themeToggle) themeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
         }
 
-        themeToggle.addEventListener('click', function() {
-            body.classList.toggle('dark-mode');
-            if (body.classList.contains('dark-mode')) {
-                localStorage.setItem('adminTheme', 'dark');
-                this.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
-            } else {
-                localStorage.setItem('adminTheme', 'light');
-                this.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
-            }
-        });
-
-        // ==========================================
-        // FUNCTIONS
-        // ==========================================
-        function addProvider() {
-            alert('📝 Add new provider form would open here');
-        }
-
-        function editProvider(name) {
-            alert(`✏️ Edit provider: ${name}`);
-        }
-
-        function approveProvider(name) {
-            if (confirm(`✅ Approve ${name} as a provider?`)) {
-                alert(`✅ ${name} has been approved!`);
-            }
-        }
-
-        function rejectProvider(name) {
-            if (confirm(`❌ Reject ${name} as a provider?`)) {
-                alert(`❌ ${name} has been rejected.`);
-            }
+        if (themeToggle) {
+            themeToggle.addEventListener('click', function() {
+                body.classList.toggle('dark-mode');
+                if (body.classList.contains('dark-mode')) {
+                    localStorage.setItem('adminTheme', 'dark');
+                    this.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+                } else {
+                    localStorage.setItem('adminTheme', 'light');
+                    this.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
+                }
+            });
         }
 
         function handleLogout(event) {
             event.preventDefault();
-            localStorage.removeItem('isLoggedIn');
-            localStorage.removeItem('userRole');
-            localStorage.removeItem('userEmail');
-            window.location.href = 'index.html';
+            Auth.logout();
         }
     </script>
-
 </body>
 </html>

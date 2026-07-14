@@ -182,6 +182,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // ✅ صفحات محمية للـ Provider
     const protectedProviderPages = ['provider-dashboard.html', 'orders.html', 'schedule.html', 'profile.html', 'subscription.html'];
     
+    // ✅ صفحات محمية للـ Admin
+    const protectedAdminPages = ['admin-dashboard.html', 'admin-customers.html', 'admin-providers.html', 'admin-orders.html', 'admin-reports.html', 'admin-settings.html'];
+
     // ✅ صفحات مشتركة (يدخلها الـ Customer والـ Provider)
     const sharedPages = ['examination.html', 'execution.html', 'rating.html', 'order-details.html', 'chat.html'];
 
@@ -193,6 +196,14 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!isLoggedIn) {
         window.location.href = 'login.html';
         return;
+    }
+
+    // Role-based Admin check
+    if (protectedAdminPages.includes(currentPage)) {
+        if (role !== 'admin' && role !== 'Admin') {
+            window.location.href = 'login.html';
+            return;
+        }
     }
 
     // Global Provider Onboarding Flow Enforcement
