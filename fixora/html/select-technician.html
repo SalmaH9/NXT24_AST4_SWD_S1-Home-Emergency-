@@ -206,8 +206,19 @@
             </footer>
         </div>
     </div>
+    <script src="../js/config.js"></script>
+    <script src="../js/tokenManager.js"></script>
+    <script src="../js/loading.js"></script>
+    <script src="../js/errorHandler.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
     <script src="../js/script.js"></script>
     <script src="../js/select-technician.js?v=2"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Auth.checkAuth(['customer']);
+        });
+    </script>
     <script src="../js/chatbot.js"></script>
 </body>
 </html>

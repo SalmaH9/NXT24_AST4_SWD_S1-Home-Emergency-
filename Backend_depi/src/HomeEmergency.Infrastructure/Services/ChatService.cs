@@ -20,15 +20,18 @@ public class ChatService : IChatService
     private readonly ApplicationDbContext _context;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly INotificationService _notificationService;
+    private readonly IRealTimeChatDispatcher _realTimeChatDispatcher;
 
     public ChatService(
         ApplicationDbContext context,
         UserManager<ApplicationUser> userManager,
-        INotificationService notificationService)
+        INotificationService notificationService,
+        IRealTimeChatDispatcher realTimeChatDispatcher)
     {
         _context = context;
         _userManager = userManager;
         _notificationService = notificationService;
+        _realTimeChatDispatcher = realTimeChatDispatcher;
     }
 
     public async Task<ChatSummaryDto> CreateChatAsync(Guid userId, CreateChatRequestDto request, CancellationToken cancellationToken = default)
@@ -203,7 +206,11 @@ public class ChatService : IChatService
             .Include(x => x.Sender)
             .FirstAsync(cancellationToken);
 
-        return MapMessage(persistedMessage);
+        var messageDto = MapMessage(persistedMessage);
+
+        await _realTimeChatDispatcher.SendMessageAsync(chatId, messageDto);
+
+        return messageDto;
     }
 
     public async Task<MessageDto> UpdateMessageAsync(Guid userId, Guid chatId, Guid messageId, UpdateMessageRequestDto request, CancellationToken cancellationToken = default)

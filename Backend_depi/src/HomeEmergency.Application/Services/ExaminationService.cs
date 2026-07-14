@@ -17,11 +17,13 @@ public class ExaminationService : IExaminationService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
+    private readonly INotificationService _notificationService;
 
-    public ExaminationService(IUnitOfWork unitOfWork, IMapper mapper)
+    public ExaminationService(IUnitOfWork unitOfWork, IMapper mapper, INotificationService notificationService)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _notificationService = notificationService;
     }
 
     public async Task<ExaminationDto> CreateExaminationAsync(Guid providerId, CreateExaminationDto request)
@@ -64,6 +66,20 @@ public class ExaminationService : IExaminationService
 
         await _unitOfWork.CompleteAsync();
 
+        try
+        {
+            await _notificationService.CreateAsync(
+                serviceRequest.CustomerId,
+                NotificationType.ExaminationSubmitted,
+                "Inspection Report Submitted",
+                $"Technician has submitted an inspection report for request {serviceRequest.Description.Substring(0, Math.Min(20, serviceRequest.Description.Length))}..."
+            );
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Notification failed: {ex.Message}");
+        }
+
         return _mapper.Map<ExaminationDto>(examination);
     }
 
@@ -84,6 +100,26 @@ public class ExaminationService : IExaminationService
 
         _unitOfWork.Examinations.Update(examination);
         await _unitOfWork.CompleteAsync();
+
+        try
+        {
+            var notificationType = request.IsApproved ? NotificationType.ExaminationAccepted : NotificationType.ExaminationRejected;
+            var notificationTitle = request.IsApproved ? "Examination Approved" : "Examination Rejected";
+            var notificationBody = request.IsApproved 
+                ? "The customer has approved your inspection report. You can now start the execution."
+                : "The customer has rejected your inspection report.";
+
+            await _notificationService.CreateAsync(
+                examination.ProviderId,
+                notificationType,
+                notificationTitle,
+                notificationBody
+            );
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Notification failed: {ex.Message}");
+        }
 
         return true;
     }

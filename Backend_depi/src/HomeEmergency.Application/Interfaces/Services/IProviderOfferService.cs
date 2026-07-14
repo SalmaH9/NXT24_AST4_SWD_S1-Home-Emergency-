@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,4 +15,10 @@ public interface IProviderOfferService
     Task<IEnumerable<ProviderOfferDto>> GetOffersByRequestAsync(Guid requestId);
 
     Task<bool> SelectProviderAsync(Guid requestId, Guid providerId);
+
+    Task<IEnumerable<ProviderOfferDto>> GetProviderOffersAsync(Guid providerId);
+
+    Task<ProviderOfferDto?> UpdateOfferAsync(Guid providerId, Guid offerId, UpdateProviderOfferDto request);
+
+    Task<bool> WithdrawOfferAsync(Guid providerId, Guid offerId);
 }

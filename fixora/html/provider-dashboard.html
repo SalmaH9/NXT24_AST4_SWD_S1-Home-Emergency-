@@ -60,23 +60,23 @@
                     <section class="stats">
                         <div class="stat-card">
                             <i class="fas fa-clipboard-list"></i>
-                            <h3>12</h3>
-                            <p>Pending Orders</p>
+                            <h3 id="pendingJobsCount">0</h3>
+                            <p>My Active Jobs</p>
                         </div>
                         <div class="stat-card">
                             <i class="fas fa-check-circle"></i>
-                            <h3>48</h3>
+                            <h3 id="completedJobsCount">0</h3>
                             <p>Completed Jobs</p>
                         </div>
                         <div class="stat-card">
-                            <i class="fas fa-star"></i>
-                            <h3>4.8</h3>
-                            <p>Rating</p>
+                            <i class="fas fa-hand-holding-dollar"></i>
+                            <h3 id="submittedOffersCount">0</h3>
+                            <p>Submitted Offers</p>
                         </div>
                         <div class="stat-card">
-                            <i class="fas fa-clock"></i>
-                            <h3>3</h3>
-                            <p>Today's Jobs</p>
+                            <i class="fas fa-star"></i>
+                            <h3 id="providerRating">4.8</h3>
+                            <p>Rating</p>
                         </div>
                     </section>
 
@@ -97,32 +97,10 @@
                                         <th style="padding: 12px; color: var(--text-secondary); font-weight: 600;">Action</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <tr style="border-bottom: 1px solid var(--border);">
-                                        <td style="padding: 12px; color: var(--text-primary); font-weight: 600;">#ORD-001</td>
-                                        <td style="padding: 12px; color: var(--text-secondary);">Ahmed Al-Saud</td>
-                                        <td style="padding: 12px; color: var(--text-secondary);"><i class="fas fa-faucet" style="color: var(--accent);"></i> Plumbing</td>
-                                        <td style="padding: 12px;"><span style="background: #fef3c7; color: #b45309; padding: 4px 12px; border-radius: 60px; font-size: 0.8rem; font-weight: 600;">Pending</span></td>
-                                        <td style="padding: 12px;">
-                                            <button style="background: var(--accent); color: white; border: none; padding: 6px 16px; border-radius: 8px; cursor: pointer; font-weight: 600;">Accept</button>
-                                        </td>
-                                    </tr>
-                                    <tr style="border-bottom: 1px solid var(--border);">
-                                        <td style="padding: 12px; color: var(--text-primary); font-weight: 600;">#ORD-002</td>
-                                        <td style="padding: 12px; color: var(--text-secondary);">Fatima Al-Zahra</td>
-                                        <td style="padding: 12px; color: var(--text-secondary);"><i class="fas fa-bolt" style="color: var(--accent);"></i> Electrical</td>
-                                        <td style="padding: 12px;"><span style="background: #d1fae5; color: #065f46; padding: 4px 12px; border-radius: 60px; font-size: 0.8rem; font-weight: 600;">In Progress</span></td>
-                                        <td style="padding: 12px;">
-                                            <button style="background: #48bb78; color: white; border: none; padding: 6px 16px; border-radius: 8px; cursor: pointer; font-weight: 600;">Complete</button>
-                                        </td>
-                                    </tr>
+                                <tbody id="recentOrdersBody">
                                     <tr>
-                                        <td style="padding: 12px; color: var(--text-primary); font-weight: 600;">#ORD-003</td>
-                                        <td style="padding: 12px; color: var(--text-secondary);">Mohammed Al-Otaibi</td>
-                                        <td style="padding: 12px; color: var(--text-secondary);"><i class="fas fa-snowflake" style="color: var(--accent);"></i> AC Repair</td>
-                                        <td style="padding: 12px;"><span style="background: #e0e7ff; color: #4338ca; padding: 4px 12px; border-radius: 60px; font-size: 0.8rem; font-weight: 600;">Scheduled</span></td>
-                                        <td style="padding: 12px;">
-                                            <button style="background: var(--accent); color: white; border: none; padding: 6px 16px; border-radius: 8px; cursor: pointer; font-weight: 600;">Start</button>
+                                        <td colspan="5" style="padding: 20px; text-align: center; color: var(--text-secondary);">
+                                            <i class="fas fa-spinner fa-spin"></i> Loading recent orders...
                                         </td>
                                     </tr>
                                 </tbody>
@@ -140,28 +118,111 @@
         </div>
     </div>
 
+    <script src="../js/config.js"></script>
+    <script src="../js/tokenManager.js"></script>
+    <script src="../js/loading.js"></script>
+    <script src="../js/errorHandler.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
     <script src="../js/script.js"></script>
-        <script src="../js/chatbot.js"></script>
+    <script src="../js/chatbot.js"></script>
     <script>
+        var categoriesMap = {};
+
+        async function loadDashboardData() {
+            try {
+                // Fetch categories
+                const categories = await api.get('/categories', { showLoader: false });
+                if (categories) {
+                    categories.forEach(c => categoriesMap[c.id] = c.name);
+                }
+
+                // Resolve current provider profile
+                const profile = await api.get('/profile', { showLoader: false });
+                let currentUserId = null;
+                if (profile) {
+                    currentUserId = profile.userId || profile.id;
+                    if (profile.rating) {
+                        document.getElementById('providerRating').textContent = parseFloat(profile.rating).toFixed(1);
+                    }
+                }
+
+                // Fetch global requests and filter for provider
+                const requestsList = await api.get('/service-requests') || [];
+
+                // Fetch submitted offers
+                const myOffersList = await api.get('/provider-offers/my-offers') || [];
+
+                // Calculate statistics
+                const activeJobs = requestsList.filter(r => r.selectedProviderId === currentUserId && r.status !== 'Completed' && r.status !== 'Cancelled');
+                const completedJobs = requestsList.filter(r => r.selectedProviderId === currentUserId && r.status === 'Completed');
+
+                // Bind stats to UI
+                document.getElementById('pendingJobsCount').textContent = activeJobs.length;
+                document.getElementById('completedJobsCount').textContent = completedJobs.length;
+                document.getElementById('submittedOffersCount').textContent = myOffersList.length;
+
+                // Render recent active assignments in dashboard table
+                const tbody = document.getElementById('recentOrdersBody');
+                if (activeJobs.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" style="padding: 20px; text-align: center; color: var(--text-secondary);"><i class="fas fa-inbox"></i> No active assignments.</td></tr>`;
+                    return;
+                }
+
+                var html = '';
+                // Display up to 5 recent active jobs
+                activeJobs.slice(0, 5).forEach(function(r) {
+                    const serviceName = categoriesMap[r.categoryId] || 'Emergency Fix';
+                    var customerMask = 'Customer ID: ' + r.customerId.substring(0, 5).toUpperCase();
+                    var statusStyle = r.status === 'InProgress' ? 'background: #d1fae5; color: #065f46;' : 'background: #e0e7ff; color: #4338ca;';
+                    
+                    html += `<tr style="border-bottom: 1px solid var(--border);">
+                        <td style="padding: 12px; color: var(--text-primary); font-weight: 600;">#ID-${r.id.substring(0, 8).toUpperCase()}</td>
+                        <td style="padding: 12px; color: var(--text-secondary);">${customerMask}</td>
+                        <td style="padding: 12px; color: var(--text-secondary);"><i class="fas ${getServiceIcon(serviceName)}" style="color: var(--accent);"></i> ${serviceName}</td>
+                        <td style="padding: 12px;"><span style="${statusStyle} padding: 4px 12px; border-radius: 60px; font-size: 0.8rem; font-weight: 600;">${r.status}</span></td>
+                        <td style="padding: 12px;">
+                            <a href="orders.html" style="background: var(--accent); color: white; border: none; padding: 6px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; text-decoration: none; display: inline-block;">View</a>
+                        </td>
+                    </tr>`;
+                });
+                tbody.innerHTML = html;
+            } catch (err) {
+                console.error('Failed to load provider dashboard:', err);
+            }
+        }
+
+        function getServiceIcon(serviceName) {
+            var name = serviceName.toLowerCase();
+            if (name.includes('plumbing')) return 'fa-faucet';
+            if (name.includes('electrical')) return 'fa-bolt';
+            if (name.includes('ac')) return 'fa-snowflake';
+            if (name.includes('carpentry')) return 'fa-hammer';
+            if (name.includes('painting')) return 'fa-paint-roller';
+            if (name.includes('masonry')) return 'fa-trowel';
+            if (name.includes('cleaning')) return 'fa-broom';
+            if (name.includes('gardening')) return 'fa-leaf';
+            return 'fa-wrench';
+        }
+
         // Check if provider is logged in
-        window.addEventListener('DOMContentLoaded', function() {
-            const role = localStorage.getItem('userRole');
-            if (role !== 'provider') {
-                window.location.href = 'login.html';
+        document.addEventListener('DOMContentLoaded', function() {
+            if (Auth.checkAuth(['provider', 'company'])) {
+                loadDashboardData();
+            }
+            
+            var footerDate = document.getElementById('footer-date');
+            if (footerDate) {
+                footerDate.textContent = new Date().toLocaleDateString('en-US', {
+                    year: 'numeric', month: 'short', day: 'numeric'
+                });
             }
         });
 
         // Logout function - redirects to HOME page
         function handleLogout(event) {
             event.preventDefault();
-            localStorage.removeItem('isLoggedIn');
-            localStorage.removeItem('userRole');
-            localStorage.removeItem('userEmail');
-            localStorage.removeItem('userName');
-            localStorage.removeItem('userPhone');
-            localStorage.removeItem('providerVerified');
-            localStorage.removeItem('currentRequest');
-            window.location.href = 'index.html';
+            Auth.logout();
         }
     </script>
 

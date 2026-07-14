@@ -15,10 +15,14 @@ namespace HomeEmergency.Infrastructure.Services;
 public class NotificationService : INotificationService
 {
     private readonly ApplicationDbContext _context;
+    private readonly IRealTimeNotificationDispatcher _realTimeNotificationDispatcher;
 
-    public NotificationService(ApplicationDbContext context)
+    public NotificationService(
+        ApplicationDbContext context,
+        IRealTimeNotificationDispatcher realTimeNotificationDispatcher)
     {
         _context = context;
+        _realTimeNotificationDispatcher = realTimeNotificationDispatcher;
     }
 
     public async Task<NotificationDto> CreateAsync(
@@ -44,7 +48,10 @@ public class NotificationService : INotificationService
         _context.Notifications.Add(notification);
         await _context.SaveChangesAsync(cancellationToken);
 
-        return Map(notification);
+        var dto = Map(notification);
+        await _realTimeNotificationDispatcher.SendNotificationAsync(userId, dto);
+
+        return dto;
     }
 
     public async Task<PaginatedListDto<NotificationDto>> GetForUserAsync(Guid userId, int pageNumber, int pageSize, CancellationToken cancellationToken = default)

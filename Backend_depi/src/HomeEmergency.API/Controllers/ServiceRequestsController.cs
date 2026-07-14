@@ -44,11 +44,11 @@ public class ServiceRequestsController : ControllerBase
     }
 
     /// <summary>
-    /// Retrieves all service requests (admin use).
+    /// Retrieves all service requests (admin/provider use).
     /// </summary>
     /// <returns>A list of all service requests.</returns>
     [HttpGet]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,Provider,Company")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<ServiceRequestDto>))]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]

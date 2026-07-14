@@ -139,6 +139,8 @@ function handleLogout(event) {
     localStorage.removeItem('currentExecution');
     localStorage.removeItem('currentOrderDetails');
     localStorage.removeItem('fixoraSubscription');
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
     
     // Redirect to HOME page (index.html)
     window.location.href = 'index.html';
@@ -152,42 +154,27 @@ document.addEventListener('DOMContentLoaded', function() {
     updateSidebarNavigation();
 
     // Update auth link in navbar
-    // const authLink = document.getElementById('authLink');
-    // const role = localStorage.getItem('userRole');
-    // if (authLink) {
-    //     if (role) {
-    //         authLink.innerHTML = `<a href="index.html" onclick="handleLogout(event)"><i class="fas fa-sign-out-alt"></i> Logout</a>`;
-    //     } else {
-    //         authLink.innerHTML = `<a href="login.html"><i class="fas fa-right-to-bracket"></i> Login</a>`;
-    //     }
-    // }
+    const authLink = document.getElementById('authLink');
+    const role = localStorage.getItem('userRole');
+    const currentPage = window.location.pathname.split('/').pop();
 
+    // الصفحات العامة (مش محمية)
+    const publicPages = ['index.html', 'services.html', 'about.html', 'contact.html', 'login.html', 'register.html'];
 
-// Update auth link in navbar
-const authLink = document.getElementById('authLink');
-const role = localStorage.getItem('userRole');
-const currentPage = window.location.pathname.split('/').pop();
-
-// الصفحات العامة (مش محمية)
-const publicPages = ['index.html', 'services.html', 'about.html', 'contact.html', 'login.html', 'register.html'];
-
-if (authLink) {
-    // لو في صفحة عامة، خليها Login دايماً
-    if (publicPages.includes(currentPage)) {
-        authLink.innerHTML = `<a href="login.html"><i class="fas fa-right-to-bracket"></i> Login</a>`;
-    } else if (role) {
-        // لو في صفحة محمية ومسجل دخول → Logout
-        authLink.innerHTML = `<a href="index.html" onclick="handleLogout(event)"><i class="fas fa-sign-out-alt"></i> Logout</a>`;
-    } else {
-        // لو في صفحة محمية ومش مسجل → Login
-        authLink.innerHTML = `<a href="login.html"><i class="fas fa-right-to-bracket"></i> Login</a>`;
+    if (authLink) {
+        // لو في صفحة عامة، خليها Login دايماً
+        if (publicPages.includes(currentPage)) {
+            authLink.innerHTML = `<a href="login.html"><i class="fas fa-right-to-bracket"></i> Login</a>`;
+        } else if (role) {
+            // لو في صفحة محمية ومسجل دخول → Logout
+            authLink.innerHTML = `<a href="index.html" onclick="handleLogout(event)"><i class="fas fa-sign-out-alt"></i> Logout</a>`;
+        } else {
+            // لو في صفحة محمية ومش مسجل → Login
+            authLink.innerHTML = `<a href="login.html"><i class="fas fa-right-to-bracket"></i> Login</a>`;
+        }
     }
-}
-
-
 
     // Protect dashboard pages
-    const currentPage = window.location.pathname.split('/').pop();
     
     // ✅ صفحات محمية للـ Customer
     const protectedCustomerPages = ['customer-dashboard.html', 'my-orders.html', 'customer-profile.html', 'post-request.html'];
@@ -199,14 +186,38 @@ if (authLink) {
     const sharedPages = ['examination.html', 'execution.html', 'rating.html', 'order-details.html', 'chat.html'];
 
     // Allow access to index.html and public pages for everyone
-    const publicPages = ['index.html', 'services.html', 'about.html', 'contact.html', 'login.html', 'register.html'];
     if (publicPages.includes(currentPage)) return;
+
+    // Strict authentication check
+    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true' && !!localStorage.getItem('accessToken');
+    if (!isLoggedIn) {
+        window.location.href = 'login.html';
+        return;
+    }
+
+    // Global Provider Onboarding Flow Enforcement
+    if (role === 'provider' || role === 'company') {
+        const verified = localStorage.getItem('providerVerified');
+        const active = localStorage.getItem('providerActive') === 'true';
+
+        if (verified !== 'approved') {
+            // Unverified providers are locked to verification
+            if (currentPage !== 'provider-verification.html' && currentPage !== 'profile.html') {
+                window.location.href = 'provider-verification.html';
+                return;
+            }
+        } else if (!active) {
+            // Verified but unpaid/unsubscribed are locked to subscription page
+            const allowedPages = ['subscription.html', 'profile.html', 'provider-verification.html'];
+            if (!allowedPages.includes(currentPage)) {
+                window.location.href = 'subscription.html';
+                return;
+            }
+        }
+    }
 
     // ✅ إذا كانت الصفحة مشتركة، نسمح بالدخول للمستخدمين المسجلين فقط
     if (sharedPages.includes(currentPage)) {
-        if (!role) {
-            window.location.href = 'login.html';
-        }
         return;
     }
 
@@ -252,3 +263,80 @@ function setActiveLink() {
 document.addEventListener('DOMContentLoaded', function() {
     setActiveLink();
 });
+
+// ==========================================
+// DYNAMIC SIGNALR LOADER & REAL-TIME NOTIFICATIONS
+// ==========================================
+var notificationConnection = null;
+
+function initNotificationHub() {
+    if (typeof RealTime === "undefined") return;
+
+    notificationConnection = RealTime.createConnection("hubs/notifications");
+    if (notificationConnection) {
+        notificationConnection.on("ReceiveNotification", function(notificationDto) {
+            console.log("Real-time notification received:", notificationDto);
+
+            // 1. Show Toast Alert
+            if (typeof ErrorHandler !== "undefined" && ErrorHandler.showNotification) {
+                ErrorHandler.showNotification(
+                    notificationDto.title || "Notification",
+                    notificationDto.body || "You have a new update.",
+                    "success"
+                );
+            }
+
+            // 2. Dispatch custom event for page-level updates
+            const event = new CustomEvent("realtimeNotification", { detail: notificationDto });
+            document.dispatchEvent(event);
+        });
+
+        RealTime.startConnection("hubs/notifications").catch(err => {
+            console.error("Failed to start Notification Hub connection:", err);
+        });
+    }
+}
+
+function loadSignalRDependencies(callback) {
+    if (typeof signalR !== "undefined" && typeof RealTime !== "undefined") {
+        if (callback) callback();
+        return;
+    }
+
+    if (typeof signalR === "undefined") {
+        const srScript = document.createElement("script");
+        srScript.src = "https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js";
+        srScript.onload = () => {
+            if (typeof RealTime === "undefined") {
+                const rtScript = document.createElement("script");
+                rtScript.src = "../js/signalr.js";
+                rtScript.onload = () => {
+                    if (callback) callback();
+                };
+                document.head.appendChild(rtScript);
+            } else {
+                if (callback) callback();
+            }
+        };
+        document.head.appendChild(srScript);
+    } else if (typeof RealTime === "undefined") {
+        const rtScript = document.createElement("script");
+        rtScript.src = "../js/signalr.js";
+        rtScript.onload = () => {
+            if (callback) callback();
+        };
+        document.head.appendChild(rtScript);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const isLoggedInUser = localStorage.getItem('isLoggedIn') === 'true' && !!localStorage.getItem('accessToken');
+    if (isLoggedInUser) {
+        loadSignalRDependencies(() => {
+            initNotificationHub();
+        });
+    }
+});
+
+window.loadSignalRDependencies = loadSignalRDependencies;
+window.initNotificationHub = initNotificationHub;

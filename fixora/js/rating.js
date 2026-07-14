@@ -12,16 +12,24 @@ var categoryRatings = {
 };
 var reviewPhotos = [];
 var currentOrder = null;
+var currentRequest = null;
+var currentRole = null;
 
 // ===== INIT =====
-document.addEventListener('DOMContentLoaded', function() {
-    loadOrderData();
+document.addEventListener('DOMContentLoaded', async function() {
+    currentRole = localStorage.getItem('userRole');
+    if (!currentRole) {
+        window.location.href = 'login.html';
+        return;
+    }
+
+    await loadOrderData();
     updateFooterDate();
     checkRole();
 });
 
-function loadOrderData() {
-    // Load order from localStorage
+async function loadOrderData() {
+    // Load cached details from localStorage
     var saved = localStorage.getItem('currentOrderDetails');
     if (saved) {
         try {
@@ -29,38 +37,68 @@ function loadOrderData() {
         } catch(e) {}
     }
 
-    // If no saved order, use demo data
-    if (!currentOrder) {
-        currentOrder = {
-            id: '#ORD-001',
-            service: 'Plumbing',
-            status: 'completed',
-            date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
-            technician: {
-                name: 'Ahmed Al-Rashid',
-                rating: 4.9,
-                reviews: 128
-            },
-            customer: {
-                name: localStorage.getItem('userName') || 'Customer'
-            }
-        };
+    if (!currentOrder || !currentOrder.id) {
+        ErrorHandler.showNotification('Warning', 'No active completed request context found to rate.', 'warning');
+        return;
     }
 
-    // Display order info
-    document.getElementById('orderId').textContent = currentOrder.id || '#ORD-001';
-    document.getElementById('orderService').textContent = currentOrder.service || 'Service';
-    document.getElementById('orderDate').textContent = currentOrder.date || 'Today';
-    document.getElementById('orderTechnician').textContent = currentOrder.technician ? currentOrder.technician.name : 'Technician';
-    document.getElementById('techName').textContent = currentOrder.technician ? currentOrder.technician.name : 'Technician';
-    document.getElementById('customerName').textContent = currentOrder.customer ? currentOrder.customer.name : 'Customer';
+    try {
+        // Fetch fresh service request data from database
+        currentRequest = await api.get(`/service-requests/${currentOrder.id}`);
+        if (currentRequest) {
+            // Resolve Category Name
+            const categories = await api.get('/categories', { showLoader: false });
+            let categoryName = 'Emergency Repair';
+            if (categories) {
+                const cat = categories.find(c => c.id === currentRequest.categoryId);
+                if (cat) categoryName = cat.name;
+            }
+
+            // Resolve Provider Profile and stats
+            let providerName = 'Technician';
+            let providerRating = '4.8';
+            let providerReviews = '10';
+
+            if (currentRequest.selectedProviderId) {
+                try {
+                    const profile = await api.get(`/profile/${currentRequest.selectedProviderId}`, { showLoader: false });
+                    if (profile) {
+                        providerName = profile.fullName || providerName;
+                        providerRating = profile.rating ? parseFloat(profile.rating).toFixed(1) : providerRating;
+                        providerReviews = profile.reviewsCount || providerReviews;
+                    }
+                } catch(e) {}
+            }
+
+            // Display order info
+            document.getElementById('orderId').textContent = `#ID-${currentRequest.id.substring(0, 8).toUpperCase()}`;
+            document.getElementById('orderService').textContent = categoryName;
+            document.getElementById('orderDate').textContent = currentRequest.createdAt ? currentRequest.createdAt.split('T')[0] : 'Today';
+            document.getElementById('orderTechnician').textContent = providerName;
+            document.getElementById('techName').textContent = providerName;
+            document.getElementById('customerName').textContent = 'Customer #' + currentRequest.customerId.substring(0, 5).toUpperCase();
+
+            // Populate reviews statistics on header
+            const headerRatingEl = document.querySelector('.tech-details .rating');
+            if (headerRatingEl) {
+                headerRatingEl.textContent = `★ ${providerRating} (${providerReviews} reviews)`;
+            }
+        }
+    } catch (err) {
+        console.error('Failed to load order ratings context:', err);
+    }
 }
 
 function checkRole() {
-    var role = localStorage.getItem('userRole');
-    // Show customer rating section for providers
-    if (role === 'provider') {
-        document.getElementById('rateCustomerCard').style.display = 'block';
+    var rateProviderCard = document.querySelector('.rating-card');
+    var rateCustomerCard = document.getElementById('rateCustomerCard');
+
+    if (currentRole === 'provider' || currentRole === 'company') {
+        if (rateProviderCard) rateProviderCard.style.display = 'none';
+        if (rateCustomerCard) rateCustomerCard.style.display = 'block';
+    } else {
+        if (rateProviderCard) rateProviderCard.style.display = 'block';
+        if (rateCustomerCard) rateCustomerCard.style.display = 'none';
     }
 }
 
@@ -168,7 +206,7 @@ function removePhoto(btn) {
     item.remove();
 }
 
-// Drag and drop for photos
+// Setup drag and drop
 var photoUpload = document.getElementById('photoUpload');
 if (photoUpload) {
     photoUpload.addEventListener('dragover', function(e) {
@@ -185,125 +223,92 @@ if (photoUpload) {
         this.style.borderColor = 'var(--border)';
         this.style.background = 'var(--bg-primary)';
         var input = document.getElementById('reviewPhotos');
-        input.files = e.dataTransfer.files;
-        input.dispatchEvent(new Event('change'));
+        if (input) {
+            input.files = e.dataTransfer.files;
+            input.dispatchEvent(new Event('change'));
+        }
     });
 }
 
 // ===== SUBMIT RATING =====
-function submitRating() {
-    // Check if rating is selected
-    if (selectedRating === 0) {
-        alert('⚠️ Please rate the technician before submitting.');
-        return;
-    }
+async function submitRating() {
+    if (!currentRequest) return;
 
-    var reviewText = document.getElementById('reviewText').value.trim();
-    var customerReviewText = document.getElementById('customerReviewText').value.trim();
+    try {
+        if (currentRole === 'customer') {
+            if (selectedRating === 0) {
+                ErrorHandler.showNotification('Validation Error', 'Please select a rating before submitting.', 'error');
+                return;
+            }
 
-    // Check if review is too short
-    if (reviewText && reviewText.length < 10) {
-        alert('⚠️ Please write a more detailed review (at least 10 characters).');
-        return;
-    }
+            var reviewText = document.getElementById('reviewText').value.trim();
+            if (reviewText && reviewText.length < 10) {
+                ErrorHandler.showNotification('Validation Error', 'Please write a review of at least 10 characters.', 'error');
+                return;
+            }
 
-    // Build rating data
-    var ratingData = {
-        orderId: currentOrder.id || 'ORD-001',
-        technician: {
-            name: currentOrder.technician ? currentOrder.technician.name : 'Technician',
-            rating: selectedRating,
-            categories: categoryRatings,
-            review: reviewText || 'No review provided',
-            photos: reviewPhotos
-        },
-        customer: {
-            name: currentOrder.customer ? currentOrder.customer.name : 'Customer',
-            rating: customerRating,
-            review: customerReviewText || 'No review provided'
-        },
-        date: new Date().toISOString(),
-        role: localStorage.getItem('userRole') || 'customer'
-    };
+            // Combine category sub-scores into comment block
+            const combinedComment = `[Quality: ${categoryRatings.quality}, Comm: ${categoryRatings.communication}, Punctuality: ${categoryRatings.punctuality}, Value: ${categoryRatings.value}] ${reviewText}`;
 
-    // Save to localStorage
-    var ratings = JSON.parse(localStorage.getItem('fixoraRatings') || '[]');
-    ratings.push(ratingData);
-    localStorage.setItem('fixoraRatings', JSON.stringify(ratings));
+            await api.post('/ratings', {
+                serviceRequestId: currentRequest.id,
+                receiverUserId: currentRequest.selectedProviderId,
+                providerId: currentRequest.selectedProviderId,
+                ratingValue: selectedRating,
+                comment: combinedComment,
+                ratingStage: 2 // ServiceCompletion stage
+            });
+        } 
+        else {
+            // Provider rating customer
+            if (customerRating === 0) {
+                ErrorHandler.showNotification('Validation Error', 'Please select a customer rating before submitting.', 'error');
+                return;
+            }
 
-    // Update technician rating in localStorage
-    updateTechnicianRating(ratingData.technician.name, selectedRating);
+            var customerReviewText = document.getElementById('customerReviewText').value.trim();
 
-    // Update customer rating if provider
-    if (ratingData.role === 'provider' && customerRating > 0) {
-        updateCustomerRating(ratingData.customer.name, customerRating);
-    }
+            await api.post('/ratings', {
+                serviceRequestId: currentRequest.id,
+                receiverUserId: currentRequest.customerId,
+                ratingValue: customerRating,
+                comment: customerReviewText || 'Satisfactory client interaction.',
+                ratingStage: 3 // CustomerExperience stage
+            });
+        }
 
-    // Update order with rating flag
-    var orders = JSON.parse(localStorage.getItem('fixoraOrders') || '[]');
-    var orderIndex = orders.findIndex(function(o) { return o.id === currentOrder.id; });
-    if (orderIndex > -1) {
-        orders[orderIndex].rated = true;
-        localStorage.setItem('fixoraOrders', JSON.stringify(orders));
-    }
+        // Show success screen
+        var rateProviderCard = document.querySelector('.rating-card');
+        if (rateProviderCard) rateProviderCard.style.display = 'none';
+        
+        var rateCustomerCard = document.getElementById('rateCustomerCard');
+        if (rateCustomerCard) rateCustomerCard.style.display = 'none';
+        
+        document.querySelector('.rating-actions').style.display = 'none';
+        document.getElementById('ratingSuccess').style.display = 'block';
 
-    // Show success
-    document.querySelector('.rating-card').style.display = 'none';
-    var customerCard = document.getElementById('rateCustomerCard');
-    if (customerCard) customerCard.style.display = 'none';
-    document.querySelector('.rating-actions').style.display = 'none';
-    document.getElementById('ratingSuccess').style.display = 'block';
-
-    // Clear order details after rating
-    localStorage.removeItem('currentOrderDetails');
-
-    console.log('⭐ Rating submitted:', ratingData);
-}
-
-function updateTechnicianRating(techName, newRating) {
-    var techs = JSON.parse(localStorage.getItem('fixoraBids') || '[]');
-    var techIndex = techs.findIndex(function(t) { return t.name === techName; });
-    if (techIndex > -1) {
-        var tech = techs[techIndex];
-        var totalReviews = tech.reviews || 0;
-        var currentRating = tech.rating || 0;
-        var newTotal = ((currentRating * totalReviews) + newRating) / (totalReviews + 1);
-        tech.rating = Math.round(newTotal * 10) / 10;
-        tech.reviews = totalReviews + 1;
-        localStorage.setItem('fixoraBids', JSON.stringify(techs));
-    }
-}
-
-function updateCustomerRating(customerName, newRating) {
-    var customers = JSON.parse(localStorage.getItem('fixoraCustomers') || '[]');
-    var customerIndex = customers.findIndex(function(c) { return c.name === customerName; });
-    if (customerIndex > -1) {
-        var customer = customers[customerIndex];
-        var totalReviews = customer.reviews || 0;
-        var currentRating = customer.rating || 0;
-        var newTotal = ((currentRating * totalReviews) + newRating) / (totalReviews + 1);
-        customer.rating = Math.round(newTotal * 10) / 10;
-        customer.reviews = totalReviews + 1;
-        localStorage.setItem('fixoraCustomers', JSON.stringify(customers));
+        // Clear cached order details
+        localStorage.removeItem('currentOrderDetails');
+    } catch (err) {
+        console.error('Failed to submit rating:', err);
     }
 }
 
 // ===== SKIP RATING =====
 function skipRating() {
-    if (confirm('⚠️ Are you sure you want to skip rating? You can always rate later from your orders page.')) {
-        window.location.href = 'customer-dashboard.html';
+    if (confirm('Are you sure you want to skip rating? You can submit your rating later from your orders page.')) {
+        if (currentRole === 'customer') {
+            window.location.href = 'customer-dashboard.html';
+        } else {
+            window.location.href = 'provider-dashboard.html';
+        }
     }
 }
 
 // ===== LOGOUT =====
 function handleLogout(event) {
     event.preventDefault();
-    localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('userRole');
-    localStorage.removeItem('userEmail');
-    localStorage.removeItem('currentExecution');
-    localStorage.removeItem('currentOrderDetails');
-    window.location.href = 'index.html';
+    Auth.logout();
 }
 
 // ===== FOOTER =====

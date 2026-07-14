@@ -16,11 +16,13 @@ public class ServiceExecutionService : IServiceExecutionService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
+    private readonly INotificationService _notificationService;
 
-    public ServiceExecutionService(IUnitOfWork unitOfWork, IMapper mapper)
+    public ServiceExecutionService(IUnitOfWork unitOfWork, IMapper mapper, INotificationService notificationService)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _notificationService = notificationService;
     }
 
     public async Task<ServiceExecutionDto> StartExecutionAsync(Guid providerId, StartServiceExecutionDto request)
@@ -76,6 +78,20 @@ public class ServiceExecutionService : IServiceExecutionService
 
         await _unitOfWork.CompleteAsync();
 
+        try
+        {
+            await _notificationService.CreateAsync(
+                serviceRequest.CustomerId,
+                NotificationType.System,
+                "Service Work Started",
+                $"Provider has started working on request {serviceRequest.Description.Substring(0, Math.Min(20, serviceRequest.Description.Length))}..."
+            );
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Notification failed: {ex.Message}");
+        }
+
         return _mapper.Map<ServiceExecutionDto>(execution);
     }
 
@@ -124,6 +140,20 @@ public class ServiceExecutionService : IServiceExecutionService
             changedBy: providerId);
 
         await _unitOfWork.CompleteAsync();
+
+        try
+        {
+            await _notificationService.CreateAsync(
+                serviceRequest.CustomerId,
+                NotificationType.System,
+                "Service Work Completed",
+                $"Provider has completed the work for request {serviceRequest.Description.Substring(0, Math.Min(20, serviceRequest.Description.Length))}..."
+            );
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Notification failed: {ex.Message}");
+        }
 
         return _mapper.Map<ServiceExecutionDto>(execution);
     }

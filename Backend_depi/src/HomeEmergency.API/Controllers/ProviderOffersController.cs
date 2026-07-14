@@ -81,4 +81,67 @@ public class ProviderOffersController : ControllerBase
 
         return Ok();
     }
+
+    /// <summary>
+    /// Retrieves all offers submitted by the authenticated provider.
+    /// </summary>
+    /// <returns>A list of offers submitted by this provider.</returns>
+    [HttpGet("provider-offers/my-offers")]
+    [Authorize(Roles = "Provider,Company")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<ProviderOfferDto>))]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> GetMyOffers()
+    {
+        var providerId = _currentUserService.GetRequiredUserId();
+        var offers = await _providerOfferService.GetProviderOffersAsync(providerId);
+        return Ok(offers);
+    }
+
+    /// <summary>
+    /// Updates a submitted offer.
+    /// </summary>
+    /// <param name="id">The offer GUID.</param>
+    /// <param name="request">The updated price and notes details.</param>
+    /// <returns>The updated offer.</returns>
+    [HttpPut("provider-offers/{id:guid}")]
+    [Authorize(Roles = "Provider,Company")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ProviderOfferDto))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdateOffer(Guid id, [FromBody] UpdateProviderOfferDto request)
+    {
+        var providerId = _currentUserService.GetRequiredUserId();
+        var result = await _providerOfferService.UpdateOfferAsync(providerId, id, request);
+        
+        if (result == null)
+            return NotFound();
+
+        return Ok(result);
+    }
+
+    /// <summary>
+    /// Withdraws/Deletes a submitted offer.
+    /// </summary>
+    /// <param name="id">The offer GUID.</param>
+    /// <returns>True if withdrawn successfully.</returns>
+    [HttpDelete("provider-offers/{id:guid}")]
+    [Authorize(Roles = "Provider,Company")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> WithdrawOffer(Guid id)
+    {
+        var providerId = _currentUserService.GetRequiredUserId();
+        var result = await _providerOfferService.WithdrawOfferAsync(providerId, id);
+        
+        if (!result)
+            return NotFound();
+
+        return Ok();
+    }
 }

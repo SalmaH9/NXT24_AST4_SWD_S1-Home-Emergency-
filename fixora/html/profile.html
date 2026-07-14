@@ -99,65 +99,119 @@
                             <div class="detail-item"><span class="label">Specialty</span><span class="value" id="profileSpecialty2">Plumbing & Electrical</span></div>
                             <div class="detail-item"><span class="label">Experience</span><span class="value" id="profileExperience">5 Years</span></div>
                             <div class="detail-item"><span class="label">License</span><span class="value" style="color: #48bb78;">✅ Certified</span></div>
-                        </div>
-                        <div class="detail-card" style="grid-column: 1 / -1;">
+                        </                        <div class="detail-card" style="grid-column: 1 / -1;">
                             <h3><i class="fas fa-pen-to-square"></i> About Me</h3>
-                            <p style="color: var(--text-secondary); line-height: 1.8;">Professional home repair specialist with over 5 years of experience in plumbing and electrical services. Committed to providing high-quality, reliable, and affordable repairs. Available 24/7 for emergency services.</p>
+                            <p id="profileBio" style="color: var(--text-secondary); line-height: 1.8;">Professional home repair specialist. Committed to providing high-quality, reliable, and affordable repairs.</p>
                             <button class="edit-btn" onclick="editProfile()"><i class="fas fa-pen"></i> Edit Profile</button>
                         </div>
                     </div>
                 </div>
             </main>
-
-            <footer class="footer">
-                <div class="footer-container">
-                    <div class="footer-grid">
-                        <div class="footer-col">
-                            <div class="footer-logo"><i class="fas fa-wrench"></i><span>Fix<span class="logo-highlight">ora</span></span></div>
-                            <p class="footer-desc">Connecting homeowners with trusted service providers.</p>
-                        </div>
-                        <div class="footer-col">
-                            <h4>Quick Links</h4>
-                            <ul>
-                                <li><a href="provider-dashboard.html">Dashboard</a></li>
-                                <li><a href="orders.html">Orders</a></li>
-                                <li><a href="schedule.html">Schedule</a></li>
-                            </ul>
-                        </div>
-                        <div class="footer-col">
-                            <h4>Contact</h4>
-                            <ul class="footer-contact">
-                                <li><i class="fas fa-phone"></i><a href="tel:+18001234567">+1 (800) 123-4567</a></li>
-                                <li><i class="fas fa-envelope"></i><a href="mailto:support@fixora.com">support@fixora.com</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="footer-bottom">
-                        <p>© 2026 <strong>Fixora</strong>. All rights reserved.</p>
-                        <div class="footer-bottom-links">
-                            <a href="#">Privacy Policy</a>
-                            <a href="#">Terms of Service</a>
-                        </div>
-                    </div>
-                </div>
-            </footer>
         </div>
     </div>
 
-    <script src="../js/script.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../js/tokenManager.js"></script>
+    <script src="../js/loading.js"></script>
+    <script src="../js/errorHandler.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
     <script src="../js/footer.js"></script>
     <script>
-        function editProfile() {
-            const name = prompt('Enter your full name:', 'Khalid Al-Omari');
-            if (name) { document.getElementById('profileName').textContent = name; document.getElementById('profileName2').textContent = name; alert('✅ Profile updated successfully!'); }
+        let currentProfileData = null;
+
+        async function loadProfile() {
+            try {
+                const profile = await api.get('/profile');
+                if (profile) {
+                    currentProfileData = profile;
+                    
+                    // Main Header Details
+                    document.getElementById('profileName').textContent = profile.fullName;
+                    document.getElementById('profileName2').textContent = profile.fullName;
+                    document.getElementById('profileEmail').textContent = profile.email;
+                    document.getElementById('profilePhone').textContent = profile.phoneNumber || 'Not Set';
+                    document.getElementById('profileRole2').textContent = profile.role;
+
+                    // Provider Profile Details
+                    const subProfile = profile.providerProfile || profile.companyProfile;
+                    if (subProfile) {
+                        const specialty = subProfile.specialty || 'General Maintenance';
+                        const expYears = subProfile.experienceYears || 0;
+                        const rating = subProfile.averageRating !== undefined ? subProfile.averageRating.toFixed(1) : '5.0';
+                        const jobs = subProfile.completedRequestsCount || 0;
+                        const coverage = subProfile.coverageArea || 'Riyadh, Saudi Arabia';
+                        const bio = subProfile.bio || 'Professional service provider.';
+
+                        document.getElementById('profileSpecialty').textContent = `⚡ ${specialty} Specialist`;
+                        document.getElementById('profileSpecialty2').textContent = specialty;
+                        document.getElementById('profileExperience').textContent = `${expYears} Years`;
+                        document.getElementById('profileYears').textContent = `${expYears}`;
+                        document.getElementById('profileRating').textContent = `${rating} ⭐`;
+                        document.getElementById('profileJobs').textContent = `${jobs}`;
+                        document.getElementById('profileLocation').textContent = coverage;
+                        document.getElementById('profileBio').textContent = bio;
+                    }
+                }
+            } catch (err) {
+                console.error('Failed to load provider profile:', err);
+            }
         }
-        function handleLogout(event) { event.preventDefault(); localStorage.removeItem('isLoggedIn'); localStorage.removeItem('userRole'); localStorage.removeItem('userEmail'); window.location.href = 'login.html'; }
+
+        async function editProfile() {
+            if (!currentProfileData) return;
+
+            const subProfile = currentProfileData.providerProfile || currentProfileData.companyProfile || {};
+
+            const newName = prompt('Enter your full name:', currentProfileData.fullName);
+            if (newName === null) return;
+            if (!newName.trim()) {
+                ErrorHandler.showNotification('Validation Error', 'Full Name cannot be empty', 'error');
+                return;
+            }
+
+            const newPhone = prompt('Enter your phone number:', currentProfileData.phoneNumber || '');
+            if (newPhone === null) return;
+
+            const newLocation = prompt('Enter your coverage area:', subProfile.coverageArea || '');
+            if (newLocation === null) return;
+
+            const newBio = prompt('Enter a short bio (About Me):', subProfile.bio || '');
+            if (newBio === null) return;
+
+            const newExpStr = prompt('Enter years of experience:', subProfile.experienceYears || '0');
+            if (newExpStr === null) return;
+            const newExp = parseInt(newExpStr) || 0;
+
+            try {
+                const success = await api.put('/profile', {
+                    fullName: newName.trim(),
+                    phoneNumber: newPhone.trim(),
+                    bio: newBio.trim(),
+                    experienceYears: newExp,
+                    coverageArea: newLocation.trim()
+                });
+
+                if (success) {
+                    ErrorHandler.showNotification('Success', 'Profile updated successfully!', 'success');
+                    loadProfile();
+                }
+            } catch (err) {
+                console.error('Failed to update provider profile:', err);
+            }
+        }
+
+        function handleLogout(event) {
+            event.preventDefault();
+            Auth.logout();
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
-            const role = localStorage.getItem('userRole');
-            if (role !== 'provider') { window.location.href = 'login.html'; }
+            if (Auth.checkAuth(['provider', 'company'])) {
+                loadProfile();
+            }
         });
     </script>
-        <script src="../js/chatbot.js"></script>
-
+    <script src="../js/chatbot.js"></script>
 </body>
 </html>

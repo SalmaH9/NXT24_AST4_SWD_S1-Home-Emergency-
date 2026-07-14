@@ -725,162 +725,245 @@
 
     </div>
 
+    <script src="../js/config.js"></script>
+    <script src="../js/tokenManager.js"></script>
+    <script src="../js/loading.js"></script>
+    <script src="../js/errorHandler.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
     <script>
-    
-const customerTab=document.getElementById("customerTab");
-const providerTab=document.getElementById("providerTab");
-const selectedRole=document.getElementById("selectedRole");
-customerTab?.addEventListener("click",()=>{customerTab.classList.add("active");providerTab.classList.remove("active");selectedRole.value="customer";});
-providerTab?.addEventListener("click",()=>{providerTab.classList.add("active");customerTab.classList.remove("active");selectedRole.value="provider";});
+        const customerTab = document.getElementById("customerTab");
+        const providerTab = document.getElementById("providerTab");
+        const selectedRole = document.getElementById("selectedRole");
+        customerTab?.addEventListener("click", () => { customerTab.classList.add("active"); providerTab.classList.remove("active"); selectedRole.value = "customer"; });
+        providerTab?.addEventListener("click", () => { providerTab.classList.add("active"); customerTab.classList.remove("active"); selectedRole.value = "provider"; });
 
-// ==========================================
-    // ROLE SELECTOR
-    // ==========================================
-    const customerRole = document.getElementById('customerRole');
-    const providerRole = document.getElementById('providerRole');
+        // ==========================================
+        // ROLE SELECTOR
+        // ==========================================
+        const customerRole = document.getElementById('customerRole');
+        const providerRole = document.getElementById('providerRole');
 
-    customerRole.addEventListener('click', function() {
-        this.classList.add('active');
-        providerRole.classList.remove('active');
-        document.querySelector('input[name="role"][value="customer"]').checked = true;
-    });
-
-    providerRole.addEventListener('click', function() {
-        this.classList.add('active');
-        customerRole.classList.remove('active');
-        document.querySelector('input[name="role"][value="provider"]').checked = true;
-    });
-
-    // ==========================================
-    // TOGGLE PASSWORD
-    // ==========================================
-    const togglePassword = document.getElementById('togglePassword');
-    const passwordInput = document.getElementById('password');
-
-    togglePassword.addEventListener('click', function() {
-        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-        passwordInput.setAttribute('type', type);
-        const icon = this.querySelector('i');
-        icon.classList.toggle('fa-eye');
-        icon.classList.toggle('fa-eye-slash');
-    });
-
-    // ==========================================
-    // HANDLE LOGIN (العادي)
-    // ==========================================
-    function handleLogin(event) {
-        event.preventDefault();
-
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        const errorMessage = document.getElementById('errorMessage');
-        const errorText = document.getElementById('errorText');
-        const rememberMe = document.getElementById('rememberMe').checked;
-
-        const role = document.getElementById('selectedRole').value;
-
-        if (email === '' || password === '') {
-            errorText.textContent = 'Please fill in all fields';
-            errorMessage.classList.add('show');
-            return;
-        }
-
-        const validCustomer = email === 'demo@fixora.com' && password === 'password123';
-        const validProvider = email === 'provider@fixora.com' && password === 'provider123';
-
-        if (validCustomer || validProvider) {
-            errorMessage.classList.remove('show');
-
-            localStorage.setItem('isLoggedIn', 'true');
-            localStorage.setItem('userRole', role);
-            localStorage.setItem('userEmail', email);
-
-            // حفظ Remember Me بس لو مش أدمن
-            if (rememberMe && email !== 'admin@fixora.com') {
-                localStorage.setItem('rememberMe', 'true');
-            } else {
-                localStorage.removeItem('rememberMe');
-            }
-
-            if (role === 'customer') {
-                window.location.href = 'customer-dashboard.html';
-            } else if (role === 'provider') {
-                window.location.href = 'provider-dashboard.html';
-            }
-        } else {
-            errorText.textContent = 'Invalid credentials. Try: demo@fixora.com / password123 or provider@fixora.com / provider123';
-            errorMessage.classList.add('show');
-        }
-    }
-
-    // ==========================================
-    // REAL-TIME VALIDATION
-    // ==========================================
-    document.querySelectorAll('#loginForm input').forEach(input => {
-        input.addEventListener('input', () => {
-            document.getElementById('errorMessage').classList.remove('show');
-        });
-    });
-
-    // ==========================================
-    // AUTO-FILL REMEMBERED EMAIL (للمستخدمين العاديين بس)
-    // ==========================================
-    window.addEventListener('DOMContentLoaded', function() {
-        // لو في صفحة login و فيه Remember Me
-        if (localStorage.getItem('rememberMe') === 'true') {
-            const email = localStorage.getItem('userEmail');
-            // بس لو الإيميل مش بتاع الأدمن
-            if (email && email !== 'admin@fixora.com') {
-                document.getElementById('email').value = email;
-                document.getElementById('rememberMe').checked = true;
-            }
-        }
-    });
-
-    // ==========================================
-    // ADMIN LOGIN FUNCTIONS
-    // ==========================================
-
-    // 1. إظهار/إخفاء فورم الأدمن
-    function toggleAdminForm(event) {
-        event.preventDefault();
-        document.getElementById('adminForm').classList.toggle('show');
-    }
-
-    // 2. التحقق من بيانات الأدمن
-    function handleAdminLogin() {
-        const password = document.getElementById('adminPassword').value;
-
-        if (password === '') {
-            alert('⚠️ Please enter admin password');
-            return;
-        }
-
-        if (password === 'admin123') {
-            localStorage.setItem('isLoggedIn', 'true');
-            localStorage.setItem('userRole', 'admin');
-            localStorage.setItem('userEmail', 'admin@fixora.com');
-            
-            // ✨ مسح Remember Me عشان ما يظهرش إيميل الأدمن
-            localStorage.removeItem('rememberMe');
-            
-            window.location.href = 'admin-dashboard.html';
-        } else {
-            alert('❌ Invalid admin password. Try: admin123');
-        }
-    }
-
-    // 3. الضغط على Enter في حقل الأدمن
-    document.addEventListener('DOMContentLoaded', function() {
-        const adminPassword = document.getElementById('adminPassword');
-        if (adminPassword) {
-            adminPassword.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    handleAdminLogin();
-                }
+        if (customerRole) {
+            customerRole.addEventListener('click', function() {
+                this.classList.add('active');
+                providerRole.classList.remove('active');
+                document.querySelector('input[name="role"][value="customer"]').checked = true;
             });
         }
-    });
+
+        if (providerRole) {
+            providerRole.addEventListener('click', function() {
+                this.classList.add('active');
+                customerRole.classList.remove('active');
+                document.querySelector('input[name="role"][value="provider"]').checked = true;
+            });
+        }
+
+        // ==========================================
+        // TOGGLE PASSWORD
+        // ==========================================
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+
+        if (togglePassword && passwordInput) {
+            togglePassword.addEventListener('click', function() {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                const icon = this.querySelector('i');
+                icon.classList.toggle('fa-eye');
+                icon.classList.toggle('fa-eye-slash');
+            });
+        }
+
+        // ==========================================
+        // HANDLE LOGIN (العادي)
+        // ==========================================
+        async function handleLogin(event) {
+            event.preventDefault();
+
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('errorMessage');
+            const errorText = document.getElementById('errorText');
+            const rememberMe = document.getElementById('rememberMe').checked;
+            const role = document.getElementById('selectedRole').value;
+
+            if (email === '' || password === '') {
+                errorText.textContent = 'Please fill in all fields';
+                errorMessage.classList.add('show');
+                return;
+            }
+
+            try {
+                const response = await api.post('/auth/login', {
+                    email: email,
+                    password: password
+                });
+
+                if (response && response.accessToken) {
+                    TokenManager.saveAccessToken(response.accessToken);
+                    TokenManager.saveRefreshToken(response.refreshToken);
+
+                    // Fetch user complete profile info
+                    const profile = await api.get('/profile');
+
+                    if (profile) {
+                        const profileRole = profile.role.toLowerCase();
+                        TokenManager.setUserRole(profileRole);
+                        TokenManager.setUserEmail(profile.email);
+                        localStorage.setItem('userName', profile.fullName);
+                        if (profile.phoneNumber) {
+                            localStorage.setItem('userPhone', profile.phoneNumber);
+                        }
+
+                        if (rememberMe && profileRole !== 'admin') {
+                            localStorage.setItem('rememberMe', 'true');
+                        } else {
+                            localStorage.removeItem('rememberMe');
+                        }
+
+                        const accountStatus = profile.status; // 'Active', 'Pending', 'Suspended', 'Inactive'
+
+                        if (accountStatus === 'Suspended') {
+                            throw new Error('Your account has been suspended. Please contact support.');
+                        }
+                        if (accountStatus === 'Inactive') {
+                            throw new Error('Your account is currently inactive.');
+                        }
+
+                        errorMessage.classList.remove('show');
+
+                        if (profileRole === 'admin') {
+                            window.location.href = 'admin-dashboard.html';
+                        } else if (profileRole === 'customer') {
+                            window.location.href = 'customer-dashboard.html';
+                        } else if (profileRole === 'provider' || profileRole === 'company') {
+                            const isPending = (accountStatus === 'Pending');
+                            if (isPending) {
+                                localStorage.setItem('providerVerified', 'pending');
+                                localStorage.setItem('providerStatus', 'under_review');
+                                window.location.href = 'provider-verification.html';
+                            } else {
+                                localStorage.setItem('providerVerified', 'approved');
+                                localStorage.setItem('providerStatus', 'approved');
+                                
+                                try {
+                                    const sub = await api.get('/subscriptions/my-subscription', { showLoader: false });
+                                    if (sub && sub.status === 'Active') {
+                                        localStorage.setItem('fixoraSubscription', JSON.stringify({ plan: sub.planName.toLowerCase(), expiresAt: sub.endDate }));
+                                        localStorage.setItem('providerActive', 'true');
+                                        window.location.href = 'provider-dashboard.html';
+                                    } else {
+                                        localStorage.setItem('providerActive', 'false');
+                                        window.location.href = 'subscription.html';
+                                    }
+                                } catch (subErr) {
+                                    localStorage.setItem('providerActive', 'false');
+                                    window.location.href = 'subscription.html';
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Login failed:', error);
+                if (error instanceof Error) {
+                    errorText.textContent = error.message;
+                } else {
+                    errorText.textContent = 'Invalid credentials or connection error.';
+                }
+                errorMessage.classList.add('show');
+                TokenManager.clearTokens();
+            }
+        }
+
+        // ==========================================
+        // REAL-TIME VALIDATION
+        // ==========================================
+        document.querySelectorAll('#loginForm input').forEach(input => {
+            input.addEventListener('input', () => {
+                const errorMessage = document.getElementById('errorMessage');
+                if (errorMessage) errorMessage.classList.remove('show');
+            });
+        });
+
+        // ==========================================
+        // AUTO-FILL REMEMBERED EMAIL
+        // ==========================================
+        window.addEventListener('DOMContentLoaded', function() {
+            if (localStorage.getItem('rememberMe') === 'true') {
+                const email = localStorage.getItem('userEmail');
+                if (email && email !== 'admin@fixora.com') {
+                    const emailInput = document.getElementById('email');
+                    const rememberMeInput = document.getElementById('rememberMe');
+                    if (emailInput) emailInput.value = email;
+                    if (rememberMeInput) rememberMeInput.checked = true;
+                }
+            }
+        });
+
+        // ==========================================
+        // ADMIN LOGIN FUNCTIONS
+        // ==========================================
+
+        function toggleAdminForm(event) {
+            event.preventDefault();
+            document.getElementById('adminForm').classList.toggle('show');
+        }
+
+        async function handleAdminLogin() {
+            const email = document.getElementById('adminEmail').value.trim();
+            const password = document.getElementById('adminPassword').value;
+
+            if (email === '' || password === '') {
+                ErrorHandler.showNotification('Validation Error', 'Please enter email and password', 'error');
+                return;
+            }
+
+            try {
+                const response = await api.post('/auth/login', {
+                    email: email,
+                    password: password
+                });
+
+                if (response && response.accessToken) {
+                    TokenManager.saveAccessToken(response.accessToken);
+                    TokenManager.saveRefreshToken(response.refreshToken);
+
+                    const profile = await api.get('/profile');
+                    if (profile) {
+                        const profileRole = profile.role.toLowerCase();
+                        if (profileRole !== 'admin') {
+                            throw new Error('Unauthorized. You are not an administrator.');
+                        }
+
+                        TokenManager.setUserRole('admin');
+                        TokenManager.setUserEmail(profile.email);
+                        localStorage.setItem('userName', profile.fullName);
+                        localStorage.removeItem('rememberMe');
+
+                        window.location.href = 'admin-dashboard.html';
+                    }
+                }
+            } catch (error) {
+                console.error('Admin login failed:', error);
+                const msg = error.message || 'Admin login failed.';
+                ErrorHandler.showNotification('Access Denied', msg, 'error');
+                TokenManager.clearTokens();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const adminPassword = document.getElementById('adminPassword');
+            if (adminPassword) {
+                adminPassword.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        handleAdminLogin();
+                    }
+                });
+            }
+        });
 </script>
 
 </body>

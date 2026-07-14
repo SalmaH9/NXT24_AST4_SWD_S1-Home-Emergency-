@@ -141,34 +141,140 @@
         </div>
     </div>
 
+    <script src="../js/config.js"></script>
+    <script src="../js/tokenManager.js"></script>
+    <script src="../js/loading.js"></script>
+    <script src="../js/errorHandler.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
     <script src="../js/script.js"></script>
     <script src="../js/footer.js"></script>
+
+    <!-- Offer Modal -->
+    <div class="modal-overlay" id="offerModal" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
+        <div class="modal-content" style="max-width: 450px; background: var(--bg-card); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); width: 100%; margin: 20px; overflow: hidden;">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; border-bottom: 1px solid var(--border);">
+                <h3 id="offerModalTitle" style="margin: 0; font-size: 1.25rem; color: var(--text-primary);"><i class="fas fa-hand-holding-dollar" style="color: var(--accent);"></i> Submit Offer</h3>
+                <button class="modal-close" onclick="closeOfferModal()" style="background: none; border: none; font-size: 1.2rem; color: var(--text-secondary); cursor: pointer;"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" style="padding: 24px;">
+                <input type="hidden" id="offerRequestId" />
+                <input type="hidden" id="offerId" />
+                <div class="form-group" style="margin-bottom: 16px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-primary);">Price Offer (EGP)</label>
+                    <input type="number" id="offerPrice" class="form-control" placeholder="Enter amount, e.g. 200" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-primary); color: var(--text-primary);" />
+                </div>
+                <div class="form-group" style="margin-bottom: 24px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-primary);">Offer Notes / Duration Estimation</label>
+                    <textarea id="offerNotes" class="form-control" rows="4" placeholder="Mention hours estimated or custom terms..." style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-primary); color: var(--text-primary); resize: none;"></textarea>
+                </div>
+                <button class="btn-primary" onclick="saveOffer()" style="width: 100%; padding: 12px; font-weight: 600; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <i class="fas fa-check"></i> Save Offer
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        var orders = [
-            { id: '#ORD-001', customer: 'Ahmed Al-Saud', service: 'Plumbing', status: 'pending', date: '2026-07-08' },
-            { id: '#ORD-002', customer: 'Fatima Al-Zahra', service: 'Electrical', status: 'selected', date: '2026-07-07' },
-            { id: '#ORD-003', customer: 'Mohammed Al-Otaibi', service: 'AC Repair', status: 'examined', date: '2026-07-09' },
-            { id: '#ORD-004', customer: 'Nora Al-Fahd', service: 'Carpentry', status: 'completed', date: '2026-07-06' },
-            { id: '#ORD-005', customer: 'Sultan Al-Ghamdi', service: 'Painting', status: 'in-progress', date: '2026-07-08' },
-            { id: '#ORD-006', customer: 'Maha Al-Saud', service: 'Plumbing', status: 'selected', date: '2026-07-10' },
-            { id: '#ORD-007', customer: 'Faisal Al-Otaibi', service: 'Electrical', status: 'completed', date: '2026-07-05' },
-            { id: '#ORD-008', customer: 'Layla Al-Zahra', service: 'AC Repair', status: 'pending', date: '2026-07-08' },
-        ];
+        var requestsList = [];
+        var myOffersList = [];
+        var categoriesMap = {};
+        var currentUserId = null;
         var currentFilter = 'all';
+
+        function mapBackendStatusToFrontend(backendStatus) {
+            switch (backendStatus) {
+                case 'Pending':
+                case 'SearchingForProviders':
+                    return 'pending';
+                case 'ProviderSelected':
+                    return 'selected';
+                case 'WaitingForExamination':
+                    return 'examined';
+                case 'WaitingCustomerApproval':
+                    return 'examined';
+                case 'InProgress':
+                    return 'in-progress';
+                case 'Completed':
+                    return 'completed';
+                case 'Cancelled':
+                    return 'cancelled';
+                default:
+                    return 'pending';
+            }
+        }
+
+        async function loadMarketplaceData() {
+            try {
+                // Fetch categories
+                const categories = await api.get('/categories', { showLoader: false });
+                if (categories) {
+                    categories.forEach(c => categoriesMap[c.id] = c.name);
+                }
+
+                // Resolve current user GUID
+                const profile = await api.get('/profile', { showLoader: false });
+                if (profile) {
+                    currentUserId = profile.userId || profile.id;
+                }
+
+                // Fetch global service requests list (provider enabled)
+                requestsList = await api.get('/service-requests') || [];
+
+                // Fetch offers submitted by this provider
+                myOffersList = await api.get('/provider-offers/my-offers') || [];
+
+                renderOrders(currentFilter);
+            } catch (err) {
+                console.error('Failed to load marketplace data:', err);
+            }
+        }
 
         function renderOrders(filter) {
             filter = filter || 'all';
             var tbody = document.getElementById('ordersBody');
-            var filtered = filter === 'all' ? orders : orders.filter(function(o) { return o.status === filter; });
+            
+            // Apply filtering logic based on role specifications
+            var filtered = [];
+            
+            if (filter === 'all') {
+                filtered = requestsList;
+            } else if (filter === 'available') {
+                // Open requests where this provider hasn't submitted an offer yet
+                filtered = requestsList.filter(function(r) {
+                    const status = mapBackendStatusToFrontend(r.status);
+                    const alreadyBid = myOffersList.some(function(o) { return o.serviceRequestId === r.id; });
+                    return (status === 'pending' || r.status === 'SearchingForProviders') && !alreadyBid && !r.selectedProviderId;
+                });
+            } else if (filter === 'my-offers') {
+                // Requests where this provider has submitted an offer
+                filtered = requestsList.filter(function(r) {
+                    return myOffersList.some(function(o) { return o.serviceRequestId === r.id; });
+                });
+            } else if (filter === 'selected') {
+                // Active assignments
+                filtered = requestsList.filter(function(r) {
+                    return r.selectedProviderId === currentUserId && r.status !== 'Completed' && r.status !== 'Cancelled';
+                });
+            } else if (filter === 'completed') {
+                // Completed jobs
+                filtered = requestsList.filter(function(r) {
+                    return r.selectedProviderId === currentUserId && r.status === 'Completed';
+                });
+            }
+
             document.getElementById('orderCount').textContent = filtered.length;
             
             if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><i class="fas fa-inbox"></i><p style="font-weight: 600; color: var(--text-secondary);">No orders found</p></div></td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><i class="fas fa-inbox"></i><p style="font-weight: 600; color: var(--text-secondary);">No requests found</p></div></td></tr>`;
                 return;
             }
             
             var html = '';
-            filtered.forEach(function(order) {
+            filtered.forEach(function(r) {
+                const serviceName = categoriesMap[r.categoryId] || 'Emergency Fix';
+                const mappedStatus = mapBackendStatusToFrontend(r.status);
+                
                 var statusClass = { 
                     'pending': 'status-pending', 
                     'selected': 'status-selected',
@@ -177,91 +283,179 @@
                     'accepted': 'status-accepted',
                     'completed': 'status-completed', 
                     'cancelled': 'status-cancelled' 
-                }[order.status] || 'status-pending';
+                }[mappedStatus] || 'status-pending';
 
                 var statusLabels = { 
-                    'pending': 'Pending', 
-                    'selected': 'Selected',
-                    'examined': 'Examined',
-                    'in-progress': 'In Progress',
-                    'accepted': 'Accepted',
+                    'pending': '⏳ Available', 
+                    'selected': '👷 Selected',
+                    'examined': '📋 Examined',
+                    'in-progress': '🔧 In Progress',
+                    'accepted': '✅ Accepted',
                     'completed': '✅ Completed', 
                     'cancelled': '❌ Cancelled' 
                 };
 
-                var actionHtml = getActionHtml(order);
-                html += `<tr><td class="order-id">${order.id}</td><td class="customer-name">${order.customer}</td><td><i class="fas ${getServiceIcon(order.service)}" style="color: var(--accent);"></i> ${order.service}</td><td><span class="status-badge ${statusClass}">${statusLabels[order.status] || order.status}</span></td><td>${order.date}</td><td>${actionHtml}</td></tr>`;
+                const myOffer = myOffersList.find(function(o) { return o.serviceRequestId === r.id; });
+                var actionHtml = getActionHtml(r, mappedStatus, myOffer);
+                var formattedDate = r.createdAt ? r.createdAt.split('T')[0] : 'N/A';
+                var customerMask = 'Customer ID: ' + r.customerId.substring(0, 5).toUpperCase();
+
+                html += `<tr>
+                    <td class="order-id">#ID-${r.id.substring(0, 8).toUpperCase()}</td>
+                    <td class="customer-name">${customerMask}</td>
+                    <td><i class="fas ${getServiceIcon(serviceName)}" style="color: var(--accent);"></i> ${serviceName}</td>
+                    <td><span class="status-badge ${statusClass}">${myOffer && mappedStatus === 'pending' ? '⏳ Bid Submitted' : statusLabels[mappedStatus] || mappedStatus}</span></td>
+                    <td>${formattedDate}</td>
+                    <td>${actionHtml}</td>
+                </tr>`;
             });
             tbody.innerHTML = html;
         }
 
-        function getActionHtml(order) {
-            var actions = {
-                'pending': `<button class="action-btn btn-accept" onclick="acceptOrder('${order.id}')">Accept</button>`,
-                'selected': `<button class="action-btn btn-examine" onclick="examineOrder('${order.id}')">Examine</button>`,
-                'examined': `<button class="action-btn btn-accept" onclick="reviewExamination('${order.id}')">Review</button>`,
-                'in-progress': `<button class="action-btn btn-complete" onclick="completeOrder('${order.id}')">Complete</button>`,
-                'accepted': `<button class="action-btn btn-start" onclick="startOrder('${order.id}')">Start</button>`,
-                'completed': `<button class="action-btn btn-done" disabled>✓ Done</button>`,
-                'cancelled': `<button class="action-btn btn-done" disabled>✗ Cancelled</button>`
-            };
-            return actions[order.status] || actions.pending;
+        function getActionHtml(r, mappedStatus, myOffer) {
+            // If the provider hasn't bid on an available request
+            if (!myOffer && (mappedStatus === 'pending' || r.status === 'SearchingForProviders') && !r.selectedProviderId) {
+                return `<button class="action-btn btn-accept" onclick="openOfferModal('${r.id}')"><i class="fas fa-paper-plane"></i> Bid</button>`;
+            }
+
+            // If provider submitted an offer and it's still pending selection
+            if (myOffer && !r.selectedProviderId) {
+                return `
+                    <div style="display: flex; gap: 6px;">
+                        <button class="action-btn btn-examine" onclick="openOfferModal('${r.id}', '${myOffer.id}', ${myOffer.price}, '${myOffer.notes.replace(/'/g, "\\'")}')"><i class="fas fa-edit"></i> Edit</button>
+                        <button class="action-btn btn-danger" onclick="withdrawOffer('${myOffer.id}')" style="background: #ef4444; border-color: #ef4444;"><i class="fas fa-trash-can"></i> Pull</button>
+                    </div>
+                `;
+            }
+
+            // If selected provider is this provider
+            if (r.selectedProviderId === currentUserId) {
+                if (mappedStatus === 'selected') {
+                    return `<button class="action-btn btn-examine" onclick="examineOrder('${r.id}')"><i class="fas fa-file-medical"></i> Examine</button>`;
+                }
+                if (mappedStatus === 'examined') {
+                    return `<button class="action-btn btn-accept" onclick="reviewExamination('${r.id}')"><i class="fas fa-file-contract"></i> Review</button>`;
+                }
+                if (r.status === 'WaitingCustomerApproval') {
+                    return `<span style="font-size:0.85rem; color:var(--text-secondary);"><i class="fas fa-spinner fa-spin"></i> Wait Approval</span>`;
+                }
+                if (mappedStatus === 'accepted') {
+                    return `<button class="action-btn btn-start" onclick="startOrder('${r.id}')"><i class="fas fa-play"></i> Start</button>`;
+                }
+                if (mappedStatus === 'in-progress') {
+                    return `<button class="action-btn btn-complete" onclick="completeOrder('${r.id}')"><i class="fas fa-check"></i> Complete</button>`;
+                }
+            }
+
+            return `<span style="font-size:0.85rem; color:var(--text-secondary);">No Action</span>`;
         }
 
-        function getServiceIcon(service) {
-            var icons = { 'Plumbing': 'fa-faucet', 'Electrical': 'fa-bolt', 'AC Repair': 'fa-snowflake', 'Carpentry': 'fa-hammer', 'Painting': 'fa-paint-roller', 'Masonry': 'fa-trowel' };
-            return icons[service] || 'fa-wrench';
+        function getServiceIcon(serviceName) {
+            var name = serviceName.toLowerCase();
+            if (name.includes('plumbing')) return 'fa-faucet';
+            if (name.includes('electrical')) return 'fa-bolt';
+            if (name.includes('ac')) return 'fa-snowflake';
+            if (name.includes('carpentry')) return 'fa-hammer';
+            if (name.includes('painting')) return 'fa-paint-roller';
+            if (name.includes('masonry')) return 'fa-trowel';
+            if (name.includes('cleaning')) return 'fa-broom';
+            if (name.includes('gardening')) return 'fa-leaf';
+            return 'fa-wrench';
         }
 
-        function acceptOrder(orderId) { 
-            if (confirm('Accept order ' + orderId + '?')) { 
-                var order = orders.find(function(o) { return o.id === orderId; }); 
-                if (order) { 
-                    order.status = 'selected'; 
-                    renderOrders(currentFilter); 
-                    alert('✅ Order ' + orderId + ' accepted! Technician will be assigned.'); 
-                } 
-            } 
+        // ===== OFFER OPERATIONS =====
+        function openOfferModal(requestId, offerId = '', price = '', notes = '') {
+            document.getElementById('offerRequestId').value = requestId;
+            document.getElementById('offerId').value = offerId;
+            document.getElementById('offerPrice').value = price;
+            document.getElementById('offerNotes').value = notes;
+            document.getElementById('offerModalTitle').innerHTML = offerId ? '<i class="fas fa-edit" style="color: var(--accent);"></i> Update Offer' : '<i class="fas fa-hand-holding-dollar" style="color: var(--accent);"></i> Submit Offer';
+            document.getElementById('offerModal').style.display = 'flex';
         }
 
-        function examineOrder(orderId) { 
-            if (confirm('Start examination for order ' + orderId + '?')) { 
-                var order = orders.find(function(o) { return o.id === orderId; }); 
-                if (order) { 
-                    order.status = 'examined'; 
-                    renderOrders(currentFilter); 
-                    alert('🔍 Examination started! Submit your report.'); 
-                    window.location.href = 'examination.html';
-                } 
-            } 
+        function closeOfferModal() {
+            document.getElementById('offerModal').style.display = 'none';
         }
 
-        function reviewExamination(orderId) { 
-            window.location.href = 'examination.html';
+        async function saveOffer() {
+            const requestId = document.getElementById('offerRequestId').value;
+            const offerId = document.getElementById('offerId').value;
+            const price = parseFloat(document.getElementById('offerPrice').value);
+            const notes = document.getElementById('offerNotes').value.trim();
+
+            if (isNaN(price) || price <= 0) {
+                ErrorHandler.showNotification('Validation Error', 'Please enter a valid price amount.', 'error');
+                return;
+            }
+
+            try {
+                if (offerId) {
+                    // Update offer details
+                    await api.put(`/provider-offers/${offerId}`, { price, notes });
+                    ErrorHandler.showNotification('Success', 'Your offer has been updated successfully.', 'success');
+                } else {
+                    // Post new offer details
+                    await api.post('/provider-offers', { serviceRequestId: requestId, price, notes });
+                    ErrorHandler.showNotification('Success', 'Your offer has been submitted successfully.', 'success');
+                }
+                closeOfferModal();
+                loadMarketplaceData();
+            } catch (err) {
+                console.error('Failed to save offer:', err);
+            }
         }
 
-        function startOrder(orderId) { 
-            if (confirm('Start working on order ' + orderId + '?')) { 
-                var order = orders.find(function(o) { return o.id === orderId; }); 
-                if (order) { 
-                    order.status = 'in-progress'; 
-                    renderOrders(currentFilter); 
-                    alert('🔧 Order ' + orderId + ' started!'); 
-                } 
-            } 
+        async function withdrawOffer(offerId) {
+            if (confirm('Are you sure you want to withdraw this offer?')) {
+                try {
+                    await api.delete(`/provider-offers/${offerId}`);
+                    ErrorHandler.showNotification('Success', 'Offer withdrawn successfully.', 'success');
+                    loadMarketplaceData();
+                } catch (err) {
+                    console.error('Failed to withdraw offer:', err);
+                }
+            }
         }
 
-        function completeOrder(orderId) { 
-            if (confirm('Mark order ' + orderId + ' as complete?')) { 
-                var order = orders.find(function(o) { return o.id === orderId; }); 
-                if (order) { 
-                    order.status = 'completed'; 
-                    renderOrders(currentFilter); 
-                    alert('✅ Order ' + orderId + ' completed!'); 
-                } 
-            } 
+        // ===== ASSIGNMENT OPERATIONS =====
+        function examineOrder(requestId) {
+            window.location.href = `examination.html?id=${requestId}`;
         }
 
+        function reviewExamination(requestId) {
+            window.location.href = `examination.html?id=${requestId}`;
+        }
+
+        async function startOrder(requestId) {
+            if (confirm('Start execution for this service request?')) {
+                try {
+                    await api.post('/service-executions/start', { serviceRequestId: requestId });
+                    ErrorHandler.showNotification('Success', 'Execution started successfully. Request is now InProgress.', 'success');
+                    loadMarketplaceData();
+                } catch (err) {
+                    console.error('Failed to start execution:', err);
+                }
+            }
+        }
+
+        async function completeOrder(requestId) {
+            if (confirm('Mark this service request as completed?')) {
+                try {
+                    const execution = await api.get(`/service-requests/${requestId}/execution`);
+                    if (execution && execution.id) {
+                        await api.post('/service-executions/complete', { serviceExecutionId: execution.id });
+                        ErrorHandler.showNotification('Success', 'Request marked as completed successfully.', 'success');
+                        loadMarketplaceData();
+                    } else {
+                        ErrorHandler.showNotification('Error', 'Execution record not found.', 'error');
+                    }
+                } catch (err) {
+                    console.error('Failed to complete execution:', err);
+                }
+            }
+        }
+
+        // ===== FILTER TABS =====
         document.querySelectorAll('.filter-btn').forEach(function(btn) {
             btn.addEventListener('click', function() { 
                 document.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); }); 
@@ -271,20 +465,24 @@
             });
         });
 
+        // ===== CHECK LOGIN & LOAD =====
+        document.addEventListener('DOMContentLoaded', function() {
+            if (Auth.checkAuth(['provider', 'company'])) {
+                loadMarketplaceData();
+            }
+            
+            var footerDate = document.getElementById('footer-date');
+            if (footerDate) {
+                footerDate.textContent = new Date().toLocaleDateString('en-US', {
+                    year: 'numeric', month: 'short', day: 'numeric'
+                });
+            }
+        });
+
         function handleLogout(event) { 
             event.preventDefault(); 
-            localStorage.removeItem('isLoggedIn'); 
-            localStorage.removeItem('userRole'); 
-            localStorage.removeItem('userEmail'); 
-            localStorage.removeItem('currentExecution');
-            window.location.href = 'index.html'; 
+            Auth.logout();
         }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            var role = localStorage.getItem('userRole');
-            if (role !== 'provider') { window.location.href = 'login.html'; }
-            renderOrders('all');
-        });
     </script>
         <script src="../js/chatbot.js"></script>
 

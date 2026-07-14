@@ -286,141 +286,71 @@
         </div>
     </div>
 
+    <script src="../js/config.js"></script>
+    <script src="../js/tokenManager.js"></script>
+    <script src="../js/loading.js"></script>
+    <script src="../js/errorHandler.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
     <script src="../js/script.js"></script>
     <script>
-        // ===== ORDERS DATA =====
-        var ordersData = [
-            { 
-                id: '#ORD-001', 
-                service: 'Plumbing', 
-                status: 'selected', 
-                date: '2026-07-08', 
-                address: 'Al-Malaz, Riyadh', 
-                price: '$50',
-                technician: 'Ahmed Al-Rashid',
-                category: 'plumbing',
-                description: 'Kitchen sink leaking from pipe under counter...'
-            },
-            { 
-                id: '#ORD-002', 
-                service: 'AC Repair', 
-                status: 'completed', 
-                date: '2026-07-06', 
-                address: 'Al-Narjis, Riyadh', 
-                price: '$80',
-                technician: 'Khalid Al-Otaibi',
-                category: 'ac-repair',
-                description: 'AC not cooling properly'
-            },
-            { 
-                id: '#ORD-003', 
-                service: 'Electrical', 
-                status: 'examined', 
-                date: '2026-07-09', 
-                address: 'Al-Sulaimaniyah, Riyadh', 
-                price: '$60',
-                technician: 'Faisal Al-Harbi',
-                category: 'electrical',
-                description: 'Power outlet not working'
-            },
-            { 
-                id: '#ORD-004', 
-                service: 'Carpentry', 
-                status: 'pending', 
-                date: '2026-07-10', 
-                address: 'Al-Rawdah, Riyadh', 
-                price: '$45',
-                technician: null,
-                category: 'carpentry',
-                description: 'Broken cabinet door'
-            },
-            { 
-                id: '#ORD-005', 
-                service: 'Painting', 
-                status: 'in-progress', 
-                date: '2026-07-08', 
-                address: 'Al-Mughrizat, Riyadh', 
-                price: '$40',
-                technician: 'Sami Al-Qahtani',
-                category: 'painting',
-                description: 'Wall painting needed'
-            },
-            { 
-                id: '#ORD-006', 
-                service: 'Plumbing', 
-                status: 'completed', 
-                date: '2026-07-04', 
-                address: 'Al-Malaz, Riyadh', 
-                price: '$50',
-                technician: 'Nasser Al-Dosari',
-                category: 'plumbing',
-                description: 'Pipe replacement'
-            }
-        ];
-
+        var ordersData = [];
         var currentFilter = 'all';
 
-        // ==========================================
-        // ✅ VIEW EXAMINATION - Save request data
-        // ==========================================
-        function viewExamination(order) {
-            // Create request object from order data
-            var requestData = {
-                id: order.id.replace('#', ''),
-                category: order.category || 'plumbing',
-                description: order.description || 'Service request',
-                city: order.address || 'Cairo',
-                customerEmail: localStorage.getItem('userEmail') || 'customer@fixora.com',
-                status: order.status,
-                selectedTechnician: order.technician,
-                createdAt: order.date,
-                examinations: order.examinations || []
-            };
-
-            // Save to localStorage
-            localStorage.setItem('currentRequest', JSON.stringify(requestData));
-            
-            // Redirect to examination page
-            window.location.href = 'examination.html';
+        function mapBackendStatusToFrontend(backendStatus) {
+            switch (backendStatus) {
+                case 'Pending':
+                case 'SearchingForProviders':
+                    return 'pending';
+                case 'ProviderSelected':
+                    return 'selected';
+                case 'WaitingForExamination':
+                    return 'examined';
+                case 'WaitingCustomerApproval':
+                    return 'examined';
+                case 'InProgress':
+                    return 'in-progress';
+                case 'Completed':
+                    return 'completed';
+                case 'Cancelled':
+                    return 'cancelled';
+                default:
+                    return 'pending';
+            }
         }
 
-        // ==========================================
-        // ✅ REVIEW REPORT - Save request data
-        // ==========================================
-        function reviewReport(order) {
-            // Create request object from order data
-            var requestData = {
-                id: order.id.replace('#', ''),
-                category: order.category || 'plumbing',
-                description: order.description || 'Service request',
-                city: order.address || 'Cairo',
-                customerEmail: localStorage.getItem('userEmail') || 'customer@fixora.com',
-                status: 'examined',
-                selectedTechnician: order.technician,
-                createdAt: order.date,
-                examinations: order.examinations || [
-                    {
-                        id: 'EXAM_' + Date.now(),
-                        techId: 'TECH_001',
-                        techName: order.technician || 'Technician',
-                        techRating: '4.8',
-                        techExp: '5 years',
-                        diagnosis: 'The main water pipe under the kitchen sink has a 2cm crack due to corrosion.',
-                        solution: 'Replace the cracked PVC pipe section with new piping.',
-                        materials: 'PVC pipe, Rubber gasket, Pipe sealant',
-                        price: 220,
-                        estTime: '1-2 hours',
-                        status: 'pending',
-                        date: 'Today'
-                    }
-                ]
-            };
+        async function loadMyOrders() {
+            try {
+                // Fetch categories to resolve names
+                const categories = await api.get('/categories', { showLoader: false });
+                const catMap = {};
+                if (categories) {
+                    categories.forEach(c => catMap[c.id] = c.name);
+                }
 
-            // Save to localStorage
-            localStorage.setItem('currentRequest', JSON.stringify(requestData));
-            
-            // Redirect to examination page
-            window.location.href = 'examination.html';
+                // Fetch customer service requests
+                const requests = await api.get('/service-requests/my-requests');
+                if (requests) {
+                    ordersData = requests.map(req => {
+                        const serviceName = catMap[req.categoryId] || 'Emergency Repair';
+                        return {
+                            id: req.id,
+                            service: serviceName,
+                            status: mapBackendStatusToFrontend(req.status),
+                            date: req.createdAt ? req.createdAt.split('T')[0] : 'N/A',
+                            address: req.address || 'N/A',
+                            price: 'EGP 0', // To be populated in Phase 5 when offers exist
+                            technician: null,
+                            category: serviceName.toLowerCase().replace(/\s+/g, '-'),
+                            description: req.description,
+                            raw: req
+                        };
+                    });
+                }
+                renderOrders(currentFilter);
+            } catch (err) {
+                console.error('Failed to load customer orders:', err);
+            }
         }
 
         // ===== RENDER ORDERS =====
@@ -465,63 +395,65 @@
                 };
 
                 var icon = {
-                    'Plumbing': 'fa-faucet',
-                    'Electrical': 'fa-bolt',
-                    'AC Repair': 'fa-snowflake',
-                    'Carpentry': 'fa-hammer',
-                    'Painting': 'fa-paint-roller',
-                    'Masonry': 'fa-trowel',
-                    'Cleaning': 'fa-broom',
-                    'Gardening': 'fa-leaf'
-                }[order.service] || 'fa-wrench';
+                    'plumbing': 'fa-faucet',
+                    'electrical': 'fa-bolt',
+                    'ac-repair': 'fa-snowflake',
+                    'carpentry': 'fa-hammer',
+                    'painting': 'fa-paint-roller',
+                    'masonry': 'fa-trowel',
+                    'cleaning': 'fa-broom',
+                    'gardening': 'fa-leaf'
+                }[order.category] || 'fa-wrench';
 
-                // بناء الأزرار حسب الحالة
                 var actionsHtml = '';
 
-                // زر التفاصيل موجود دائماً
+                // Details button
                 actionsHtml += `
                     <a href="order-details.html?id=${order.id}" class="btn-sm btn-outline">
                         <i class="fas fa-eye"></i> Details
                     </a>
                 `;
 
-                // ✅ حالة selected → عرض زر "View Examination"
+                if (order.status === 'pending') {
+                    actionsHtml += `
+                        <button class="btn-sm btn-review" onclick="viewOffers('${order.id}')">
+                            <i class="fas fa-handshake"></i> View Offers
+                        </button>
+                    `;
+                }
+
                 if (order.status === 'selected') {
                     actionsHtml += `
-                        <button class="btn-sm btn-review" onclick="viewExamination(${JSON.stringify(order).replace(/"/g, '&quot;')})">
+                        <button class="btn-sm btn-review" onclick="viewExamination('${order.id}')">
                             <i class="fas fa-file-medical"></i> View Examination
                         </button>
                     `;
                 }
 
-                // ✅ حالة examined → عرض زر "Review Report"
                 if (order.status === 'examined') {
                     actionsHtml += `
-                        <button class="btn-sm btn-review" onclick="reviewReport(${JSON.stringify(order).replace(/"/g, '&quot;')})">
+                        <button class="btn-sm btn-review" onclick="reviewReport('${order.id}')">
                             <i class="fas fa-file-contract"></i> Review Report
                         </button>
                     `;
                 }
 
-                // حالة in-progress → عرض زر "Track"
                 if (order.status === 'in-progress' || order.status === 'accepted') {
                     actionsHtml += `
-                        <a href="execution.html" class="btn-sm btn-track">
+                        <a href="execution.html?id=${order.id}" class="btn-sm btn-track">
                             <i class="fas fa-location-dot"></i> Track
                         </a>
                     `;
                 }
 
-                // حالة completed → عرض زر "Rate"
                 if (order.status === 'completed') {
                     actionsHtml += `
-                        <a href="rating.html" class="btn-sm btn-review">
+                        <a href="rating.html?id=${order.id}" class="btn-sm btn-review">
                             <i class="fas fa-star"></i> Rate
                         </a>
                     `;
                 }
 
-                // زر الإلغاء للطلبات الغير منتهية
                 if (order.status !== 'completed' && order.status !== 'cancelled') {
                     actionsHtml += `
                         <button class="btn-sm btn-danger" onclick="cancelOrder('${order.id}')">
@@ -533,7 +465,7 @@
                 html += `
                     <div class="order-card">
                         <div class="order-header">
-                            <span class="order-id">${order.id}</span>
+                            <span class="order-id">#ID-${order.id.substring(0, 8).toUpperCase()}</span>
                             <span class="order-date"><i class="far fa-calendar"></i> ${order.date}</span>
                         </div>
                         <div class="order-body">
@@ -547,7 +479,6 @@
                             </div>
                             <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
                                 <span class="order-status-badge ${statusClass}">${statusLabels[order.status] || order.status}</span>
-                                <span style="font-weight: 700; color: var(--accent);">${order.price}</span>
                                 <div class="order-actions">
                                     ${actionsHtml}
                                 </div>
@@ -560,15 +491,37 @@
             container.innerHTML = html;
         }
 
-        // ===== CANCEL ORDER =====
-        function cancelOrder(orderId) {
-            if (confirm('Are you sure you want to cancel ' + orderId + '?')) {
-                var order = ordersData.find(function(o) { return o.id === orderId; });
-                if (order) {
-                    order.status = 'cancelled';
-                    renderOrders(currentFilter);
-                    alert('❌ ' + orderId + ' has been cancelled.');
+        async function cancelOrder(orderId) {
+            if (confirm('Are you sure you want to cancel this service request?')) {
+                try {
+                    await api.delete(`/service-requests/${orderId}`);
+                    ErrorHandler.showNotification('Success', 'Request has been cancelled successfully.', 'success');
+                    loadMyOrders();
+                } catch (err) {
+                    console.error('Failed to cancel request:', err);
                 }
+            }
+        }
+
+        function viewExamination(orderId) {
+            localStorage.setItem('currentRequestId', orderId);
+            window.location.href = 'examination.html';
+        }
+
+        function reviewReport(orderId) {
+            localStorage.setItem('currentRequestId', orderId);
+            window.location.href = 'examination.html';
+        }
+
+        async function viewOffers(orderId) {
+            try {
+                const req = await api.get(`/service-requests/${orderId}`);
+                if (req) {
+                    localStorage.setItem('currentRequest', JSON.stringify(req));
+                    window.location.href = 'select-technician.html';
+                }
+            } catch (err) {
+                console.error('Failed to view offers:', err);
             }
         }
 
@@ -582,36 +535,23 @@
             });
         });
 
-        // ===== CHECK LOGIN =====
+        // ===== CHECK LOGIN & LOAD =====
         document.addEventListener('DOMContentLoaded', function() {
-            var role = localStorage.getItem('userRole');
-            if (role !== 'customer') {
-                window.location.href = 'login.html';
-                return;
+            if (Auth.checkAuth(['customer'])) {
+                loadMyOrders();
             }
             
-            // تحميل الطلبات من localStorage إذا وجدت
-            var savedOrders = localStorage.getItem('fixoraOrders');
-            if (savedOrders) {
-                try {
-                    var parsed = JSON.parse(savedOrders);
-                    if (parsed.length > 0) {
-                        ordersData = parsed;
-                    }
-                } catch(e) {}
+            var footerDate = document.getElementById('footer-date');
+            if (footerDate) {
+                footerDate.textContent = new Date().toLocaleDateString('en-US', {
+                    year: 'numeric', month: 'short', day: 'numeric'
+                });
             }
-            
-            renderOrders('all');
         });
 
         function handleLogout(event) {
             event.preventDefault();
-            localStorage.removeItem('isLoggedIn');
-            localStorage.removeItem('userRole');
-            localStorage.removeItem('userEmail');
-            localStorage.removeItem('currentExecution');
-            localStorage.removeItem('currentOrderDetails');
-            window.location.href = 'index.html';
+            Auth.logout();
         }
     </script>
     <script src="../js/chatbot.js"></script>

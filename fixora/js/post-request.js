@@ -272,48 +272,65 @@ function populateRequestReview() {
     }
 }
 
+// ===== GLOBAL CATEGORIES MAP =====
+var backendCategories = {};
+
 // ===== SUBMIT REQUEST =====
-function submitRequest() {
-    const requestData = {
-        id: 'REQ_' + Date.now(),
-        category: document.getElementById('selectedCategory').value,
-        description: document.getElementById('problemDesc').value,
-        techCount: parseInt(document.getElementById('techCountInput').value),
-        urgency: document.getElementById('selectedUrgency').value,
-        city: document.getElementById('reqCity').value,
-        address: document.getElementById('reqAddress').value,
-        landmark: document.getElementById('reqLandmark').value,
-        latLng: document.getElementById('latLng').value,
-        preferredDate: document.getElementById('prefDate').value,
-        preferredTime: document.getElementById('prefTime').value,
-        media: uploadedMedia.map(m => m.name),
-        status: 'open',
-        createdAt: new Date().toISOString(),
-        customerEmail: localStorage.getItem('userEmail') || 'guest@fixora.com',
-        bids: [],
-        examinations: []
-    };
+async function submitRequest() {
+    const selectedCatKey = document.getElementById('selectedCategory').value;
+    const description = document.getElementById('problemDesc').value.trim();
+    const techCount = parseInt(document.getElementById('techCountInput').value) || 1;
+    const city = document.getElementById('reqCity').value;
+    const addressDetails = document.getElementById('reqAddress').value.trim();
+    const landmark = document.getElementById('reqLandmark').value.trim();
 
-    // Save to localStorage
-    let requests = JSON.parse(localStorage.getItem('fixoraRequests') || '[]');
-    requests.push(requestData);
-    localStorage.setItem('fixoraRequests', JSON.stringify(requests));
+    // Construct unified address string
+    let fullAddress = city + ", " + addressDetails;
+    if (landmark) fullAddress += " (Near: " + landmark + ")";
 
-    // Also save as current request for select-technician page
-    localStorage.setItem('currentRequest', JSON.stringify(requestData));
+    // Parse coordinates
+    const latLngStr = document.getElementById('latLng').value;
+    let latitude = 30.0444; // Default Cairo lat
+    let longitude = 31.2357; // Default Cairo lng
+    if (latLngStr) {
+        const parts = latLngStr.split(',');
+        latitude = parseFloat(parts[0]) || latitude;
+        longitude = parseFloat(parts[1]) || longitude;
+    }
 
-    // Hide form, show success
-    document.querySelectorAll('.request-step').forEach(c => c.classList.remove('active'));
-    document.querySelector('.request-progress').style.display = 'none';
-    document.getElementById('requestSuccess').classList.add('show');
+    if (!selectedCatKey) {
+        ErrorHandler.showNotification('Validation Error', 'Please select a service category', 'error');
+        return;
+    }
+
+    try {
+        const result = await api.post('/service-requests', {
+            categoryId: selectedCatKey,
+            description: description,
+            address: fullAddress,
+            latitude: latitude,
+            longitude: longitude,
+            requiredProviders: techCount
+        });
+
+        if (result) {
+            // Save request detail in local storage
+            localStorage.setItem('currentRequest', JSON.stringify(result));
+
+            // Hide form steps and show success state
+            document.querySelectorAll('.request-step').forEach(c => c.classList.remove('active'));
+            document.querySelector('.request-progress').style.display = 'none';
+            document.getElementById('requestSuccess').classList.add('show');
+        }
+    } catch (err) {
+        console.error('Failed to submit service request:', err);
+    }
 }
 
-// ===== CHECK LOGIN =====
-document.addEventListener('DOMContentLoaded', function() {
-    const role = localStorage.getItem('userRole');
-    // Allow guests to post requests, but show a note
-    if (!role) {
-        // Guest can still post, but we'll store it locally
+// ===== CHECK LOGIN & FETCH CATEGORIES =====
+document.addEventListener('DOMContentLoaded', async function() {
+    if (!Auth.checkAuth(['customer'])) {
+        return;
     }
 
     // Set footer date
@@ -323,6 +340,45 @@ document.addEventListener('DOMContentLoaded', function() {
             year: 'numeric', month: 'short', day: 'numeric'
         });
     }
+
+    try {
+        // Load categories from backend API
+        const categories = await api.get('/categories');
+        if (categories) {
+            categories.forEach(cat => {
+                backendCategories[cat.name.toLowerCase()] = cat;
+            });
+
+            // Override click handler on static category cards to bind CategoryId Guids
+            document.querySelectorAll('.category-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    document.querySelectorAll('.category-card').forEach(c => c.classList.remove('selected'));
+                    this.classList.add('selected');
+                    
+                    const catKey = this.dataset.value; // e.g. 'plumbing'
+                    let backendCat = backendCategories[catKey];
+                    
+                    // Match appliance card to appliance repair category
+                    if (catKey === 'appliance') {
+                        backendCat = backendCategories['appliance repair'];
+                    }
+
+                    if (backendCat) {
+                        document.getElementById('selectedCategory').value = backendCat.id;
+                    } else {
+                        // Fallback match by card text
+                        const text = this.querySelector('span').textContent.toLowerCase();
+                        const fallbackCat = backendCategories[text];
+                        if (fallbackCat) {
+                            document.getElementById('selectedCategory').value = fallbackCat.id;
+                        }
+                    }
+                });
+            });
+        }
+    } catch (err) {
+        console.error('Failed to load categories:', err);
+    }
 });
 
 // ==========================================
@@ -330,10 +386,5 @@ document.addEventListener('DOMContentLoaded', function() {
 // ==========================================
 function handleLogout(event) {
     event.preventDefault();
-    localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('userRole');
-    localStorage.removeItem('userEmail');
-    localStorage.removeItem('currentRequest');
-    localStorage.removeItem('currentExecution');
-    window.location.href = 'index.html';
+    Auth.logout();
 }

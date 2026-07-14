@@ -4,6 +4,8 @@ using HomeEmergency.API.Extensions;
 using HomeEmergency.API.Filters;
 using HomeEmergency.API.Hubs;
 using HomeEmergency.API.Middleware;
+using HomeEmergency.API.Services;
+using HomeEmergency.Application.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,6 +19,18 @@ builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddSwaggerDocumentation();
 builder.Services.AddProblemDetails();
 builder.Services.AddSignalR();
+builder.Services.AddScoped<IRealTimeChatDispatcher, RealTimeChatDispatcher>();
+builder.Services.AddScoped<IRealTimeNotificationDispatcher, RealTimeNotificationDispatcher>();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:5500", "http://127.0.0.1:5500", "http://localhost:3000", "http://127.0.0.1:3000")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+});
 
 // 2. Add API Controllers support
 builder.Services.AddScoped<ValidationActionFilter>();
@@ -59,6 +73,8 @@ app.UseHttpsRedirection();
 
 // Public files such as advertisement media can still be served from wwwroot.
 app.UseStaticFiles();
+
+app.UseCors("AllowFrontend");
 
 // 5. Authentication & Authorization Middleware
 app.UseAuthentication();

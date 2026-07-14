@@ -70,6 +70,20 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityR
             new IdentityRole<Guid> { Id = companyRoleId, Name = "Company", NormalizedName = "COMPANY" }
         );
 
+        modelBuilder.Entity<Category>().HasData(
+            new Category { Id = Guid.Parse("d2b512c8-8df3-4c91-a123-5e926ab4d1ef"), Name = "Plumbing", Description = "Plumbing repairs, leaks, blocks, and piping emergencies." },
+            new Category { Id = Guid.Parse("e7c81a5f-9bf4-4d82-b234-6f937bc5d2f0"), Name = "Electrical", Description = "Short circuits, wiring issues, power cuts, and electrical emergencies." },
+            new Category { Id = Guid.Parse("f8d92b6a-0cf5-4e93-c345-7fa48cd6e3a1"), Name = "AC Repair", Description = "Air conditioning fixes, cooling issues, and gas refilling." },
+            new Category { Id = Guid.Parse("a9e03c7b-1df6-4f04-d456-8fa59de7f4b2"), Name = "Carpentry", Description = "Door, window, locks, and furniture repair services." },
+            new Category { Id = Guid.Parse("b0f14d8c-2df7-4f15-e567-9fa60ef8f5c3"), Name = "Painting", Description = "Wall painting, touch-ups, and water damage cover-ups." },
+            new Category { Id = Guid.Parse("c1f25e9d-3df8-4f26-f678-0fa71f09f6d4"), Name = "Masonry", Description = "Wall repairs, tiles fixes, cement, and concrete touch-ups." },
+            new Category { Id = Guid.Parse("d2f36f0e-4df9-4f37-a789-1fa82f1af7e5"), Name = "Cleaning", Description = "Emergency home cleaning, post-leak cleanups, and sanitization." },
+            new Category { Id = Guid.Parse("e3f47a1f-5df0-4f48-b890-2fa93f2bf8f6"), Name = "Gardening", Description = "Trimming, yard maintenance, and outdoor cleanups." },
+            new Category { Id = Guid.Parse("f4f58b20-6df1-4f59-c901-3faa4f3cf9f7"), Name = "Appliance Repair", Description = "Oven, fridge, washing machine, and stove emergency fixes." },
+            new Category { Id = Guid.Parse("05f69c31-7df2-4f60-da12-4fba5f4df0f8"), Name = "Pest Control", Description = "Bugs, insects, and rodents elimination services." },
+            new Category { Id = Guid.Parse("16f7ad42-8df3-4f71-eb23-5fca6f5e01f9"), Name = "Other", Description = "Any other emergency maintenance services." }
+        );
+
         // Apply all custom entity configurations from assembly
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
     }

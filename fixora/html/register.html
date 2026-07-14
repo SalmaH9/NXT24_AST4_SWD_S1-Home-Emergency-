@@ -576,6 +576,12 @@
         </div>
     </div>
 
+    <script src="../js/config.js"></script>
+    <script src="../js/tokenManager.js"></script>
+    <script src="../js/loading.js"></script>
+    <script src="../js/errorHandler.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
     <script>
         const customerTab = document.getElementById('customerTab');
         const providerTab = document.getElementById('providerTab');
@@ -606,7 +612,7 @@
             icon.classList.toggle('fa-eye-slash');
         });
 
-        function handleRegister(event) {
+        async function handleRegister(event) {
             event.preventDefault();
 
             const fullName = document.getElementById('fullName').value.trim();
@@ -638,19 +644,30 @@
 
             errorMessage.classList.remove('show');
 
-            localStorage.setItem('isLoggedIn', 'true');
-            localStorage.setItem('userRole', role);
-            localStorage.setItem('userEmail', email);
-            localStorage.setItem('userName', fullName);
-            localStorage.setItem('userPhone', phone);
-            localStorage.setItem('isVerified', 'false');
+            const apiRole = role.charAt(0).toUpperCase() + role.slice(1); // Map customer -> Customer, provider -> Provider
 
-            alert('Account created successfully!');
+            try {
+                const success = await api.post('/auth/register', {
+                    email: email,
+                    password: password,
+                    fullName: fullName,
+                    role: apiRole
+                });
 
-            if (role === 'customer') {
-                window.location.href = 'customer-dashboard.html';
-            } else if (role === 'provider') {
-                window.location.href = 'provider-verification.html';
+                if (success) {
+                    ErrorHandler.showNotification('Success', 'Account created successfully! Redirecting to login...', 'success');
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 2000);
+                }
+            } catch (error) {
+                console.error('Registration failed:', error);
+                if (error instanceof Error) {
+                    errorText.textContent = error.message;
+                } else {
+                    errorText.textContent = 'Registration failed. Please correct the fields.';
+                }
+                errorMessage.classList.add('show');
             }
         }
 

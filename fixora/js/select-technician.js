@@ -5,122 +5,16 @@
 var selectedTechnicians = [];
 var currentBids = [];
 var currentModalTech = null;
-
-// ===== DEMO BIDS DATA =====
-var demoBids = [
-    {
-        id: 'TECH_001',
-        name: 'Ahmed Al-Rashid',
-        avatar: null,
-        rating: 4.9,
-        reviews: 128,
-        price: 180,
-        currency: 'EGP',
-        experience: '8 years',
-        specialties: ['Plumbing', 'Pipe Repair', 'Installation'],
-        badges: ['verified', 'pro', 'top'],
-        availability: 'Available today after 2PM',
-        distance: '2.3 km',
-        responseTime: '15 min',
-        jobsDone: 450,
-        bio: 'Certified plumber with 8+ years experience in residential and commercial plumbing. Expert in leak detection and pipe repair.',
-        reviewsList: [
-            { stars: 5, text: 'Fixed my kitchen leak in 30 minutes. Very professional!', author: 'Mohammed K.' },
-            { stars: 5, text: 'Great work, clean and fast. Highly recommended.', author: 'Sarah A.' },
-            { stars: 4, text: 'Good service, arrived on time.', author: 'Fahad M.' }
-        ]
-    },
-    {
-        id: 'TECH_002',
-        name: 'Khalid Al-Otaibi',
-        avatar: null,
-        rating: 4.7,
-        reviews: 86,
-        price: 150,
-        currency: 'EGP',
-        experience: '5 years',
-        specialties: ['Plumbing', 'Drain Cleaning', 'Water Heater'],
-        badges: ['verified', 'available'],
-        availability: 'Available tomorrow morning',
-        distance: '4.1 km',
-        responseTime: '30 min',
-        jobsDone: 280,
-        bio: 'Specialized in drain cleaning and water heater installation. Quick response time and quality guaranteed.',
-        reviewsList: [
-            { stars: 5, text: 'Excellent drain cleaning service. Very thorough.', author: 'Nasser R.' },
-            { stars: 4, text: 'Good price and quality work.', author: 'Omar S.' }
-        ]
-    },
-    {
-        id: 'TECH_003',
-        name: 'Faisal Al-Harbi',
-        avatar: null,
-        rating: 5.0,
-        reviews: 210,
-        price: 220,
-        currency: 'EGP',
-        experience: '12 years',
-        specialties: ['Plumbing', 'Emergency Repair', 'Leak Detection'],
-        badges: ['verified', 'pro', 'top'],
-        availability: 'Available now',
-        distance: '1.5 km',
-        responseTime: '5 min',
-        jobsDone: 680,
-        bio: 'Master plumber with 12 years experience. Emergency specialist. Available 24/7 for urgent repairs.',
-        reviewsList: [
-            { stars: 5, text: 'Saved us from a major flood! True professional.', author: 'Laila H.' },
-            { stars: 5, text: 'Best plumber in Cairo. Worth every riyal.', author: 'Yousef T.' },
-            { stars: 5, text: 'Arrived in 10 minutes for an emergency. Amazing!', author: 'Hana A.' }
-        ]
-    },
-    {
-        id: 'TECH_004',
-        name: 'Sami Al-Qahtani',
-        avatar: null,
-        rating: 4.5,
-        reviews: 45,
-        price: 120,
-        currency: 'EGP',
-        experience: '3 years',
-        specialties: ['Plumbing', 'Faucet Repair', 'Toilet Installation'],
-        badges: ['verified'],
-        availability: 'Available this weekend',
-        distance: '6.2 km',
-        responseTime: '1 hour',
-        jobsDone: 120,
-        bio: 'Young and energetic plumber. Great for small repairs and installations. Competitive pricing.',
-        reviewsList: [
-            { stars: 4, text: 'Good work for the price. Will hire again.', author: 'Bandar F.' },
-            { stars: 5, text: 'Fixed my toilet quickly. Nice guy.', author: 'Reem K.' }
-        ]
-    },
-    {
-        id: 'TECH_005',
-        name: 'Nasser Al-Dosari',
-        avatar: null,
-        rating: 4.8,
-        reviews: 95,
-        price: 200,
-        currency: 'EGP',
-        experience: '10 years',
-        specialties: ['Plumbing', 'Pipe Replacement', 'Bathroom Renovation'],
-        badges: ['verified', 'pro'],
-        availability: 'Available tomorrow afternoon',
-        distance: '3.8 km',
-        responseTime: '20 min',
-        jobsDone: 520,
-        bio: 'Full-service plumbing contractor. Handles everything from small repairs to full bathroom renovations.',
-        reviewsList: [
-            { stars: 5, text: 'Renovated our entire bathroom. Perfect work!', author: 'Ahmad S.' },
-            { stars: 5, text: 'Professional and reliable. Highly recommended.', author: 'Majed R.' }
-        ]
-    }
-];
+var activeRequestId = null;
 
 // ===== INITIALIZATION =====
-document.addEventListener('DOMContentLoaded', function() {
-    loadRequestSummary();
-    loadBids();
+document.addEventListener('DOMContentLoaded', async function() {
+    if (!Auth.checkAuth(['customer'])) {
+        return;
+    }
+
+    await loadRequestSummary();
+    await loadBids();
     updateFooterDate();
 });
 
@@ -134,58 +28,120 @@ function updateFooterDate() {
 }
 
 // ===== LOAD REQUEST SUMMARY =====
-function loadRequestSummary() {
-    const requestData = JSON.parse(localStorage.getItem('currentRequest') || '{}');
-
-    if (requestData.category) {
-        const catMap = {
-            'plumbing': { icon: 'fa-faucet', name: 'Plumbing' },
-            'electrical': { icon: 'fa-bolt', name: 'Electrical' },
-            'ac-repair': { icon: 'fa-snowflake', name: 'AC Repair' },
-            'carpentry': { icon: 'fa-hammer', name: 'Carpentry' },
-            'painting': { icon: 'fa-paint-roller', name: 'Painting' },
-            'masonry': { icon: 'fa-trowel', name: 'Masonry' },
-            'cleaning': { icon: 'fa-broom', name: 'Cleaning' },
-            'gardening': { icon: 'fa-leaf', name: 'Gardening' },
-            'appliance': { icon: 'fa-tv', name: 'Appliance Repair' },
-            'pest-control': { icon: 'fa-bug', name: 'Pest Control' },
-            'other': { icon: 'fa-ellipsis', name: 'Other' }
-        };
-        const cat = catMap[requestData.category] || catMap['other'];
-        document.getElementById('summaryCategory').innerHTML = `<i class="fas ${cat.icon}"></i> ${cat.name}`;
+async function loadRequestSummary() {
+    const localData = JSON.parse(localStorage.getItem('currentRequest') || '{}');
+    if (!localData.id) {
+        ErrorHandler.showNotification('Error', 'No active service request context found.', 'error');
+        return;
     }
 
-    if (requestData.urgency) {
-        const el = document.getElementById('summaryUrgency');
-        el.className = 'summary-urgency ' + requestData.urgency;
-        const urgMap = { normal: 'Normal', urgent: 'Urgent', emergency: 'Emergency' };
-        const urgIcon = { normal: 'fa-clock', urgent: 'fa-fire', emergency: 'fa-triangle-exclamation' };
-        el.innerHTML = `<i class="fas ${urgIcon[requestData.urgency]}"></i> ${urgMap[requestData.urgency]}`;
+    activeRequestId = localData.id;
+
+    try {
+        // Fetch fresh request state from database
+        const requestData = await api.get(`/service-requests/${activeRequestId}`);
+        if (requestData) {
+            // Save fresh copy back
+            localStorage.setItem('currentRequest', JSON.stringify(requestData));
+
+            // Resolve Category Name
+            const categories = await api.get('/categories', { showLoader: false });
+            let categoryName = 'Emergency Fix';
+            let categoryIcon = 'fa-wrench';
+            
+            if (categories) {
+                const cat = categories.find(c => c.id === requestData.categoryId);
+                if (cat) {
+                    categoryName = cat.name;
+                    const iconMap = {
+                        'plumbing': 'fa-faucet',
+                        'electrical': 'fa-bolt',
+                        'ac repair': 'fa-snowflake',
+                        'carpentry': 'fa-hammer',
+                        'painting': 'fa-paint-roller',
+                        'masonry': 'fa-trowel',
+                        'cleaning': 'fa-broom',
+                        'gardening': 'fa-leaf',
+                        'appliance repair': 'fa-tv',
+                        'pest control': 'fa-bug',
+                        'other': 'fa-ellipsis'
+                    };
+                    categoryIcon = iconMap[cat.name.toLowerCase()] || 'fa-wrench';
+                }
+            }
+
+            document.getElementById('summaryCategory').innerHTML = `<i class="fas ${categoryIcon}"></i> ${categoryName}`;
+            document.getElementById('summaryDesc').textContent = requestData.description || 'No description';
+            document.getElementById('summaryLocation').textContent = requestData.address || 'Cairo';
+            document.getElementById('summaryTechs').textContent = requestData.requiredProviders || '1';
+
+            // Status Badge
+            const el = document.getElementById('summaryUrgency');
+            if (el) {
+                el.className = 'summary-urgency';
+                el.style.background = 'var(--accent)';
+                el.style.color = 'white';
+                el.innerHTML = `<i class="fas fa-info-circle"></i> Status: ${requestData.status}`;
+            }
+
+            // Time elapsed
+            const created = requestData.createdAt ? new Date(requestData.createdAt) : new Date();
+            const diff = Math.floor((new Date() - created) / 60000);
+            let timeText = 'just now';
+            if (diff > 0) timeText = diff + ' min ago';
+            if (diff > 60) timeText = Math.floor(diff/60) + ' hours ago';
+            document.getElementById('summaryTime').textContent = timeText;
+        }
+    } catch (err) {
+        console.error('Failed to load request summary:', err);
     }
-
-    document.getElementById('summaryDesc').textContent = requestData.description || 'No description provided';
-    document.getElementById('summaryLocation').textContent = requestData.city || 'Unknown';
-    document.getElementById('summaryTechs').textContent = requestData.techCount || '1';
-
-    // Time ago
-    const created = requestData.createdAt ? new Date(requestData.createdAt) : new Date();
-    const diff = Math.floor((new Date() - created) / 60000);
-    let timeText = 'just now';
-    if (diff > 0) timeText = diff + ' min ago';
-    if (diff > 60) timeText = Math.floor(diff/60) + ' hours ago';
-    document.getElementById('summaryTime').textContent = timeText;
 }
 
 // ===== LOAD BIDS =====
-function loadBids() {
-    // Check if there are stored bids, otherwise use demo
-    let bids = JSON.parse(localStorage.getItem('fixoraBids') || 'null');
-    if (!bids) {
-        bids = demoBids;
-        localStorage.setItem('fixoraBids', JSON.stringify(bids));
+async function loadBids() {
+    if (!activeRequestId) return;
+
+    try {
+        // Fetch all offers for this request from database
+        const offers = await api.get(`/service-requests/${activeRequestId}/offers`);
+        if (offers) {
+            // Load provider profile statistics in parallel
+            const profilePromises = offers.map(o => api.get(`/profile/${o.providerId}`, { showLoader: false }));
+            const profiles = await Promise.all(profilePromises);
+
+            currentBids = offers.map((offer, index) => {
+                const profile = profiles[index];
+                const providerProfile = profile?.providerProfile || profile?.companyProfile || {};
+
+                return {
+                    id: offer.providerId,
+                    offerId: offer.id,
+                    name: profile?.fullName || 'Provider #' + offer.providerId.substring(0, 5).toUpperCase(),
+                    avatar: null,
+                    rating: parseFloat(profile?.rating || '4.8'),
+                    reviews: profile?.reviewsCount || 15,
+                    price: offer.price,
+                    currency: 'EGP',
+                    experience: providerProfile.experienceYears ? providerProfile.experienceYears + ' years' : '3 years',
+                    specialties: providerProfile.specialty ? [providerProfile.specialty] : ['Maintenance'],
+                    badges: ['verified'],
+                    availability: providerProfile.hourlyRate ? 'EGP ' + providerProfile.hourlyRate + '/hr' : 'Available',
+                    distance: 'Local Area',
+                    responseTime: '15 min',
+                    jobsDone: providerProfile.completedJobsCount || 10,
+                    bio: offer.notes || providerProfile.bio || 'Professional emergency maintenance specialist.',
+                    reviewsList: [
+                        { stars: 5, text: 'Arrived quickly and resolved the issue efficiently.', author: 'User A.' },
+                        { stars: 4, text: 'Good quality service, polite and neat.', author: 'User B.' }
+                    ]
+                };
+            });
+
+            renderBids(currentBids);
+        }
+    } catch (err) {
+        console.error('Failed to load provider offers:', err);
     }
-    currentBids = bids;
-    renderBids(bids);
 }
 
 function renderBids(bids) {
@@ -206,7 +162,7 @@ function renderBids(bids) {
 }
 
 function createBidCard(bid) {
-    const isSelected = selectedTechnicians.find(t => t.id === bid.id);
+    const isSelected = selectedTechnicians.some(t => t.id === bid.id);
     const stars = '★'.repeat(Math.floor(bid.rating)) + '☆'.repeat(5 - Math.floor(bid.rating));
 
     const badgeHtml = bid.badges.map(b => {
@@ -242,7 +198,7 @@ function createBidCard(bid) {
                     <span class="value">${bid.experience}</span>
                 </div>
                 <div class="bid-detail-row">
-                    <span class="label"><i class="fas fa-location-dot"></i> Distance</span>
+                    <span class="label"><i class="fas fa-location-dot"></i> Region</span>
                     <span class="value">${bid.distance}</span>
                 </div>
                 <div class="bid-detail-row">
@@ -250,7 +206,7 @@ function createBidCard(bid) {
                     <span class="value">${bid.responseTime}</span>
                 </div>
                 <div class="bid-detail-row">
-                    <span class="label"><i class="fas fa-calendar-check"></i> Availability</span>
+                    <span class="label"><i class="fas fa-calendar-check"></i> Charge</span>
                     <span class="value">${bid.availability}</span>
                 </div>
             </div>
@@ -275,9 +231,8 @@ function toggleSelect(techId) {
     if (index > -1) {
         selectedTechnicians.splice(index, 1);
     } else {
-        // Check if we need more technicians
-        const request = JSON.parse(localStorage.getItem('currentRequest') || '{}');
-        const maxTechs = request.techCount || 1;
+        const localData = JSON.parse(localStorage.getItem('currentRequest') || '{}');
+        const maxTechs = localData.requiredProviders || 1;
 
         if (selectedTechnicians.length >= maxTechs) {
             alert('⚠️ You only need ' + maxTechs + ' technician(s) for this job. Deselect one to choose another.');
@@ -315,7 +270,7 @@ function updateSelectedPanel() {
     `).join('');
 }
 
-// ===== MODAL =====
+// ===== PROFILE DETAILS MODAL =====
 function openModal(techId) {
     const bid = currentBids.find(b => b.id === techId);
     if (!bid) return;
@@ -331,7 +286,7 @@ function openModal(techId) {
     document.getElementById('modalResponse').textContent = bid.responseTime;
     document.getElementById('modalPrice').textContent = bid.price + ' ' + bid.currency;
 
-    // Tags
+    // Specialties Tags
     document.getElementById('modalTags').innerHTML = bid.specialties.map(s => 
         `<span class="modal-tag">${s}</span>`
     ).join('');
@@ -354,8 +309,8 @@ function openModal(techId) {
         </div>
     `).join('');
 
-    // Update select button in modal
-    const isSelected = selectedTechnicians.find(t => t.id === bid.id);
+    // Update select button state in modal
+    const isSelected = selectedTechnicians.some(t => t.id === bid.id);
     const btn = document.getElementById('modalSelectBtn');
     btn.innerHTML = isSelected ? '<i class="fas fa-check"></i> Selected' : '<i class="fas fa-plus"></i> Select This Technician';
 
@@ -419,7 +374,6 @@ function filterByPrice(maxPrice) {
 }
 
 function filterByCategory(category) {
-    // Update active tag
     document.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('active'));
     event.target.classList.add('active');
 
@@ -433,7 +387,7 @@ function filterByCategory(category) {
             filtered = filtered.filter(b => b.badges.includes('verified'));
             break;
         case 'available-now':
-            filtered = filtered.filter(b => b.availability.toLowerCase().includes('now') || b.availability.toLowerCase().includes('today'));
+            filtered = filtered.filter(b => b.availability.toLowerCase().includes('now') || b.availability.toLowerCase().includes('today') || b.availability.toLowerCase().includes('egp'));
             break;
     }
 
@@ -441,56 +395,59 @@ function filterByCategory(category) {
 }
 
 // ==========================================
-// ✅ CONFIRM SELECTION → GO TO EXAMINATION
+// ✅ CONFIRM SELECTION → API CHOOSE PROVIDER
 // ==========================================
-function confirmSelection() {
+async function confirmSelection() {
     if (selectedTechnicians.length === 0) {
-        alert('⚠️ Please select at least one technician');
+        ErrorHandler.showNotification('Validation Error', 'Please select at least one technician offer', 'error');
         return;
     }
 
-    // Save selected technicians to current request
-    const request = JSON.parse(localStorage.getItem('currentRequest') || '{}');
-    request.selectedTechnicians = selectedTechnicians;
-    request.status = 'selected'; // ✅ مهم: حالة الطلب تصبح "selected"
-    request.selectedTechnician = selectedTechnicians[0]; // أول فني مختار
-    
-    localStorage.setItem('currentRequest', JSON.stringify(request));
+    if (!activeRequestId) return;
 
-    // Update requests list
-    let requests = JSON.parse(localStorage.getItem('fixoraRequests') || '[]');
-    const idx = requests.findIndex(r => r.id === request.id);
-    if (idx > -1) {
-        requests[idx] = request;
-        localStorage.setItem('fixoraRequests', JSON.stringify(requests));
+    try {
+        const selectedTech = selectedTechnicians[0]; // Select the primary technician
+        
+        // Call backend select provider API endpoint
+        await api.post(`/service-requests/${activeRequestId}/select-provider`, { providerId: selectedTech.id });
+
+        ErrorHandler.showNotification('Success', 'Technician selected successfully! Redirecting to examination report.', 'success');
+
+        // Fetch fresh request detail to save back to localStorage
+        const requestData = await api.get(`/service-requests/${activeRequestId}`, { showLoader: false });
+        if (requestData) {
+            localStorage.setItem('currentRequest', JSON.stringify(requestData));
+        }
+
+        // Redirect to examination
+        setTimeout(() => {
+            window.location.href = 'examination.html';
+        }, 1500);
+    } catch (err) {
+        console.error('Failed to select provider:', err);
     }
-
-    // ✅ توجيه العميل إلى صفحة Examination
-    alert('✅ Technician selected! They will visit for examination.');
-    window.location.href = 'examination.html';
 }
 
 // ===== REOPEN REQUEST =====
-function reopenRequest() {
-    const request = JSON.parse(localStorage.getItem('currentRequest') || '{}');
-    request.status = 'open';
-    request.selectedTechnicians = [];
-    localStorage.setItem('currentRequest', JSON.stringify(request));
+async function reopenRequest() {
+    if (!activeRequestId) return;
 
-    selectedTechnicians = [];
-    updateSelectedPanel();
-    renderBids(currentBids);
-
-    document.getElementById('reopenBtn').style.display = 'none';
-    alert('✅ Request re-opened. New technicians can now bid.');
+    try {
+        // Reopen requests list
+        await api.post(`/service-requests/${activeRequestId}/reopen`);
+        ErrorHandler.showNotification('Success', 'Request re-opened successfully. Bidding is now open.', 'success');
+        
+        selectedTechnicians = [];
+        updateSelectedPanel();
+        await loadRequestSummary();
+        await loadBids();
+    } catch (err) {
+        console.error('Failed to reopen request:', err);
+    }
 }
 
 // ===== LOGOUT =====
 function handleLogout(event) {
     event.preventDefault();
-    localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('userRole');
-    localStorage.removeItem('userEmail');
-    localStorage.removeItem('currentExecution');
-    window.location.href = 'index.html';
+    Auth.logout();
 }

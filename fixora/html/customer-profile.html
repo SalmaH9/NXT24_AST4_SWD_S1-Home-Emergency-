@@ -272,29 +272,90 @@
         </div>
     </div>
 
-    <script src="../js/script.js"></script>
-    <script src="../js/chatbot.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../js/tokenManager.js"></script>
+    <script src="../js/loading.js"></script>
+    <script src="../js/errorHandler.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
     <script>
-        function saveProfile(event) {
+        let currentProfileData = null;
+
+        async function loadProfile() {
+            try {
+                const profile = await api.get('/profile');
+                if (profile) {
+                    currentProfileData = profile;
+                    document.getElementById('profileName').textContent = profile.fullName;
+                    document.getElementById('fullName').value = profile.fullName;
+                    document.getElementById('email').value = profile.email;
+                    document.getElementById('phone').value = profile.phoneNumber || '';
+                    
+                    if (profile.customerProfile) {
+                        document.getElementById('address').value = profile.customerProfile.defaultAddress || '';
+                        const citySelect = document.getElementById('city');
+                        if (profile.customerProfile.preferredLanguage) {
+                            // Find and select the option matching preferredLanguage (city)
+                            for (let i = 0; i < citySelect.options.length; i++) {
+                                if (citySelect.options[i].text === profile.customerProfile.preferredLanguage) {
+                                    citySelect.selectedIndex = i;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error('Failed to load profile:', err);
+            }
+        }
+
+        async function saveProfile(event) {
             event.preventDefault();
-            const name = document.getElementById('fullName').value;
-            document.getElementById('profileName').textContent = name;
-            alert('✅ Profile updated successfully!');
+            const fullName = document.getElementById('fullName').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const address = document.getElementById('address').value.trim();
+            const city = document.getElementById('city').value;
+
+            if (!fullName) {
+                ErrorHandler.showNotification('Validation Error', 'Full Name is required', 'error');
+                return;
+            }
+
+            try {
+                const success = await api.put('/profile', {
+                    fullName: fullName,
+                    phoneNumber: phone,
+                    defaultAddress: address,
+                    preferredLanguage: city // Map city selection to preferredLanguage DTO field
+                });
+
+                if (success) {
+                    document.getElementById('profileName').textContent = fullName;
+                    ErrorHandler.showNotification('Success', 'Profile updated successfully!', 'success');
+                }
+            } catch (err) {
+                console.error('Failed to save profile:', err);
+            }
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            const role = localStorage.getItem('userRole');
-            if (role !== 'customer') {
-                window.location.href = 'login.html';
+            if (Auth.checkAuth(['customer'])) {
+                loadProfile();
+            }
+            
+            // Set footer date
+            const dateEl = document.getElementById('footer-date');
+            if (dateEl) {
+                dateEl.textContent = new Date().toLocaleDateString('en-US', {
+                    year: 'numeric', month: 'short', day: 'numeric'
+                });
             }
         });
 
         function handleLogout(event) {
             event.preventDefault();
-            localStorage.removeItem('isLoggedIn');
-            localStorage.removeItem('userRole');
-            localStorage.removeItem('userEmail');
-            window.location.href = 'login.html';
+            Auth.logout();
         }
     </script>
 </body>

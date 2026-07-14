@@ -5,81 +5,89 @@
 var selectedPlan = null;
 var currentUserPlan = 'free';
 var currentUser = null;
+var backendPlans = {}; // Map planName.toLowerCase() to backend plan object
 
-// ===== DEMO DATA =====
+// ===== DEMO DATA (Fallback for rendering UI attributes if needed) =====
 var plansData = {
-    free: {
-        name: 'Free',
-        price: 0,
-        features: ['View service requests', 'Basic profile', '1 active request at a time']
-    },
-    pro: {
-        name: 'Pro',
-        price: 50,
-        features: ['View service requests', 'Professional profile', 'Unlimited active requests', 'Accept service requests', 'Priority support']
-    },
-    premium: {
-        name: 'Premium',
-        price: 100,
-        features: ['View service requests', 'Premium profile with badge', 'Unlimited active requests', 'Accept service requests', 'Priority support', 'Featured listing']
-    }
+    free: { name: 'Free', price: 0 },
+    pro: { name: 'Pro', price: 50 },
+    premium: { name: 'Premium', price: 100 }
 };
 
 // ===== INIT =====
-document.addEventListener('DOMContentLoaded', function() {
-    currentUser = {
-        id: localStorage.getItem('userEmail') || 'provider@fixora.com',
-        name: localStorage.getItem('userName') || 'Provider',
-        role: localStorage.getItem('userRole') || 'provider'
-    };
-
-    // Check if user is provider
-    if (currentUser.role !== 'provider') {
-        window.location.href = 'login.html';
+document.addEventListener('DOMContentLoaded', async function() {
+    if (!Auth.checkAuth(['provider', 'company'])) {
         return;
     }
 
-    // ✅ Check verification status first
+    currentUser = {
+        email: TokenManager.getUserEmail(),
+        role: TokenManager.getUserRole()
+    };
+
+    // Check verification status
     const verified = localStorage.getItem('providerVerified');
     if (verified !== 'approved') {
-        alert('⚠️ You must complete verification before subscribing.\n\nPlease complete your profile verification first.');
-        window.location.href = 'provider-verification.html';
+        ErrorHandler.showNotification('Verification Required', 'You must complete verification before subscribing.', 'warning');
+        setTimeout(() => {
+            window.location.href = 'provider-verification.html';
+        }, 1500);
         return;
     }
 
-    loadSubscriptionStatus();
-    updateUI();
-    updateFooterDate();
+    try {
+        // 1. Fetch available plans from backend
+        const plans = await api.get('/subscriptions');
+        if (plans) {
+            plans.forEach(p => {
+                const key = p.planName.toLowerCase();
+                backendPlans[key] = p;
+                
+                // Dynamically update the price text on cards
+                const card = document.querySelector(`.plan-card[data-plan="${key}"]`);
+                if (card) {
+                    const priceEl = card.querySelector('.price span');
+                    if (priceEl) priceEl.textContent = p.price;
+                }
+            });
+        }
+
+        // 2. Fetch current subscription status
+        await loadSubscriptionStatus();
+        updateUI();
+        updateFooterDate();
+    } catch (err) {
+        console.error('Failed to initialize subscription details:', err);
+    }
 });
 
-function loadSubscriptionStatus() {
-    var saved = localStorage.getItem('fixoraSubscription');
-    if (saved) {
-        try {
-            var data = JSON.parse(saved);
-            currentUserPlan = data.plan || 'free';
-        } catch(e) {
+async function loadSubscriptionStatus() {
+    try {
+        const sub = await api.get('/subscriptions/my-subscription');
+        if (sub && sub.status === 'Active') {
+            currentUserPlan = sub.planName.toLowerCase();
+            localStorage.setItem('fixoraSubscription', JSON.stringify({
+                plan: currentUserPlan,
+                activatedAt: sub.startDate,
+                expiresAt: sub.endDate
+            }));
+            localStorage.setItem('providerActive', 'true');
+        } else {
             currentUserPlan = 'free';
+            localStorage.setItem('providerActive', 'false');
+            localStorage.removeItem('fixoraSubscription');
         }
-    } else {
+    } catch (err) {
+        console.error('Failed to fetch subscription status:', err);
         currentUserPlan = 'free';
+        localStorage.setItem('providerActive', 'false');
     }
-}
-
-function saveSubscriptionStatus(plan) {
-    var data = {
-        plan: plan,
-        activatedAt: new Date().toISOString(),
-        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
-    };
-    localStorage.setItem('fixoraSubscription', JSON.stringify(data));
-    currentUserPlan = plan;
 }
 
 function updateUI() {
-    // Update current status
-    var planName = plansData[currentUserPlan].name;
-    var planPrice = plansData[currentUserPlan].price;
+    const planObj = backendPlans[currentUserPlan] || { planName: 'Free', price: 0 };
+    const planName = planObj.planName;
+    const planPrice = planObj.price;
     
     document.getElementById('currentPlan').textContent = planName + (planPrice > 0 ? ' (' + planPrice + ' EGP/month)' : '');
     document.getElementById('currentStatusText').textContent = planPrice === 0 ? 
@@ -107,6 +115,8 @@ function updateUI() {
                 });
             }
         } catch(e) {}
+    } else {
+        document.getElementById('expiryDate').textContent = 'N/A';
     }
 
     // Update plan cards
@@ -118,9 +128,10 @@ function updateUI() {
             btn.textContent = 'Current Plan';
             btn.disabled = true;
             btn.className = 'btn-plan current';
+            btn.onclick = null;
         } else {
-            var planData = plansData[plan];
-            btn.textContent = 'Upgrade to ' + planData.name;
+            const planDetails = backendPlans[plan] || { planName: plan.toUpperCase() };
+            btn.textContent = 'Upgrade to ' + planDetails.planName;
             btn.disabled = false;
             btn.className = 'btn-plan';
             btn.onclick = function() { selectPlan(plan); };
@@ -138,16 +149,17 @@ function updateProviderStatus() {
 
 function selectPlan(plan) {
     if (plan === currentUserPlan) {
-        alert('You are already on the ' + plansData[plan].name + ' plan.');
+        alert('You are already on this plan.');
         return;
     }
 
     selectedPlan = plan;
-    var planData = plansData[plan];
+    const planDetails = backendPlans[plan];
+    if (!planDetails) return;
     
-    document.getElementById('paymentPlan').textContent = planData.name;
-    document.getElementById('paymentPrice').textContent = planData.price + ' EGP';
-    document.getElementById('paymentTotal').textContent = planData.price + ' EGP';
+    document.getElementById('paymentPlan').textContent = planDetails.planName;
+    document.getElementById('paymentPrice').textContent = planDetails.price + ' EGP';
+    document.getElementById('paymentTotal').textContent = planDetails.price + ' EGP';
     
     document.getElementById('paymentModal').classList.add('show');
 }
@@ -184,70 +196,85 @@ function formatCardExpiry(input) {
     }
 }
 
-function processPayment() {
+async function processPayment() {
     var cardNumber = document.getElementById('cardNumber').value.replace(/\s/g, '');
     var cardExpiry = document.getElementById('cardExpiry').value;
     var cardCvv = document.getElementById('cardCvv').value;
     var cardName = document.getElementById('cardName').value.trim();
 
     if (cardNumber.length < 16) {
-        alert('⚠️ Please enter a valid card number (16 digits).');
+        ErrorHandler.showNotification('Validation Error', 'Please enter a valid card number (16 digits).', 'error');
         return;
     }
 
     if (cardExpiry.length < 5) {
-        alert('⚠️ Please enter a valid expiry date (MM/YY).');
+        ErrorHandler.showNotification('Validation Error', 'Please enter a valid expiry date (MM/YY).', 'error');
         return;
     }
 
     if (cardCvv.length < 3) {
-        alert('⚠️ Please enter a valid CVV (3-4 digits).');
+        ErrorHandler.showNotification('Validation Error', 'Please enter a valid CVV (3 digits).', 'error');
         return;
     }
 
     if (!cardName) {
-        alert('⚠️ Please enter the cardholder name.');
+        ErrorHandler.showNotification('Validation Error', 'Please enter the cardholder name.', 'error');
+        return;
+    }
+
+    const planDetails = backendPlans[selectedPlan];
+    if (!planDetails) {
+        ErrorHandler.showNotification('Error', 'Selected plan is not available on the backend.', 'error');
         return;
     }
 
     var btn = document.querySelector('.btn-pay');
-    btn.textContent = 'Processing...';
+    btn.textContent = 'Processing Payment...';
     btn.disabled = true;
 
-    setTimeout(function() {
-        btn.textContent = '✅ Payment Successful!';
-        
-        saveSubscriptionStatus(selectedPlan);
-        
-        setTimeout(function() {
-            closePaymentModal();
-            btn.textContent = 'Pay Now';
-            btn.disabled = false;
-            updateUI();
-            showSuccess(selectedPlan);
-        }, 1000);
-    }, 2000);
+    try {
+        // Execute subscribe API call on backend
+        const response = await api.post(`/subscriptions/${planDetails.id}/subscribe`);
+        if (response) {
+            btn.textContent = '✅ Payment Successful!';
+            
+            localStorage.setItem('fixoraSubscription', JSON.stringify({
+                plan: selectedPlan,
+                activatedAt: response.startDate,
+                expiresAt: response.endDate
+            }));
+            currentUserPlan = selectedPlan;
+            localStorage.setItem('providerActive', 'true');
+            
+            setTimeout(function() {
+                closePaymentModal();
+                btn.textContent = 'Pay Now';
+                btn.disabled = false;
+                updateUI();
+                showSuccess(selectedPlan);
+            }, 1000);
+        }
+    } catch (err) {
+        console.error('Subscription purchase failed:', err);
+        btn.textContent = 'Pay Now';
+        btn.disabled = false;
+    }
 }
 
 function showSuccess(plan) {
+    const planName = (backendPlans[plan] || { planName: plan }).planName;
     document.querySelector('.plans-grid').style.display = 'none';
     document.querySelector('.comparison-section').style.display = 'none';
     document.getElementById('currentStatus').style.display = 'none';
     document.getElementById('subscriptionSuccess').style.display = 'block';
-    document.getElementById('successPlan').textContent = plansData[plan].name;
+    document.getElementById('successPlan').textContent = planName;
     localStorage.setItem('providerActive', 'true');
 }
 
 // ===== LOGOUT =====
 function handleLogout(event) {
     event.preventDefault();
-    localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('userRole');
-    localStorage.removeItem('userEmail');
-    localStorage.removeItem('currentExecution');
-    localStorage.removeItem('currentOrderDetails');
-    localStorage.removeItem('currentRequest');
-    window.location.href = 'index.html';
+    Auth.logout();
 }
 
 // ===== FOOTER =====

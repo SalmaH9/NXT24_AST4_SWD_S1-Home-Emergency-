@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -33,4 +33,11 @@ public class ProviderOfferDto
 public class SelectProviderDto
 {
     public Guid ProviderId { get; set; }
+}
+
+public class UpdateProviderOfferDto
+{
+    public decimal Price { get; set; }
+
+    public string Notes { get; set; } = string.Empty;
 }

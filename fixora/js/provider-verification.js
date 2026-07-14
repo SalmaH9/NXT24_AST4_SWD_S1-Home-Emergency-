@@ -179,40 +179,88 @@ function populateReview() {
 // ==========================================
 // ✅ SUBMIT VERIFICATION
 // ==========================================
-function submitVerification() {
-    // ✅ حفظ حالة التحقق
-    localStorage.setItem('providerVerified', 'pending');
-    localStorage.setItem('providerStatus', 'under_review');
-    
-    // ✅ حفظ بيانات مقدم الخدمة
-    const providerData = {
-        fullName: document.getElementById('vFullName').value,
-        nationalId: document.getElementById('vNationalId').value,
-        country: document.getElementById('vCountry').value,
-        city: document.getElementById('vCity').value,
-        address: document.getElementById('vAddress').value,
-        bio: document.getElementById('vBio').value,
-        experience: document.getElementById('vExperience').value,
-        rate: document.getElementById('vRate').value,
-        specialties: Array.from(document.querySelectorAll('.specialty-tag.selected'))
-            .map(tag => tag.dataset.value),
-        submittedAt: new Date().toISOString(),
-        status: 'pending'
-    };
-    
-    localStorage.setItem('providerData', JSON.stringify(providerData));
+async function submitVerification() {
+    const name = document.getElementById('vFullName').value.trim();
+    const experience = parseInt(document.getElementById('vExperience').value) || 0;
+    const specialties = Array.from(document.querySelectorAll('.specialty-tag.selected'))
+        .map(tag => tag.textContent.trim()).join(', ');
+    const bio = document.getElementById('vBio').value.trim();
 
-    // Hide form, show success
-    document.querySelectorAll('.step-content').forEach(c => c.classList.remove('active'));
-    document.querySelector('.progress-steps').style.display = 'none';
-    document.querySelector('.warning-box').style.display = 'none';
-    document.getElementById('successState').classList.add('show');
+    const idFileInput = document.getElementById('idFile');
+    const criminalFileInput = document.getElementById('criminalFile');
+    const licenseFileInput = document.getElementById('licenseFile');
 
-    // Unlock navbar on success
-    document.getElementById('navbar').classList.remove('nav-locked');
-    document.querySelectorAll('.nav-links a').forEach(link => {
-        link.removeAttribute('onclick');
-    });
+    if (idFileInput.files.length === 0 || criminalFileInput.files.length === 0) {
+        ErrorHandler.showNotification('Validation Error', 'ID Card and Criminal Record files are required.', 'error');
+        return;
+    }
+
+    try {
+        Loading.show("Updating profile details...");
+        
+        // Update Profile Details
+        await api.put('/profile', {
+            fullName: name,
+            bio: bio,
+            serviceCategory: specialties || 'General Maintenance',
+            experienceYears: experience,
+            availabilityStatus: 'Offline',
+            serviceRadiusKm: 25
+        }, { showLoader: false });
+
+        // Upload ID Card
+        Loading.show("Uploading ID Card...");
+        const idFormData = new FormData();
+        idFormData.append("type", "0"); // DocumentType.IDCard is 0
+        idFormData.append("files", idFileInput.files[0]);
+        await api.post('/documents/upload', idFormData, { showLoader: false });
+
+        // Upload Criminal Record (ProfessionalCertificate is 2)
+        Loading.show("Uploading Criminal Record...");
+        const crimFormData = new FormData();
+        crimFormData.append("type", "2"); // DocumentType.ProfessionalCertificate is 2
+        crimFormData.append("files", criminalFileInput.files[0]);
+        await api.post('/documents/upload', crimFormData, { showLoader: false });
+
+        // Upload License if provided
+        if (licenseFileInput.files.length > 0) {
+            Loading.show("Uploading License...");
+            const licFormData = new FormData();
+            licFormData.append("type", "2"); 
+            licFormData.append("files", licenseFileInput.files[0]);
+            await api.post('/documents/upload', licFormData, { showLoader: false });
+        }
+
+        Loading.hide();
+
+        localStorage.setItem('providerVerified', 'pending');
+        localStorage.setItem('providerStatus', 'under_review');
+        
+        // Hide form, show success
+        document.querySelectorAll('.step-content').forEach(c => c.classList.remove('active'));
+        const pSteps = document.querySelector('.progress-steps');
+        if (pSteps) pSteps.style.display = 'none';
+        const wBox = document.querySelector('.warning-box');
+        if (wBox) wBox.style.display = 'none';
+        
+        const formCard = document.querySelector('.form-card');
+        if (formCard) formCard.style.display = 'none';
+        const stepNav = document.querySelector('.step-nav');
+        if (stepNav) stepNav.style.display = 'none';
+        
+        document.getElementById('successState').classList.add('show');
+
+        // Unlock navbar on success
+        const navbar = document.getElementById('navbar');
+        if (navbar) navbar.classList.remove('nav-locked');
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.removeAttribute('onclick');
+        });
+
+    } catch (err) {
+        Loading.forceHide();
+        console.error('Failed to submit verification details:', err);
+    }
 }
 
 // ==========================================
@@ -222,11 +270,6 @@ function simulateAdminApproval() {
     if (confirm('⚠️ Development Mode: Simulate admin approval?\n\nThis will mark your verification as APPROVED.')) {
         localStorage.setItem('providerVerified', 'approved');
         localStorage.setItem('providerStatus', 'approved');
-        
-        // ✅ تحديث حالة مقدم الخدمة
-        const providerData = JSON.parse(localStorage.getItem('providerData') || '{}');
-        providerData.status = 'approved';
-        localStorage.setItem('providerData', JSON.stringify(providerData));
         
         alert('✅ Admin approval simulated!\n\nYou can now access the subscription page.');
         window.location.href = 'subscription.html';
@@ -247,56 +290,76 @@ function blockNav(event) {
 // ==========================================
 // CHECK LOGIN & VERIFICATION STATUS
 // ==========================================
-document.addEventListener('DOMContentLoaded', function() {
-    const role = localStorage.getItem('userRole');
-    if (role !== 'provider') {
-        window.location.href = 'login.html';
+document.addEventListener('DOMContentLoaded', async function() {
+    if (!Auth.checkAuth(['provider', 'company'])) {
         return;
     }
 
-    // Pre-fill name if available
-    const userName = localStorage.getItem('userName');
-    if (userName) {
-        document.getElementById('vFullName').value = userName;
+    // Set footer date
+    const dateEl = document.getElementById('footer-date');
+    if (dateEl) {
+        dateEl.textContent = new Date().toLocaleDateString('en-US', {
+            year: 'numeric', month: 'short', day: 'numeric'
+        });
     }
 
-    // ✅ Check verification status
-    const verified = localStorage.getItem('providerVerified');
-    console.log('📌 Verification Status:', verified);
-    
-    if (verified === 'approved') {
-        // ✅ إذا كان verified، نتحقق من الاشتراك
-        const subscription = localStorage.getItem('fixoraSubscription');
-        if (subscription) {
-            try {
-                const subData = JSON.parse(subscription);
-                if (subData.plan && subData.plan !== 'free') {
-                    // ✅ Verified + Subscribed → Dashboard
-                    window.location.href = 'provider-dashboard.html';
+    try {
+        const profile = await api.get('/profile');
+        if (profile) {
+            localStorage.setItem('userName', profile.fullName);
+            document.getElementById('vFullName').value = profile.fullName;
+
+            const verified = profile.status; // 'Active', 'Pending', 'Suspended', 'Inactive'
+            console.log('📌 Backend Verification Status:', verified);
+
+            if (verified === 'Active') {
+                localStorage.setItem('providerVerified', 'approved');
+                localStorage.setItem('providerStatus', 'approved');
+                
+                try {
+                    const sub = await api.get('/subscriptions/my-subscription', { showLoader: false });
+                    if (sub && sub.status === 'Active') {
+                        localStorage.setItem('fixoraSubscription', JSON.stringify({ plan: sub.planName.toLowerCase(), expiresAt: sub.endDate }));
+                        localStorage.setItem('providerActive', 'true');
+                        window.location.href = 'provider-dashboard.html';
+                    } else {
+                        localStorage.setItem('providerActive', 'false');
+                        window.location.href = 'subscription.html';
+                    }
+                } catch (subErr) {
+                    localStorage.setItem('providerActive', 'false');
+                    window.location.href = 'subscription.html';
+                }
+                return;
+            } else if (verified === 'Pending') {
+                const docs = await api.get('/documents/my-documents', { showLoader: false });
+                if (docs && docs.length > 0) {
+                    localStorage.setItem('providerVerified', 'pending');
+                    localStorage.setItem('providerStatus', 'under_review');
+                    
+                    document.querySelectorAll('.step-content').forEach(c => c.classList.remove('active'));
+                    const pSteps = document.querySelector('.progress-steps');
+                    if (pSteps) pSteps.style.display = 'none';
+                    const wBox = document.querySelector('.warning-box');
+                    if (wBox) wBox.style.display = 'none';
+                    
+                    const formCard = document.querySelector('.form-card');
+                    if (formCard) formCard.style.display = 'none';
+                    const stepNav = document.querySelector('.step-nav');
+                    if (stepNav) stepNav.style.display = 'none';
+                    
+                    document.getElementById('waitingState').style.display = 'block';
+                    
+                    const simDiv = document.getElementById('adminSimulation');
+                    if (simDiv) simDiv.style.display = 'block';
                     return;
                 }
-            } catch(e) {}
+            }
         }
-        // ✅ Verified but not subscribed → Subscription page
-        window.location.href = 'subscription.html';
-        return;
-    } else if (verified === 'pending') {
-        // ✅ قيد المراجعة - إظهار حالة الانتظار
-        document.querySelectorAll('.step-content').forEach(c => c.classList.remove('active'));
-        document.querySelector('.progress-steps').style.display = 'none';
-        document.querySelector('.warning-box').style.display = 'none';
-        document.querySelector('.form-card')?.parentElement?.remove();
-        document.querySelector('.step-nav')?.remove();
-        
-        document.getElementById('waitingState').style.display = 'block';
-        
-        // إظهار زر المحاكاة
-        const simDiv = document.getElementById('adminSimulation');
-        if (simDiv) simDiv.style.display = 'block';
-        return;
+    } catch (e) {
+        console.error('Error fetching verification status:', e);
     }
 
-    // ✅ Show admin simulation button for development
     setTimeout(function() {
         const simDiv = document.getElementById('adminSimulation');
         if (simDiv) {
@@ -310,11 +373,5 @@ document.addEventListener('DOMContentLoaded', function() {
 // ==========================================
 function handleLogout(event) {
     event.preventDefault();
-    localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('userRole');
-    localStorage.removeItem('userEmail');
-    localStorage.removeItem('currentExecution');
-    localStorage.removeItem('currentOrderDetails');
-    localStorage.removeItem('currentRequest');
-    window.location.href = 'index.html';
+    Auth.logout();
 }

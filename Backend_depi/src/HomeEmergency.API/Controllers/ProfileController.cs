@@ -68,5 +68,22 @@ public class ProfileController : ControllerBase
         var result = await _userService.UpdateUserProfileAsync(userId, request);
         return Ok(result);
     }
+
+    /// <summary>
+    /// Retrieves the profile details of any user by GUID (useful for customers to view provider bids).
+    /// </summary>
+    /// <param name="userId">The user GUID.</param>
+    /// <returns>General user and role-specific profile details.</returns>
+    [HttpGet("{userId:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserProfileDto))]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetProfileById(Guid userId)
+    {
+        var profile = await _userService.GetUserProfileAsync(userId);
+        if (profile == null)
+            return NotFound();
+        return Ok(profile);
+    }
 }
 
