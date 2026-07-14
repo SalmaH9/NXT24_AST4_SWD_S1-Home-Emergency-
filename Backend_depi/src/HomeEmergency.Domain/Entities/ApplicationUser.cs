@@ -37,5 +37,12 @@ public class ApplicationUser : IdentityUser<Guid>
     public virtual ICollection<Rating> RatingsReceived { get; set; } = new List<Rating>();
     public virtual ICollection<Advertisement> Advertisements { get; set; } = new List<Advertisement>();
     public virtual ICollection<AIConversation> AIConversations { get; set; } = new List<AIConversation>();
+    // Backend 2
+    public virtual ICollection<ServiceRequest> ServiceRequests { get; set; } = new List<ServiceRequest>();
+    public virtual ICollection<ServiceRequest> AssignedServiceRequests { get; set; } = new List<ServiceRequest>();
+
+    public virtual ICollection<ProviderOffer> ProviderOffers { get; set; } = new List<ProviderOffer>();
+
+    public virtual ICollection<Examination> Examinations { get; set; } = new List<Examination>();
 }
 

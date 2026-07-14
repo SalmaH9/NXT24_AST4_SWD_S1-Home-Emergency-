@@ -26,9 +26,23 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityR
     public DbSet<Notification> Notifications { get; set; } = null!;
     public DbSet<Rating> Ratings { get; set; } = null!;
     public DbSet<Advertisement> Advertisements { get; set; } = null!;
+    public DbSet<Category> Categories { get; set; } = null!;
     public DbSet<AdvertisementCategory> AdvertisementCategories { get; set; } = null!;
+ 
     public DbSet<AIConversation> AIConversations { get; set; } = null!;
     public DbSet<AIMessage> AIMessages { get; set; } = null!;
+    public DbSet<ServiceRequest> ServiceRequests { get; set; } = null!;
+
+    public DbSet<ProviderOffer> ProviderOffers { get; set; } = null!;
+
+    public DbSet<Examination> Examinations { get; set; } = null!;
+
+    public DbSet<ServiceExecution> ServiceExecutions { get; set; } = null!;
+
+    public DbSet<TrackingLocation> TrackingLocations { get; set; } = null!;
+
+    public DbSet<RequestHistory> RequestHistories { get; set; } = null!;
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

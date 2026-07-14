@@ -14,6 +14,18 @@ public interface IUnitOfWork : IDisposable
     IGenericRepository<UserWarning> UserWarnings { get; }
     IGenericRepository<RefreshToken> RefreshTokens { get; }
     IGenericRepository<SubscriptionPlan> SubscriptionPlans { get; }
+    IGenericRepository<Category> Categories { get; }
+    IGenericRepository<ServiceRequest> ServiceRequests { get; }
+
+    IGenericRepository<ProviderOffer> ProviderOffers { get; }
+
+    IGenericRepository<Examination> Examinations { get; }
+
+    IGenericRepository<ServiceExecution> ServiceExecutions { get; }
+
+    IGenericRepository<TrackingLocation> TrackingLocations { get; }
+
+    IGenericRepository<RequestHistory> RequestHistories { get; }
     Task<int> CompleteAsync();
 }
 

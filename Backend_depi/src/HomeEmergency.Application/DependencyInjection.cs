@@ -24,6 +24,12 @@ public static class DependencyInjection
         services.AddScoped<IDocumentService, DocumentService>();
         services.AddScoped<IWarningService, WarningService>();
         services.AddScoped<ISubscriptionService, SubscriptionService>();
+        services.AddScoped<ICategoryService, CategoryService>();
+        services.AddScoped<IProviderOfferService, ProviderOfferService>();
+        services.AddScoped<IServiceRequestService, ServiceRequestService>();
+        services.AddScoped<IExaminationService, ExaminationService>();
+        services.AddScoped<IServiceExecutionService, ServiceExecutionService>();
+        services.AddScoped<ITrackingLocationService, TrackingLocationService>();
 
         return services;
     }
