@@ -152,15 +152,39 @@ document.addEventListener('DOMContentLoaded', function() {
     updateSidebarNavigation();
 
     // Update auth link in navbar
-    const authLink = document.getElementById('authLink');
-    const role = localStorage.getItem('userRole');
-    if (authLink) {
-        if (role) {
-            authLink.innerHTML = `<a href="index.html" onclick="handleLogout(event)"><i class="fas fa-sign-out-alt"></i> Logout</a>`;
-        } else {
-            authLink.innerHTML = `<a href="login.html"><i class="fas fa-right-to-bracket"></i> Login</a>`;
-        }
+    // const authLink = document.getElementById('authLink');
+    // const role = localStorage.getItem('userRole');
+    // if (authLink) {
+    //     if (role) {
+    //         authLink.innerHTML = `<a href="index.html" onclick="handleLogout(event)"><i class="fas fa-sign-out-alt"></i> Logout</a>`;
+    //     } else {
+    //         authLink.innerHTML = `<a href="login.html"><i class="fas fa-right-to-bracket"></i> Login</a>`;
+    //     }
+    // }
+
+
+// Update auth link in navbar
+const authLink = document.getElementById('authLink');
+const role = localStorage.getItem('userRole');
+const currentPage = window.location.pathname.split('/').pop();
+
+// الصفحات العامة (مش محمية)
+const publicPages = ['index.html', 'services.html', 'about.html', 'contact.html', 'login.html', 'register.html'];
+
+if (authLink) {
+    // لو في صفحة عامة، خليها Login دايماً
+    if (publicPages.includes(currentPage)) {
+        authLink.innerHTML = `<a href="login.html"><i class="fas fa-right-to-bracket"></i> Login</a>`;
+    } else if (role) {
+        // لو في صفحة محمية ومسجل دخول → Logout
+        authLink.innerHTML = `<a href="index.html" onclick="handleLogout(event)"><i class="fas fa-sign-out-alt"></i> Logout</a>`;
+    } else {
+        // لو في صفحة محمية ومش مسجل → Login
+        authLink.innerHTML = `<a href="login.html"><i class="fas fa-right-to-bracket"></i> Login</a>`;
     }
+}
+
+
 
     // Protect dashboard pages
     const currentPage = window.location.pathname.split('/').pop();

@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Track Order - Fixora</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <style>
+        /* ===== TRACK ORDER PAGE ===== */
+        .track-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px 0;
+        }
+
+        .track-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .track-header h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        .track-header p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        /* ===== Order Info Card ===== */
+        .order-info-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-sm);
+            padding: 24px 28px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+
+        .order-info-card .order-id {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .order-info-card .order-status-badge {
+            padding: 6px 18px;
+            border-radius: 60px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .order-info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .order-info-grid .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .order-info-grid .info-item .label {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .order-info-grid .info-item .value {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+
+        /* ===== Tracking Timeline ===== */
+        .timeline {
+            background: var(--bg-card);
+            border-radius: var(--radius-sm);
+            padding: 30px 28px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 24px;
+            top: 40px;
+            bottom: 40px;
+            width: 3px;
+            background: var(--border);
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 20px;
+            padding: 16px 0;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .timeline-item:last-child {
+            padding-bottom: 0;
+        }
+
+        .timeline-item .step-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: var(--text-light);
+            flex-shrink: 0;
+            z-index: 1;
+            transition: all 0.3s ease;
+            border: 3px solid var(--bg-card);
+        }
+
+        .timeline-item.completed .step-icon {
+            background: #48bb78;
+            color: white;
+        }
+
+        .timeline-item.active .step-icon {
+            background: var(--gradient-primary);
+            color: white;
+            animation: pulseStep 1.5s ease-in-out infinite;
+        }
+
+        .timeline-item.pending .step-icon {
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+        @keyframes pulseStep {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.4);
+            }
+            50% {
+                transform: scale(1.08);
+                box-shadow: 0 0 0 12px rgba(102, 126, 234, 0);
+            }
+        }
+
+        .timeline-item .step-content {
+            flex: 1;
+            padding-top: 4px;
+        }
+
+        .timeline-item .step-content .step-title {
+            font-weight: 700;
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+
+        .timeline-item .step-content .step-desc {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin: 2px 0 4px;
+        }
+
+        .timeline-item .step-content .step-time {
+            color: var(--text-light);
+            font-size: 0.8rem;
+        }
+
+        .timeline-item.completed .step-content .step-title {
+            color: #48bb78;
+        }
+
+        .timeline-item.active .step-content .step-title {
+            color: var(--accent);
+        }
+
+        /* ===== Status Legend ===== */
+        .status-legend {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
+            padding: 16px;
+            background: var(--bg-card);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+        }
+
+        .status-legend .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .status-legend .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .legend-dot.completed {
+            background: #48bb78;
+        }
+        .legend-dot.active {
+            background: var(--accent);
+        }
+        .legend-dot.pending {
+            background: #fef3c7;
+            border: 2px solid #b45309;
+        }
+
+        /* ===== Search Box ===== */
+        .search-box {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 14px 20px;
+            border: 2px solid var(--border);
+            border-radius: 14px;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            outline: none;
+            transition: 0.3s;
+            min-width: 200px;
+        }
+
+        .search-box input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.08);
+        }
+
+        .search-box .btn-track {
+            padding: 14px 32px;
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            white-space: nowrap;
+        }
+
+        .search-box .btn-track:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.35);
+        }
+
+        /* ===== No Order Found ===== */
+        .no-order {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-light);
+        }
+
+        .no-order i {
+            font-size: 3.5rem;
+            color: var(--border);
+            margin-bottom: 16px;
+        }
+
+        .no-order h3 {
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 768px) {
+            .order-info-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .search-box {
+                flex-direction: column;
+            }
+
+            .search-box .btn-track {
+                justify-content: center;
+            }
+
+            .timeline-item {
+                padding-left: 0;
+            }
+
+            .timeline::before {
+                left: 16px;
+            }
+
+            .timeline-item .step-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Mobile Toggle -->
+    <button class="sidebar-toggle" id="sidebar-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <div class="page-wrapper">
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-wrench"></i>
+                    <span>Fix<span class="logo-highlight">ora</span></span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="customer-dashboard.html"><i class="fas fa-gauge-high"></i> Dashboard</a></li>
+                    <li><a href="post-request.html"><i class="fas fa-plus-circle"></i> Post Request</a></li>
+                    <li><a href="my-orders.html"><i class="fas fa-list-check"></i> My Orders</a></li>
+                    <li><a href="track-order.html" class="active"><i class="fas fa-location-dot"></i> Track Order</a></li>
+                    <li><a href="customer-profile.html"><i class="fas fa-user"></i> Profile</a></li>
+                    <li style="margin-top: 16px; border-top: 1px solid var(--border); padding-top: 12px;">
+                        <a href="index.html" onclick="handleLogout(event)" style="color: #ef4444; font-weight: 600;">
+                            <i class="fas fa-sign-out-alt" style="margin-right: 10px;"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <button id="theme-toggle" class="theme-btn-sidebar">
+                    <i class="fas fa-moon"></i> Dark Mode
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN -->
+        <div class="main-area">
+
+            <main class="main-content">
+                <div class="container">
+                    <div class="track-container">
+
+                        <!-- Header -->
+                        <div class="track-header">
+                            <h1><i class="fas fa-location-dot" style="color: var(--accent);"></i> Track Your Order</h1>
+                            <p>Enter your order ID to see the current status</p>
+                        </div>
+
+                        <!-- Search Box -->
+                        <div class="search-box">
+                            <input type="text" id="orderSearch" placeholder="Enter Order ID (e.g., ORD-001)" />
+                            <button class="btn-track" onclick="trackOrder()">
+                                <i class="fas fa-search"></i> Track Order
+                            </button>
+                        </div>
+
+                        <!-- Order Result -->
+                        <div id="orderResult">
+                            <!-- سيتم عرض النتيجة هنا بواسطة JavaScript -->
+                        </div>
+
+                    </div>
+                </div>
+            </main>
+
+            <footer class="footer">
+                <p>© 2026 <strong>Fixora</strong> — Professional Home Repair Services</p>
+                <p class="footer-update">Last updated: <span id="footer-date"></span></p>
+            </footer>
+        </div>
+    </div>
+
+    <script src="../js/script.js"></script>
+    <script>
+        // ==========================================
+        // SAMPLE ORDERS DATA
+        // ==========================================
+        const ordersData = {
+            'ORD-001': {
+                id: 'ORD-001',
+                service: 'Plumbing',
+                status: 'completed',
+                date: '2026-07-10',
+                address: 'Al-Malaz, Riyadh',
+                provider: 'Khalid Al-Omari',
+                timeline: [
+                    { step: 'Order Placed', desc: 'You placed the order successfully', time: '2026-07-10 09:00 AM', status: 'completed' },
+                    { step: 'Provider Assigned', desc: 'Khalid Al-Omari was assigned to your order', time: '2026-07-10 10:30 AM', status: 'completed' },
+                    { step: 'In Progress', desc: 'Provider is working on your request', time: '2026-07-10 11:45 AM', status: 'completed' },
+                    { step: 'Completed', desc: 'Your order has been completed successfully!', time: '2026-07-10 02:00 PM', status: 'completed' }
+                ]
+            },
+            'ORD-002': {
+                id: 'ORD-002',
+                service: 'AC Repair',
+                status: 'in-progress',
+                date: '2026-07-11',
+                address: 'Al-Narjis, Riyadh',
+                provider: 'Sultan Al-Ghamdi',
+                timeline: [
+                    { step: 'Order Placed', desc: 'You placed the order successfully', time: '2026-07-11 08:00 AM', status: 'completed' },
+                    { step: 'Provider Assigned', desc: 'Sultan Al-Ghamdi was assigned to your order', time: '2026-07-11 09:15 AM', status: 'completed' },
+                    { step: 'In Progress', desc: 'Provider is working on your request', time: '2026-07-11 10:30 AM', status: 'active' },
+                    { step: 'Completed', desc: 'Your order will be completed soon', time: 'Pending', status: 'pending' }
+                ]
+            },
+            'ORD-003': {
+                id: 'ORD-003',
+                service: 'Electrical',
+                status: 'pending',
+                date: '2026-07-12',
+                address: 'Al-Sulaimaniyah, Riyadh',
+                provider: 'Not assigned yet',
+                timeline: [
+                    { step: 'Order Placed', desc: 'You placed the order successfully', time: '2026-07-12 01:00 PM', status: 'completed' },
+                    { step: 'Provider Assigned', desc: 'Waiting for provider assignment', time: 'Pending', status: 'pending' },
+                    { step: 'In Progress', desc: 'Will start once provider is assigned', time: 'Pending', status: 'pending' },
+                    { step: 'Completed', desc: 'Will be completed after the work is done', time: 'Pending', status: 'pending' }
+                ]
+            }
+        };
+
+        // ==========================================
+        // TRACK ORDER FUNCTION
+        // ==========================================
+        function trackOrder() {
+            const input = document.getElementById('orderSearch').value.trim().toUpperCase();
+            const resultDiv = document.getElementById('orderResult');
+
+            if (!input) {
+                resultDiv.innerHTML = `
+                    <div class="no-order">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <h3>Please enter an Order ID</h3>
+                        <p>Example: ORD-001, ORD-002, or ORD-003</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const order = ordersData[input];
+
+            if (!order) {
+                resultDiv.innerHTML = `
+                    <div class="no-order">
+                        <i class="fas fa-box-open"></i>
+                        <h3>Order Not Found</h3>
+                        <p>We couldn't find an order with ID <strong>${input}</strong></p>
+                        <p style="font-size: 0.85rem; margin-top: 8px;">Available orders: ORD-001, ORD-002, ORD-003</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Build order info
+            const statusClass = order.status === 'completed' ? 'status-completed' : 
+                              order.status === 'in-progress' ? 'status-progress' : 'status-pending';
+            const statusText = order.status === 'completed' ? '✅ Completed' : 
+                              order.status === 'in-progress' ? '🔄 In Progress' : '⏳ Pending';
+
+            let timelineHtml = '';
+            order.timeline.forEach(item => {
+                let itemClass = '';
+                let icon = '';
+
+                if (item.status === 'completed') {
+                    itemClass = 'completed';
+                    icon = '<i class="fas fa-check"></i>';
+                } else if (item.status === 'active') {
+                    itemClass = 'active';
+                    icon = '<i class="fas fa-spinner fa-pulse"></i>';
+                } else {
+                    itemClass = 'pending';
+                    icon = '<i class="fas fa-clock"></i>';
+                }
+
+                timelineHtml += `
+                    <div class="timeline-item ${itemClass}">
+                        <div class="step-icon">${icon}</div>
+                        <div class="step-content">
+                            <div class="step-title">${item.step}</div>
+                            <div class="step-desc">${item.desc}</div>
+                            <div class="step-time">${item.time}</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            resultDiv.innerHTML = `
+                <!-- Order Info Card -->
+                <div class="order-info-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                        <span class="order-id"><i class="fas fa-receipt" style="color: var(--accent);"></i> ${order.id}</span>
+                        <span class="order-status-badge ${statusClass}">${statusText}</span>
+                    </div>
+                    <div class="order-info-grid">
+                        <div class="info-item">
+                            <span class="label">Service</span>
+                            <span class="value">${order.service}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Provider</span>
+                            <span class="value">${order.provider}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Date</span>
+                            <span class="value">${order.date}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Address</span>
+                            <span class="value">${order.address}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timeline -->
+                <div class="timeline">
+                    <h3 style="color: var(--text-primary); margin-bottom: 16px; display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-clock-rotate-left" style="color: var(--accent);"></i> Order Timeline
+                    </h3>
+                    ${timelineHtml}
+                </div>
+
+                <!-- Status Legend -->
+                <div class="status-legend">
+                    <div class="legend-item">
+                        <span class="legend-dot completed"></span> Completed
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-dot active"></span> In Progress
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-dot pending"></span> Pending
+                    </div>
+                </div>
+            `;
+        }
+
+        // ==========================================
+        // KEYPRESS ENTER
+        // ==========================================
+        document.getElementById('orderSearch').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                trackOrder();
+            }
+        });
+
+        // ==========================================
+        // CHECK LOGIN
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', function() {
+            const role = localStorage.getItem('userRole');
+            if (role !== 'customer') {
+                window.location.href = 'login.html';
+            }
+
+            // Set footer date
+            const footerDate = document.getElementById('footer-date');
+            if (footerDate) {
+                const now = new Date();
+                const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                footerDate.textContent = now.toLocaleDateString('en-US', options);
+            }
+        });
+
+        function handleLogout(event) {
+            event.preventDefault();
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('userRole');
+            localStorage.removeItem('userEmail');
+            localStorage.removeItem('userName');
+            localStorage.removeItem('userPhone');
+            localStorage.removeItem('providerVerified');
+            localStorage.removeItem('currentRequest');
+            window.location.href = 'index.html';
+        }
+    </script>
+
+</body>
+</html>
