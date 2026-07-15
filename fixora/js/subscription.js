@@ -37,10 +37,15 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     try {
         // 1. Fetch available plans from backend
-        const plans = await api.get('/subscriptions');
+        const plans = await api.get('/Subscriptions');
         if (plans) {
             plans.forEach(p => {
-                const key = p.planName.toLowerCase();
+                // بنطابق اسم الخطة من السيرفر مع data-plan في الكارت.
+                // بنشيل أي كلام زيادة زي "Plan" وبنخليها حروف صغيرة.
+                // ⚠️ SubscriptionPlanDto فيه "name" مش "planName"
+                // (الـ planName موجود في UserSubscriptionDto بس)
+                const key = (p.name || '').toLowerCase().replace(/\s*plan\s*$/, '').trim();
+                if (!key) return;
                 backendPlans[key] = p;
                 
                 // Dynamically update the price text on cards
@@ -63,9 +68,10 @@ document.addEventListener('DOMContentLoaded', async function() {
 
 async function loadSubscriptionStatus() {
     try {
-        const sub = await api.get('/subscriptions/my-subscription');
+        const sub = await api.get('/Subscriptions/my-subscription');
         if (sub && sub.status === 'Active') {
-            currentUserPlan = sub.planName.toLowerCase();
+            // UserSubscriptionDto فيه planName (مش name) — ده صح هنا
+            currentUserPlan = (sub.planName || '').toLowerCase().replace(/\s*plan\s*$/, '').trim();
             localStorage.setItem('fixoraSubscription', JSON.stringify({
                 plan: currentUserPlan,
                 activatedAt: sub.startDate,
@@ -85,9 +91,9 @@ async function loadSubscriptionStatus() {
 }
 
 function updateUI() {
-    const planObj = backendPlans[currentUserPlan] || { planName: 'Free', price: 0 };
-    const planName = planObj.planName;
-    const planPrice = planObj.price;
+    const planObj = backendPlans[currentUserPlan] || { name: 'Free', price: 0 };
+    const planName = planObj.name || 'Free';
+    const planPrice = planObj.price || 0;
     
     document.getElementById('currentPlan').textContent = planName + (planPrice > 0 ? ' (' + planPrice + ' EGP/month)' : '');
     document.getElementById('currentStatusText').textContent = planPrice === 0 ? 
@@ -130,8 +136,8 @@ function updateUI() {
             btn.className = 'btn-plan current';
             btn.onclick = null;
         } else {
-            const planDetails = backendPlans[plan] || { planName: plan.toUpperCase() };
-            btn.textContent = 'Upgrade to ' + planDetails.planName;
+            const planDetails = backendPlans[plan] || { name: plan.toUpperCase() };
+            btn.textContent = 'Upgrade to ' + planDetails.name;
             btn.disabled = false;
             btn.className = 'btn-plan';
             btn.onclick = function() { selectPlan(plan); };
@@ -142,8 +148,16 @@ function updateUI() {
     updateProviderStatus();
 }
 
+// ⚠️ الدالة دي كانت بتعيد حساب providerActive من اسم الكارت في الواجهة.
+//    لو اسم الخطة في السيرفر مااتطابقش مع data-plan (مثلًا "Pro Plan" مقابل "pro")،
+//    كانت بترجّعها false وتقفل المزوّد تاني بعد ما يدفع.
+//    الحل: مصدر الحقيقة هو وجود اشتراك فعّال من السيرفر.
 function updateProviderStatus() {
-    var isSubscribed = currentUserPlan !== 'free';
+    var isSubscribed = currentUserPlan !== 'free' && !!backendPlans[currentUserPlan];
+    // ماننزلش الحالة لـ false لو عندنا اشتراك محفوظ من السيرفر
+    if (!isSubscribed && localStorage.getItem('fixoraSubscription')) {
+        return;
+    }
     localStorage.setItem('providerActive', isSubscribed ? 'true' : 'false');
 }
 
@@ -157,7 +171,7 @@ function selectPlan(plan) {
     const planDetails = backendPlans[plan];
     if (!planDetails) return;
     
-    document.getElementById('paymentPlan').textContent = planDetails.planName;
+    document.getElementById('paymentPlan').textContent = planDetails.name;
     document.getElementById('paymentPrice').textContent = planDetails.price + ' EGP';
     document.getElementById('paymentTotal').textContent = planDetails.price + ' EGP';
     
@@ -234,7 +248,7 @@ async function processPayment() {
 
     try {
         // Execute subscribe API call on backend
-        const response = await api.post(`/subscriptions/${planDetails.id}/subscribe`);
+        const response = await api.post(`/Subscriptions/${planDetails.id}/subscribe`);
         if (response) {
             btn.textContent = '✅ Payment Successful!';
             
@@ -262,7 +276,7 @@ async function processPayment() {
 }
 
 function showSuccess(plan) {
-    const planName = (backendPlans[plan] || { planName: plan }).planName;
+    const planName = (backendPlans[plan] || { name: plan }).name;
     document.querySelector('.plans-grid').style.display = 'none';
     document.querySelector('.comparison-section').style.display = 'none';
     document.getElementById('currentStatus').style.display = 'none';

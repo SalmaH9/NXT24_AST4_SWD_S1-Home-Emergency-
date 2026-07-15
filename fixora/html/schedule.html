@@ -220,113 +220,18 @@
         </div>
     </div>
 
+    <!-- ==========================================
+         SCRIPTS — الترتيب مهم (config.js لازم الأول)
+         ========================================== -->
+    <script src="../js/config.js"></script>
+    <script src="../js/tokenManager.js"></script>
+    <script src="../js/loading.js"></script>
+    <script src="../js/errorHandler.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
     <script src="../js/script.js"></script>
     <script src="../js/footer.js"></script>
-    <script>
-        // ===== SCHEDULE DATA =====
-        const scheduleData = {
-            'today': [
-                { time: '09:00 AM', customer: 'Ahmed Al-Saud', service: 'Plumbing', location: 'Al-Malaz, Riyadh' },
-                { time: '11:30 AM', customer: 'Mohammed Al-Otaibi', service: 'AC Repair', location: 'Al-Narjis, Riyadh' },
-                { time: '02:00 PM', customer: 'Sultan Al-Ghamdi', service: 'Painting', location: 'Al-Rawdah, Riyadh' },
-                { time: '04:30 PM', customer: 'Nora Al-Fahd', service: 'Carpentry', location: 'Al-Mughrizat, Riyadh' },
-            ],
-            'tomorrow': [
-                { time: '10:00 AM', customer: 'Fatima Al-Zahra', service: 'Electrical', location: 'Al-Sulaimaniyah, Riyadh' },
-                { time: '01:00 PM', customer: 'Khalid Al-Saud', service: 'Plumbing', location: 'Al-Malaz, Riyadh' },
-                { time: '03:30 PM', customer: 'Maha Al-Otaibi', service: 'AC Repair', location: 'Al-Narjis, Riyadh' },
-            ],
-            'wed': [
-                { time: '08:30 AM', customer: 'Faisal Al-Ghamdi', service: 'Carpentry', location: 'Al-Rawdah, Riyadh' },
-                { time: '12:00 PM', customer: 'Layla Al-Zahra', service: 'Electrical', location: 'Al-Sulaimaniyah, Riyadh' },
-                { time: '05:00 PM', customer: 'Saud Al-Fahd', service: 'Painting', location: 'Al-Mughrizat, Riyadh' },
-            ],
-            'thu': [
-                { time: '09:30 AM', customer: 'Nora Al-Saud', service: 'Plumbing', location: 'Al-Malaz, Riyadh' },
-                { time: '02:30 PM', customer: 'Ahmed Al-Otaibi', service: 'AC Repair', location: 'Al-Narjis, Riyadh' },
-            ],
-            'fri': [
-                { time: '10:00 AM', customer: 'Mohammed Al-Zahra', service: 'Electrical', location: 'Al-Sulaimaniyah, Riyadh' },
-                { time: '01:30 PM', customer: 'Sultan Al-Fahd', service: 'Carpentry', location: 'Al-Mughrizat, Riyadh' },
-                { time: '04:00 PM', customer: 'Fatima Al-Ghamdi', service: 'Painting', location: 'Al-Rawdah, Riyadh' },
-            ]
-        };
-
-        let currentDay = 'today';
-
-        function renderSchedule(day) {
-            const container = document.getElementById('scheduleList');
-            const items = scheduleData[day] || [];
-
-            document.getElementById('todayJobs').textContent = scheduleData.today.length || 0;
-            const totalWeek = scheduleData.today.length + scheduleData.tomorrow.length + scheduleData.wed.length + scheduleData.thu.length + scheduleData.fri.length;
-            document.getElementById('weekJobs').textContent = totalWeek || 0;
-            document.getElementById('monthJobs').textContent = totalWeek * 4 || 0;
-
-            if (items.length === 0) {
-                container.innerHTML = `
-                    <div style="text-align: center; padding: 40px 20px; color: var(--text-light);">
-                        <i class="fas fa-calendar-xmark" style="font-size: 2.5rem; display: block; margin-bottom: 12px;"></i>
-                        <p style="font-weight: 600;">No jobs scheduled for this day</p>
-                    </div>
-                `;
-                return;
-            }
-
-            let html = '';
-            items.forEach(item => {
-                const icon = {
-                    'Plumbing': 'fa-faucet',
-                    'Electrical': 'fa-bolt',
-                    'AC Repair': 'fa-snowflake',
-                    'Carpentry': 'fa-hammer',
-                    'Painting': 'fa-paint-roller',
-                }[item.service] || 'fa-wrench';
-
-                html += `
-                    <div class="schedule-item">
-                        <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
-                            <span class="schedule-time">${item.time}</span>
-                            <div class="schedule-info">
-                                <h4>${item.customer}</h4>
-                                <p><i class="fas ${icon}" style="color: var(--accent);"></i> ${item.service}</p>
-                            </div>
-                        </div>
-                        <div class="schedule-location">
-                            <i class="fas fa-location-dot"></i> ${item.location}
-                        </div>
-                    </div>
-                `;
-            });
-
-            container.innerHTML = html;
-        }
-
-        document.querySelectorAll('.day-tab').forEach(tab => {
-            tab.addEventListener('click', function() {
-                document.querySelectorAll('.day-tab').forEach(t => t.classList.remove('active'));
-                this.classList.add('active');
-                currentDay = this.dataset.day;
-                renderSchedule(currentDay);
-            });
-        });
-
-        function handleLogout(event) {
-            event.preventDefault();
-            localStorage.removeItem('isLoggedIn');
-            localStorage.removeItem('userRole');
-            localStorage.removeItem('userEmail');
-            window.location.href = 'login.html';
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const role = localStorage.getItem('userRole');
-            if (role !== 'provider') {
-                window.location.href = 'login.html';
-            }
-            renderSchedule('today');
-        });
-    </script>
+    <script src="../js/schedule.js"></script>
     <script src="../js/chatbot.js"></script>
 
 </body>

@@ -224,6 +224,9 @@
                 // Fetch offers submitted by this provider
                 myOffersList = await api.get('/provider-offers/my-offers') || [];
 
+                // ✅ نجيب أسماء العملاء الحقيقية قبل العرض
+                await loadCustomerNames(requestsList);
+
                 renderOrders(currentFilter);
             } catch (err) {
                 console.error('Failed to load marketplace data:', err);
@@ -298,7 +301,8 @@
                 const myOffer = myOffersList.find(function(o) { return o.serviceRequestId === r.id; });
                 var actionHtml = getActionHtml(r, mappedStatus, myOffer);
                 var formattedDate = r.createdAt ? r.createdAt.split('T')[0] : 'N/A';
-                var customerMask = 'Customer ID: ' + r.customerId.substring(0, 5).toUpperCase();
+                // ✅ الاسم الحقيقي من /Profile/{userId} بدل جزء من الـ GUID
+                var customerMask = customerNames[r.customerId] || ('Customer #' + r.customerId.substring(0, 5).toUpperCase());
 
                 html += `<tr>
                     <td class="order-id">#ID-${r.id.substring(0, 8).toUpperCase()}</td>
@@ -415,6 +419,30 @@
                     console.error('Failed to withdraw offer:', err);
                 }
             }
+        }
+
+        // ==========================================
+        // أسماء العملاء الحقيقية
+        // ==========================================
+        // كانت الصفحة بتعرض "Customer ID: E8710" (أول 5 حروف من الـ GUID).
+        // الاسم الحقيقي موجود في GET /api/Profile/{userId}.
+        var customerNames = {};
+
+        async function loadCustomerNames(requests) {
+            var ids = [];
+            (requests || []).forEach(function (r) {
+                if (r.customerId && !customerNames[r.customerId] && ids.indexOf(r.customerId) === -1) {
+                    ids.push(r.customerId);
+                }
+            });
+            if (!ids.length) return;
+
+            await Promise.all(ids.map(async function (id) {
+                try {
+                    var p = await api.get('/Profile/' + id, { showLoader: false, silent: true });
+                    if (p && p.fullName) customerNames[id] = p.fullName;
+                } catch (e) { /* البروفايل مش متاح */ }
+            }));
         }
 
         // ===== ASSIGNMENT OPERATIONS =====

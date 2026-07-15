@@ -75,7 +75,7 @@
                         </div>
                         <div class="stat-card">
                             <i class="fas fa-star"></i>
-                            <h3 id="providerRating">4.8</h3>
+                            <h3 id="providerRating">—</h3>
                             <p>Rating</p>
                         </div>
                     </section>
@@ -128,6 +128,7 @@
     <script src="../js/chatbot.js"></script>
     <script>
         var categoriesMap = {};
+        var customerNames = {};   // userId → الاسم الحقيقي
 
         async function loadDashboardData() {
             try {
@@ -138,13 +139,33 @@
                 }
 
                 // Resolve current provider profile
-                const profile = await api.get('/profile', { showLoader: false });
+                const profile = await api.get('/Profile', { showLoader: false });
                 let currentUserId = null;
                 if (profile) {
                     currentUserId = profile.userId || profile.id;
-                    if (profile.rating) {
-                        document.getElementById('providerRating').textContent = parseFloat(profile.rating).toFixed(1);
+
+                    // ⚠️ UserProfileDto مفيهوش حقل "rating" — الشرط ده كان بيفشل دايمًا
+                    //    فالرقم كان بيفضل 4.8 المكتوب في الـ HTML رغم إن مفيش تقييمات أصلًا.
+                    //    التقييم الحقيقي في providerProfile.averageRating،
+                    //    والأدق منه ملخّص التقييمات من /users/{id}/rating-summary
+                    const pp = profile.providerProfile || profile.companyProfile || {};
+                    let rating = typeof pp.averageRating === 'number' ? pp.averageRating : null;
+
+                    if (currentUserId) {
+                        try {
+                            const summary = await api.get(`/users/${currentUserId}/rating-summary`,
+                                                          { showLoader: false, silent: true });
+                            if (summary && summary.totalRatings > 0) {
+                                rating = summary.averageRating;
+                            } else if (summary) {
+                                rating = null;   // مفيش تقييمات فعلًا
+                            }
+                        } catch (e) { /* مفيش ملخّص متاح */ }
                     }
+
+                    // "—" معناها لسه مفيش تقييم. أصدق من رقم مخترع.
+                    document.getElementById('providerRating').textContent =
+                        (rating === null || rating === undefined) ? '—' : parseFloat(rating).toFixed(1);
                 }
 
                 // Fetch global requests and filter for provider
@@ -162,6 +183,16 @@
                 document.getElementById('completedJobsCount').textContent = completedJobs.length;
                 document.getElementById('submittedOffersCount').textContent = myOffersList.length;
 
+                // ✅ الأسماء الحقيقية بدل "Customer ID: E8710"
+                await Promise.all(
+                    [...new Set(activeJobs.map(r => r.customerId))].map(async function (id) {
+                        try {
+                            const p = await api.get('/Profile/' + id, { showLoader: false, silent: true });
+                            if (p && p.fullName) customerNames[id] = p.fullName;
+                        } catch (e) { /* مش متاح */ }
+                    })
+                );
+
                 // Render recent active assignments in dashboard table
                 const tbody = document.getElementById('recentOrdersBody');
                 if (activeJobs.length === 0) {
@@ -173,7 +204,7 @@
                 // Display up to 5 recent active jobs
                 activeJobs.slice(0, 5).forEach(function(r) {
                     const serviceName = categoriesMap[r.categoryId] || 'Emergency Fix';
-                    var customerMask = 'Customer ID: ' + r.customerId.substring(0, 5).toUpperCase();
+                    var customerMask = customerNames[r.customerId] || ('Customer #' + r.customerId.substring(0, 5).toUpperCase());
                     var statusStyle = r.status === 'InProgress' ? 'background: #d1fae5; color: #065f46;' : 'background: #e0e7ff; color: #4338ca;';
                     
                     html += `<tr style="border-bottom: 1px solid var(--border);">

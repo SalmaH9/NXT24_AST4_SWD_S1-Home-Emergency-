@@ -276,6 +276,13 @@
             background: rgba(238, 243, 255, 0.88);
         }
 
+        .password-hint {
+            font-size: 0.75rem;
+            color: rgba(26, 32, 44, 0.45);
+            margin-top: 6px;
+            padding-left: 4px;
+        }
+
         .terms-check {
             display: flex;
             align-items: flex-start;
@@ -337,6 +344,12 @@
 
         .btn-register:active {
             transform: scale(0.98);
+        }
+
+        .btn-register:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
         }
 
         .btn-register::after {
@@ -510,7 +523,7 @@
             <div class="form-group">
                 <label for="fullName">Full Name</label>
                 <div class="input-wrapper">
-                    <input type="text" id="fullName" placeholder="John Doe" required />
+                    <input type="text" id="fullName" placeholder="John Doe" required maxlength="150" />
                     <i class="fas fa-user input-icon"></i>
                 </div>
             </div>
@@ -526,7 +539,7 @@
             <div class="form-group">
                 <label for="phone">Phone Number</label>
                 <div class="input-wrapper">
-                    <input type="tel" id="phone" placeholder="+966 50 123 4567" required />
+                    <input type="tel" id="phone" placeholder="+20 100 123 4567" required />
                     <i class="fas fa-phone input-icon"></i>
                 </div>
             </div>
@@ -539,6 +552,10 @@
                     <button type="button" class="password-toggle" id="togglePassword">
                         <i class="fas fa-eye"></i>
                     </button>
+                </div>
+                <div class="password-hint">
+                    <i class="fas fa-circle-info"></i>
+                    At least 8 characters, including a lowercase letter and a number.
                 </div>
             </div>
 
@@ -576,107 +593,17 @@
         </div>
     </div>
 
+    <!-- ==========================================
+         SCRIPTS — الترتيب مهم جدًا
+         نفس ترتيب login.html بالظبط
+         ========================================== -->
     <script src="../js/config.js"></script>
     <script src="../js/tokenManager.js"></script>
     <script src="../js/loading.js"></script>
     <script src="../js/errorHandler.js"></script>
     <script src="../js/api.js"></script>
     <script src="../js/auth.js"></script>
-    <script>
-        const customerTab = document.getElementById('customerTab');
-        const providerTab = document.getElementById('providerTab');
-        const providerNote = document.getElementById('providerNote');
-
-        customerTab.addEventListener('click', function() {
-            this.classList.add('active');
-            providerTab.classList.remove('active');
-            document.querySelector('input[name="role"][value="customer"]').checked = true;
-            providerNote.classList.remove('show');
-        });
-
-        providerTab.addEventListener('click', function() {
-            this.classList.add('active');
-            customerTab.classList.remove('active');
-            document.querySelector('input[name="role"][value="provider"]').checked = true;
-            providerNote.classList.add('show');
-        });
-
-        const togglePassword = document.getElementById('togglePassword');
-        const passwordInput = document.getElementById('password');
-
-        togglePassword.addEventListener('click', function() {
-            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-            passwordInput.setAttribute('type', type);
-            const icon = this.querySelector('i');
-            icon.classList.toggle('fa-eye');
-            icon.classList.toggle('fa-eye-slash');
-        });
-
-        async function handleRegister(event) {
-            event.preventDefault();
-
-            const fullName = document.getElementById('fullName').value.trim();
-            const email = document.getElementById('email').value.trim();
-            const phone = document.getElementById('phone').value.trim();
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-            const errorMessage = document.getElementById('errorMessage');
-            const errorText = document.getElementById('errorText');
-            const role = document.querySelector('input[name="role"]:checked').value;
-
-            if (fullName === '' || email === '' || phone === '' || password === '') {
-                errorText.textContent = 'Please fill in all fields';
-                errorMessage.classList.add('show');
-                return;
-            }
-
-            if (password.length < 8) {
-                errorText.textContent = 'Password must be at least 8 characters';
-                errorMessage.classList.add('show');
-                return;
-            }
-
-            if (password !== confirmPassword) {
-                errorText.textContent = 'Passwords do not match';
-                errorMessage.classList.add('show');
-                return;
-            }
-
-            errorMessage.classList.remove('show');
-
-            const apiRole = role.charAt(0).toUpperCase() + role.slice(1); // Map customer -> Customer, provider -> Provider
-
-            try {
-                const success = await api.post('/auth/register', {
-                    email: email,
-                    password: password,
-                    fullName: fullName,
-                    role: apiRole
-                });
-
-                if (success) {
-                    ErrorHandler.showNotification('Success', 'Account created successfully! Redirecting to login...', 'success');
-                    setTimeout(() => {
-                        window.location.href = 'login.html';
-                    }, 2000);
-                }
-            } catch (error) {
-                console.error('Registration failed:', error);
-                if (error instanceof Error) {
-                    errorText.textContent = error.message;
-                } else {
-                    errorText.textContent = 'Registration failed. Please correct the fields.';
-                }
-                errorMessage.classList.add('show');
-            }
-        }
-
-        document.querySelectorAll('#registerForm input').forEach(input => {
-            input.addEventListener('input', () => {
-                document.getElementById('errorMessage').classList.remove('show');
-            });
-        });
-    </script>
+    <script src="../js/register.js"></script>
     <script src="../js/chatbot.js"></script>
 </body>
 </html>

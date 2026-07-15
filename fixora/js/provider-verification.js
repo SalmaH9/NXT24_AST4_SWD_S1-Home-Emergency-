@@ -199,7 +199,7 @@ async function submitVerification() {
         Loading.show("Updating profile details...");
         
         // Update Profile Details
-        await api.put('/profile', {
+        await api.put('/Profile', {
             fullName: name,
             bio: bio,
             serviceCategory: specialties || 'General Maintenance',
@@ -211,24 +211,28 @@ async function submitVerification() {
         // Upload ID Card
         Loading.show("Uploading ID Card...");
         const idFormData = new FormData();
-        idFormData.append("type", "0"); // DocumentType.IDCard is 0
+        idFormData.append("type", "0"); // IDCard
         idFormData.append("files", idFileInput.files[0]);
-        await api.post('/documents/upload', idFormData, { showLoader: false });
+        await api.post('/Documents/upload', idFormData, { showLoader: false });
 
-        // Upload Criminal Record (ProfessionalCertificate is 2)
+        // Upload Criminal Record
+        // ⚠️ مفيش CriminalRecord في DocumentType enum، فبنستخدم ProfessionalCertificate (2) مؤقتًا.
+        //    الأنضف: تضيفي CriminalRecord للـ enum في الـ Backend.
         Loading.show("Uploading Criminal Record...");
         const crimFormData = new FormData();
-        crimFormData.append("type", "2"); // DocumentType.ProfessionalCertificate is 2
+        crimFormData.append("type", "2"); // ProfessionalCertificate
         crimFormData.append("files", criminalFileInput.files[0]);
-        await api.post('/documents/upload', crimFormData, { showLoader: false });
+        await api.post('/Documents/upload', crimFormData, { showLoader: false });
 
         // Upload License if provided
+        // ✅ DocumentType enum: IDCard = 0, BusinessLicense = 1, ProfessionalCertificate = 2
+        // الرخصة لازم تتبعت كـ BusinessLicense (1) مش ProfessionalCertificate (2)
         if (licenseFileInput.files.length > 0) {
             Loading.show("Uploading License...");
             const licFormData = new FormData();
-            licFormData.append("type", "2"); 
+            licFormData.append("type", "1"); // BusinessLicense
             licFormData.append("files", licenseFileInput.files[0]);
-            await api.post('/documents/upload', licFormData, { showLoader: false });
+            await api.post('/Documents/upload', licFormData, { showLoader: false });
         }
 
         Loading.hide();
@@ -304,7 +308,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 
     try {
-        const profile = await api.get('/profile');
+        const profile = await api.get('/Profile');
         if (profile) {
             localStorage.setItem('userName', profile.fullName);
             document.getElementById('vFullName').value = profile.fullName;
@@ -317,7 +321,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                 localStorage.setItem('providerStatus', 'approved');
                 
                 try {
-                    const sub = await api.get('/subscriptions/my-subscription', { showLoader: false });
+                    const sub = await api.get('/Subscriptions/my-subscription', { showLoader: false });
                     if (sub && sub.status === 'Active') {
                         localStorage.setItem('fixoraSubscription', JSON.stringify({ plan: sub.planName.toLowerCase(), expiresAt: sub.endDate }));
                         localStorage.setItem('providerActive', 'true');
@@ -332,7 +336,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                 }
                 return;
             } else if (verified === 'Pending') {
-                const docs = await api.get('/documents/my-documents', { showLoader: false });
+                const docs = await api.get('/Documents/my-documents', { showLoader: false });
                 if (docs && docs.length > 0) {
                     localStorage.setItem('providerVerified', 'pending');
                     localStorage.setItem('providerStatus', 'under_review');

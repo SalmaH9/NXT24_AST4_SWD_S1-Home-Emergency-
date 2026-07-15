@@ -56,10 +56,10 @@
                         <div>
                             <div class="order-id">
                                 <i class="fas fa-clipboard-list"></i> 
-                                <span id="orderId">#REQ-001</span>
+                                <span id="orderId">—</span>
                             </div>
                             <div style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 4px;">
-                                <i class="fas fa-tag"></i> <span id="orderCategory">Plumbing</span>
+                                <i class="fas fa-tag"></i> <span id="orderCategory">—</span>
                             </div>
                         </div>
                         <div>
@@ -77,28 +77,28 @@
 
                             <div class="report-section">
                                 <span class="label"><i class="fas fa-magnifying-glass"></i> Diagnosis</span>
-                                <p class="value" id="reportDiagnosis">The PVC pipe under the kitchen sink has a 2cm crack due to corrosion. The rubber gasket is completely worn out.</p>
+                                <p class="value" id="reportDiagnosis">—</p>
                             </div>
 
                             <div class="report-section">
                                 <span class="label"><i class="fas fa-lightbulb"></i> Suggested Solution</span>
-                                <p class="value" id="reportSolution">Replace the cracked PVC pipe section (approximately 30cm) with new piping. Install new rubber gasket and apply pipe sealant.</p>
+                                <p class="value" id="reportSolution">—</p>
                             </div>
 
                             <div class="report-section">
                                 <span class="label"><i class="fas fa-box-open"></i> Materials Needed</span>
-                                <p class="value" id="reportMaterials">PVC pipe 1/2 inch (30cm), Rubber gasket, Pipe sealant, Teflon tape</p>
+                                <p class="value" id="reportMaterials">—</p>
                             </div>
 
                             <!-- Price Box -->
                             <div class="price-box">
                                 <div class="price-row">
                                     <span class="label">🔍 Examination Fee</span>
-                                    <span class="value paid" id="examFee">100 EGP <span style="font-size: 0.75rem; color: #48bb78;">(Paid)</span></span>
+                                    <span class="value paid" id="examFee">—</span>
                                 </div>
                                 <div class="price-row total">
                                     <span class="label">🔧 Repair Cost</span>
-                                    <span class="value pending" id="repairCost">500 EGP <span style="font-size: 0.75rem; color: #f6ad55;">(Pending)</span></span>
+                                    <span class="value pending" id="repairCost">—</span>
                                 </div>
                             </div>
 
@@ -118,9 +118,9 @@
                                     <i class="fas fa-user"></i>
                                 </div>
                                 <div class="tech-details">
-                                    <h4 id="techName">Ahmed Al-Rashid</h4>
-                                    <p class="rating">★★★★★ 4.9 (128 reviews)</p>
-                                    <p><i class="fas fa-briefcase"></i> <span id="techExp">8 years experience</span></p>
+                                    <h4 id="techName">—</h4>
+                                    <p class="rating" id="techRating">—</p>
+                                    <p><i class="fas fa-briefcase"></i> <span id="techExp">—</span></p>
                                 </div>
                             </div>
 
@@ -132,8 +132,8 @@
                                 <div class="map-placeholder" id="mapPlaceholder">
                                     <i class="fas fa-map-location-dot"></i>
                                     <h4>Technician Location</h4>
-                                    <p id="techLocation">📍 En route to your location</p>
-                                    <div class="eta" id="techEta">⏱️ Estimated arrival: 12 minutes</div>
+                                    <p id="techLocation">📍 —</p>
+                                    <div class="eta" id="techEta">⏱️ —</div>
                                 </div>
                             </div>
 
@@ -173,7 +173,7 @@
                                 <i class="fas fa-circle-info"></i>
                                 <p>
                                     <strong>You have rejected the repair cost.</strong><br />
-                                    You will pay only the <span class="highlight">examination fee (100 EGP)</span>.
+                                    You will pay only the <span class="highlight">examination fee</span>.
                                     The request remains <span class="highlight">open</span> for other technicians to submit new examinations.
                                 </p>
                             </div>
@@ -225,6 +225,9 @@
     <script src="../js/api.js"></script>
     <script src="../js/auth.js"></script>
     <script src="../js/script.js"></script>
+    <!-- ⚠️ footer.js كان ناقص → "updateFooterDate is not defined"
+         والخطأ ده كان بيقتل كل الكود بعده في execution.js -->
+    <script src="../js/footer.js"></script>
     <script src="../js/execution.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {

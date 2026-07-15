@@ -133,7 +133,8 @@ async function determineView() {
         // Query the examination report from backend
         let hasReport = false;
         try {
-            currentExamination = await api.get(`/service-requests/${currentRequest.id}/examination`, { showLoader: false });
+            // silent: مفيش تقرير لسه = حالة عادية مش خطأ، فمانطلّعش إشعار أحمر
+            currentExamination = await api.get(`/service-requests/${currentRequest.id}/examination`, { showLoader: false, silent: true });
             if (currentExamination && currentExamination.id) {
                 hasReport = true;
             }

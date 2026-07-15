@@ -56,16 +56,35 @@ async function loadOrderData() {
 
             // Resolve Provider Profile and stats
             let providerName = 'Technician';
-            let providerRating = '4.8';
-            let providerReviews = '10';
+            let providerRating = '0.0';   // مفيش تقييم لسه بدل رقم مخترع
+            let providerReviews = '0';
 
             if (currentRequest.selectedProviderId) {
                 try {
-                    const profile = await api.get(`/profile/${currentRequest.selectedProviderId}`, { showLoader: false });
+                    const profile = await api.get(`/Profile/${currentRequest.selectedProviderId}`, { showLoader: false });
                     if (profile) {
                         providerName = profile.fullName || providerName;
-                        providerRating = profile.rating ? parseFloat(profile.rating).toFixed(1) : providerRating;
-                        providerReviews = profile.reviewsCount || providerReviews;
+
+                        // ⚠️ UserProfileDto مفيهوش rating ولا reviewsCount.
+                        //    التقييم الحقيقي في providerProfile.averageRating،
+                        //    وعدد المراجعات من /users/{id}/rating-summary
+                        const pp = profile.providerProfile || profile.companyProfile || {};
+                        if (typeof pp.averageRating === 'number') {
+                            providerRating = pp.averageRating.toFixed(1);
+                        }
+                    }
+
+                    // ✅ RatingSummaryDto: totalRatings, averageRating
+                    const summary = await api.get(
+                        `/users/${currentRequest.selectedProviderId}/rating-summary`,
+                        { showLoader: false }
+                    ).catch(() => null);
+
+                    if (summary) {
+                        if (typeof summary.averageRating === 'number') {
+                            providerRating = summary.averageRating.toFixed(1);
+                        }
+                        providerReviews = summary.totalRatings ?? 0;
                     }
                 } catch(e) {}
             }
@@ -76,7 +95,14 @@ async function loadOrderData() {
             document.getElementById('orderDate').textContent = currentRequest.createdAt ? currentRequest.createdAt.split('T')[0] : 'Today';
             document.getElementById('orderTechnician').textContent = providerName;
             document.getElementById('techName').textContent = providerName;
-            document.getElementById('customerName').textContent = 'Customer #' + currentRequest.customerId.substring(0, 5).toUpperCase();
+            // ✅ الاسم الحقيقي بدل "Customer #E8710"
+            var customerLabel = 'Customer #' + currentRequest.customerId.substring(0, 5).toUpperCase();
+            try {
+                var custProfile = await api.get('/Profile/' + currentRequest.customerId,
+                                                { showLoader: false, silent: true });
+                if (custProfile && custProfile.fullName) customerLabel = custProfile.fullName;
+            } catch (e) { /* البروفايل مش متاح */ }
+            document.getElementById('customerName').textContent = customerLabel;
 
             // Populate reviews statistics on header
             const headerRatingEl = document.querySelector('.tech-details .rating');

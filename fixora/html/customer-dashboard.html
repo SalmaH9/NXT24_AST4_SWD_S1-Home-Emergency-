@@ -198,22 +198,22 @@
                     <section class="stats">
                         <div class="stat-card">
                             <i class="fas fa-clipboard-list"></i>
-                            <h3 id="activeOrders">3</h3>
+                            <h3 id="activeOrders">—</h3>
                             <p>Active Orders</p>
                         </div>
                         <div class="stat-card">
                             <i class="fas fa-check-circle"></i>
-                            <h3 id="completedOrders">12</h3>
+                            <h3 id="completedOrders">—</h3>
                             <p>Completed</p>
                         </div>
                         <div class="stat-card">
                             <i class="fas fa-clock"></i>
-                            <h3 id="pendingOrders">2</h3>
+                            <h3 id="pendingOrders">—</h3>
                             <p>Pending</p>
                         </div>
                         <div class="stat-card">
                             <i class="fas fa-star"></i>
-                            <h3>4.9</h3>
+                            <h3 id="customerRating">—</h3>
                             <p>Your Rating</p>
                         </div>
                     </section>
@@ -241,28 +241,10 @@
                             <div class="card-icon"><i class="fas fa-clock"></i></div>
                             <h3>Recent Orders</h3>
                             <p>Your latest repair requests</p>
-                            <div class="recent-orders">
-                                <div class="recent-order-item">
-                                    <div>
-                                        <strong style="color: var(--text-primary);">#ORD-001</strong>
-                                        <span style="color: var(--text-secondary); font-size: 0.85rem; display: block;">Plumbing - 2 days ago</span>
-                                    </div>
-                                    <span class="order-status status-progress">In Progress</span>
-                                </div>
-                                <div class="recent-order-item">
-                                    <div>
-                                        <strong style="color: var(--text-primary);">#ORD-002</strong>
-                                        <span style="color: var(--text-secondary); font-size: 0.85rem; display: block;">AC Repair - 5 days ago</span>
-                                    </div>
-                                    <span class="order-status status-completed">Completed</span>
-                                </div>
-                                <div class="recent-order-item">
-                                    <div>
-                                        <strong style="color: var(--text-primary);">#ORD-003</strong>
-                                        <span style="color: var(--text-secondary); font-size: 0.85rem; display: block;">Electrical - 1 day ago</span>
-                                    </div>
-                                    <span class="order-status status-pending">Pending</span>
-                                </div>
+                            <div class="recent-orders" id="recentOrders">
+                                <p style="color: var(--text-secondary); font-size: 0.85rem;">
+                                    <i class="fas fa-spinner fa-spin"></i> Loading...
+                                </p>
                             </div>
                         </div>
 
@@ -297,32 +279,132 @@
         </div>
     </div>
 
+    <!-- ==========================================
+         SCRIPTS — الترتيب مهم (config.js لازم الأول)
+         الصفحة دي كانت محمّلة script.js بس → CONFIG is not defined
+         ========================================== -->
+    <script src="../js/config.js"></script>
+    <script src="../js/tokenManager.js"></script>
+    <script src="../js/loading.js"></script>
+    <script src="../js/errorHandler.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
     <script src="../js/script.js"></script>
     <script src="../js/chatbot.js"></script>
     <script>
-        // Check if customer is logged in
-        document.addEventListener('DOMContentLoaded', function() {
-            const role = localStorage.getItem('userRole');
-            const email = localStorage.getItem('userEmail') || 'Customer';
-            
-            if (role !== 'customer') {
-                window.location.href = 'login.html';
+        var categoriesMap = {};
+
+        function iconFor(name) {
+            var n = (name || '').toLowerCase();
+            if (n.indexOf('plumb') > -1) return 'fa-faucet';
+            if (n.indexOf('electric') > -1) return 'fa-bolt';
+            if (n.indexOf('ac') > -1 || n.indexOf('air') > -1) return 'fa-snowflake';
+            if (n.indexOf('carpen') > -1) return 'fa-hammer';
+            if (n.indexOf('paint') > -1) return 'fa-paint-roller';
+            return 'fa-wrench';
+        }
+
+        function statusClass(status) {
+            if (status === 'Completed') return 'status-completed';
+            if (status === 'InProgress' || status === 'ProviderSelected') return 'status-progress';
+            return 'status-pending';
+        }
+
+        function escapeHtml(str) {
+            var d = document.createElement('div');
+            d.textContent = str == null ? '' : String(str);
+            return d.innerHTML;
+        }
+
+        async function loadDashboard() {
+            try {
+                // ---- الاسم الحقيقي من السيرفر
+                // ⚠️ كان بيعرض email.split('@')[0] → "s.h01063083970" بدل الاسم
+                var profile = await api.get('/Profile/me', { showLoader: false });
+                if (profile && profile.fullName) {
+                    document.getElementById('userName').textContent = profile.fullName;
+                }
+
+                // ---- تقييم العميل الحقيقي (كان 4.9 مكتوب بالإيد)
+                var uid = profile ? (profile.userId || profile.id) : null;
+                if (uid) {
+                    try {
+                        var summary = await api.get('/users/' + uid + '/rating-summary',
+                                                    { showLoader: false, silent: true });
+                        document.getElementById('customerRating').textContent =
+                            (summary && summary.totalRatings > 0)
+                                ? summary.averageRating.toFixed(1)
+                                : '—';   // "—" أصدق من رقم مخترع
+                    } catch (e) {
+                        document.getElementById('customerRating').textContent = '—';
+                    }
+                }
+
+                // ---- التصنيفات
+                var cats = await api.get('/categories', { showLoader: false });
+                (cats || []).forEach(function (c) { categoriesMap[c.id] = c.name; });
+
+                // ---- الطلبات الحقيقية
+                var requests = await api.get('/service-requests/my-requests', { showLoader: false }) || [];
+
+                var active = requests.filter(function (r) {
+                    return r.status !== 'Completed' && r.status !== 'Cancelled' && r.status !== 'Pending';
+                });
+                var completed = requests.filter(function (r) { return r.status === 'Completed'; });
+                var pending = requests.filter(function (r) {
+                    return r.status === 'Pending' || r.status === 'SearchingForProviders';
+                });
+
+                document.getElementById('activeOrders').textContent = active.length;
+                document.getElementById('completedOrders').textContent = completed.length;
+                document.getElementById('pendingOrders').textContent = pending.length;
+
+                // ---- آخر الطلبات (كانت #ORD-001/002/003 مخترعين)
+                var box = document.getElementById('recentOrders');
+                if (!requests.length) {
+                    box.innerHTML = '<p style="color: var(--text-secondary); font-size: 0.85rem;">' +
+                                    'No requests yet. Post your first one!</p>';
+                    return;
+                }
+
+                box.innerHTML = requests.slice(0, 3).map(function (r) {
+                    var service = categoriesMap[r.categoryId] || 'Service';
+                    // ⚠️ ServiceRequestDto مفيهوش createdAt لسه (شوفي BACKEND_FIXES.md)
+                    var when = r.createdAt ? new Date(r.createdAt).toLocaleDateString() : '';
+                    return '<div class="recent-order-item">' +
+                             '<div>' +
+                               '<strong style="color: var(--text-primary);">#ID-' +
+                                 r.id.substring(0, 8).toUpperCase() + '</strong>' +
+                               '<span style="color: var(--text-secondary); font-size: 0.85rem; display: block;">' +
+                                 '<i class="fas ' + iconFor(service) + '"></i> ' +
+                                 escapeHtml(service) + (when ? ' - ' + when : '') +
+                               '</span>' +
+                             '</div>' +
+                             '<span class="order-status ' + statusClass(r.status) + '">' +
+                               escapeHtml(r.status) + '</span>' +
+                           '</div>';
+                }).join('');
+
+            } catch (err) {
+                console.error('Failed to load customer dashboard:', err);
             }
-            
-            document.getElementById('userName').textContent = email.split('@')[0];
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            if (Auth.checkAuth(['customer'])) {
+                loadDashboard();
+            }
+            var d = document.getElementById('footer-date');
+            if (d) {
+                d.textContent = new Date().toLocaleDateString('en-US',
+                    { year: 'numeric', month: 'short', day: 'numeric' });
+            }
         });
 
-        // Logout function - redirects to HOME page
+        // ⚠️ النسخة القديمة كانت بتسيب accessToken و refreshToken في المتصفح!
         function handleLogout(event) {
-            event.preventDefault();
-            localStorage.removeItem('isLoggedIn');
-            localStorage.removeItem('userRole');
-            localStorage.removeItem('userEmail');
-            localStorage.removeItem('userName');
-            localStorage.removeItem('userPhone');
-            localStorage.removeItem('providerVerified');
-            localStorage.removeItem('currentRequest');
-            window.location.href = 'index.html';
+            if (event) event.preventDefault();
+            Auth.logout();
         }
     </script>
 </body>

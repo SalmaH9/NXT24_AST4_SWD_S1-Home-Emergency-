@@ -124,25 +124,23 @@ function updateSidebarNavigation() {
 // ==========================================
 // LOGOUT FUNCTION - redirects to HOME page
 // ==========================================
+// ⚠️ كان فيه نسختين من منطق تسجيل الخروج (هنا + Auth.logout).
+//    لو حد اتعدّل ونُسي التاني → تسريب بيانات. دلوقتي مصدر واحد بس.
 function handleLogout(event) {
     if (event) event.preventDefault();
-    
-    // Clear all user data
-    localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('userRole');
-    localStorage.removeItem('userEmail');
-    localStorage.removeItem('userName');
-    localStorage.removeItem('userPhone');
-    localStorage.removeItem('providerVerified');
-    localStorage.removeItem('currentRequest');
-    localStorage.removeItem('rememberMe');
-    localStorage.removeItem('currentExecution');
-    localStorage.removeItem('currentOrderDetails');
-    localStorage.removeItem('fixoraSubscription');
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    
-    // Redirect to HOME page (index.html)
+
+    if (typeof Auth !== 'undefined' && Auth.logout) {
+        Auth.logout();   // بيمسح كل حاجة عن طريق TokenManager.clearTokens
+        return;
+    }
+
+    // احتياطي فقط لو auth.js مش متحمّل في الصفحة دي
+    if (typeof TokenManager !== 'undefined') {
+        TokenManager.clearTokens();
+    }
+    ['providerActive', 'providerStatus', 'rememberMe', 'providerData'].forEach(function (k) {
+        localStorage.removeItem(k);
+    });
     window.location.href = 'index.html';
 }
 

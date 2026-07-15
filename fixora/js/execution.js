@@ -18,8 +18,20 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 
     await loadExecutionData();
-    updateFooterDate();
-    startSimulatedTracking();
+
+    // ⚠️ updateFooterDate معرّفة في footer.js — لو الصفحة مش محمّلاه
+    //    كان بيرمي ReferenceError ويقتل كل الكود بعده (منه التتبّع).
+    if (typeof updateFooterDate === 'function') {
+        updateFooterDate();
+    } else {
+        var fd = document.getElementById('footer-date');
+        if (fd) {
+            fd.textContent = new Date().toLocaleDateString('en-US',
+                { year: 'numeric', month: 'short', day: 'numeric' });
+        }
+    }
+
+    startLiveTracking();
 });
 
 async function loadExecutionData() {
@@ -112,11 +124,24 @@ async function loadExecutionData() {
         document.getElementById('reportDiagnosis').textContent = diagnosis;
         document.getElementById('reportSolution').textContent = solution;
         document.getElementById('reportMaterials').textContent = materials;
-        document.getElementById('examFee').innerHTML = '100 EGP <span style="font-size: 0.75rem; color: #48bb78;">(Paid)</span>';
+        // ⚠️ examFee كان مكتوب "100 EGP" ثابت في الكود — مش جاي من السيرفر.
+        //    مفيش حقل رسوم فحص في أي DTO، فبنخفي السطر بدل ما نخترع رقم.
+        var feeRow = document.getElementById('examFee');
+        if (feeRow) {
+            var feeParent = feeRow.closest('.price-row');
+            if (feeParent) feeParent.style.display = 'none';
+        }
+
         document.getElementById('repairCost').innerHTML = price + ' EGP <span style="font-size: 0.75rem; color: #f6ad55;">(Pending)</span>';
 
         document.getElementById('techName').textContent = providerName;
         document.getElementById('techExp').textContent = providerExp;
+
+        // ✅ التقييم الحقيقي
+        // ⚠️ الـ HTML كان فيه <p class="rating">★★★★★ 4.9 (128 reviews)</p>
+        //    من غير id خالص — فالـ JS مكانش يقدر يوصلها أصلًا والرقم
+        //    المزيف كان مستحيل يتغير. دلوقتي id="techRating".
+        await renderProviderRating();
 
         updateStatusUI();
     } catch (err) {
@@ -368,34 +393,147 @@ async function openChat() {
     }
 }
 
-function callTechnician() {
+async function renderProviderRating() {
+    var el = document.getElementById('techRating');
+    if (!el || !currentRequest || !currentRequest.selectedProviderId) return;
+
+    try {
+        var summary = await api.get('/users/' + currentRequest.selectedProviderId + '/rating-summary',
+                                    { showLoader: false, silent: true });
+        if (summary && summary.totalRatings > 0) {
+            var full = Math.round(summary.averageRating);
+            el.textContent = '★'.repeat(full) + '☆'.repeat(5 - full) +
+                             ' ' + summary.averageRating.toFixed(1) +
+                             ' (' + summary.totalRatings + ' reviews)';
+        } else {
+            el.textContent = 'No ratings yet';
+        }
+    } catch (e) {
+        el.textContent = 'No ratings yet';
+    }
+}
+
+// ⚠️ كان بيعرض رقم سعودي مخترع: "+966 50 123 4567"
+//    الرقم الحقيقي في UserProfileDto.phoneNumber
+async function callTechnician() {
     var techName = document.getElementById('techName').textContent;
-    alert('📞 Calling ' + techName + '\nPhone: +966 50 123 4567');
+
+    if (!currentRequest || !currentRequest.selectedProviderId) {
+        ErrorHandler.showNotification('Unavailable', 'No technician assigned yet.', 'warning');
+        return;
+    }
+
+    try {
+        var profile = await api.get('/Profile/' + currentRequest.selectedProviderId,
+                                    { showLoader: false, silent: true });
+        var phone = profile && profile.phoneNumber;
+
+        if (phone) {
+            window.location.href = 'tel:' + phone;   // بيفتح الاتصال فعلًا
+        } else {
+            ErrorHandler.showNotification('No phone number',
+                techName + ' has not added a phone number. Try the chat instead.', 'warning');
+        }
+    } catch (e) {
+        ErrorHandler.showNotification('Error', 'Could not load contact details.', 'error');
+    }
 }
 
 // ===== SIMULATED TRACKING =====
-function startSimulatedTracking() {
+// ==========================================
+// LIVE TRACKING — بيانات حقيقية
+// ==========================================
+// ⚠️ الدالة القديمة اسمها كان startSimulatedTracking وكانت بتلف على
+//    مصفوفة نصوص ثابتة: "3.2 km away" / "Estimated arrival: 12 minutes"
+//    من غير أي علاقة بمكان الفني الحقيقي — مع إن الـ Backend فيه
+//    GET /api/service-executions/{executionId}/tracking
+//    بيرجّع إحداثيات فعلية (TrackingLocationDto).
+var trackingTimer = null;
+
+function haversineKm(lat1, lon1, lat2, lon2) {
+    var R = 6371;
+    var dLat = (lat2 - lat1) * Math.PI / 180;
+    var dLon = (lon2 - lon1) * Math.PI / 180;
+    var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+async function refreshTracking() {
     var locationEl = document.getElementById('techLocation');
     var etaEl = document.getElementById('techEta');
-    var count = 0;
+    if (!locationEl && !etaEl) return;
 
-    setInterval(function() {
-        count++;
-        var distances = ['📍 En route to your location', '📍 3.2 km away', '📍 1.5 km away', '📍 0.8 km away', '📍 Near your location'];
-        var etas = ['⏱️ Estimated arrival: 12 minutes', '⏱️ Estimated arrival: 8 minutes', '⏱️ Estimated arrival: 4 minutes', '⏱️ Estimated arrival: 2 minutes', '⏱️ Arriving soon!'];
+    if (!currentRequest) return;
 
-        if (currentRequest && (currentRequest.status === 'InProgress' || currentRequest.status === 'ProviderSelected')) {
-            var idx = Math.min(count % distances.length, distances.length - 1);
-            if (locationEl) locationEl.textContent = distances[idx];
-            if (etaEl) etaEl.textContent = etas[idx];
-        } else if (currentRequest && currentRequest.status === 'Completed') {
-            if (locationEl) locationEl.textContent = '📍 Arrived & Job Completed';
-            if (etaEl) etaEl.textContent = '⏱️ Completed';
-        } else {
-            if (locationEl) locationEl.textContent = '📍 Pending Assignment';
-            if (etaEl) etaEl.textContent = '⏱️ Awaiting Start';
+    // الحالات اللي مفيش فيها تتبّع
+    if (currentRequest.status === 'Completed') {
+        if (locationEl) locationEl.textContent = '📍 Arrived & job completed';
+        if (etaEl) etaEl.textContent = '⏱️ Completed';
+        if (trackingTimer) clearInterval(trackingTimer);
+        return;
+    }
+    if (currentRequest.status !== 'InProgress') {
+        if (locationEl) locationEl.textContent = '📍 Not started yet';
+        if (etaEl) etaEl.textContent = '⏱️ Awaiting start';
+        return;
+    }
+
+    try {
+        // لازم نجيب التنفيذ الأول عشان الـ executionId
+        var execution = await api.get('/service-requests/' + currentRequest.id + '/execution',
+                                      { showLoader: false, silent: true });
+        if (!execution || !execution.id) {
+            if (locationEl) locationEl.textContent = '📍 Not started yet';
+            if (etaEl) etaEl.textContent = '⏱️ Awaiting start';
+            return;
         }
-    }, 5000);
+
+        var points = await api.get('/service-executions/' + execution.id + '/tracking',
+                                   { showLoader: false, silent: true });
+
+        if (!points || !points.length) {
+            // الفني مابيشاركش موقعه — نقول الحقيقة بدل ما نخترع
+            if (locationEl) locationEl.textContent = '📍 Location not shared';
+            if (etaEl) etaEl.textContent = '⏱️ —';
+            return;
+        }
+
+        // آخر نقطة مسجّلة (TrackingLocationDto: latitude, longitude, recordedAt)
+        var latest = points.reduce(function (a, b) {
+            return new Date(a.recordedAt) > new Date(b.recordedAt) ? a : b;
+        });
+
+        var km = null;
+        if (currentRequest.latitude && currentRequest.longitude) {
+            km = haversineKm(latest.latitude, latest.longitude,
+                             currentRequest.latitude, currentRequest.longitude);
+        }
+
+        if (locationEl) {
+            locationEl.textContent = (km === null)
+                ? '📍 En route'
+                : (km < 0.3 ? '📍 Arriving now' : '📍 ' + km.toFixed(1) + ' km away');
+        }
+
+        if (etaEl) {
+            var mins = (km === null) ? null : Math.max(1, Math.round((km / 30) * 60)); // ~30 كم/س في المدينة
+            var ago = Math.round((Date.now() - new Date(latest.recordedAt).getTime()) / 60000);
+            etaEl.textContent = (mins === null)
+                ? '⏱️ Updated ' + ago + ' min ago'
+                : '⏱️ ~' + mins + ' min away';
+        }
+    } catch (e) {
+        if (locationEl) locationEl.textContent = '📍 Tracking unavailable';
+        if (etaEl) etaEl.textContent = '⏱️ —';
+    }
+}
+
+function startLiveTracking() {
+    refreshTracking();
+    if (trackingTimer) clearInterval(trackingTimer);
+    trackingTimer = setInterval(refreshTracking, 20000);   // كل 20 ثانية
 }
 
 // ===== LOGOUT =====

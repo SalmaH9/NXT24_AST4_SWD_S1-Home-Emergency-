@@ -260,8 +260,8 @@
                                     AA
                                 </div>
                                 <div>
-                                    <div style="font-weight: 700; color: var(--text-primary); font-size: 1.05rem;" id="techName">Ahmed Al-Rashid</div>
-                                    <div style="color: var(--text-secondary); font-size: 0.85rem;" id="techRating">⭐ 4.9 (128 reviews)</div>
+                                    <div style="font-weight: 700; color: var(--text-primary); font-size: 1.05rem;" id="techName">—</div>
+                                    <div style="color: var(--text-secondary); font-size: 0.85rem;" id="techRating">—</div>
                                     <div style="color: var(--text-light); font-size: 0.8rem;" id="techSpecialty">Plumbing Specialist</div>
                                 </div>
                             </div>
@@ -314,6 +314,7 @@
     <script src="../js/script.js"></script>
     <script>
         var orderDetails = null;
+        var currentRequest = null;   // ⚠️ الطلب الخام — selectedProviderId كان بيضيع في التحويل
 
         function mapBackendStatusToFrontend(backendStatus) {
             switch (backendStatus) {
@@ -356,6 +357,7 @@
                 // Fetch details of specific request
                 const req = await api.get(`/service-requests/${orderId}`);
                 if (req) {
+                    currentRequest = req;   // نحتفظ بيه عشان قسم الفني
                     const serviceName = catMap[req.categoryId] || 'Emergency Repair';
                     const mappedStatus = mapBackendStatusToFrontend(req.status);
                     
@@ -386,16 +388,110 @@
                         status: mappedStatus,
                         date: req.createdAt ? req.createdAt.split('T')[0] : 'N/A',
                         address: req.address || 'N/A',
-                        price: 'EGP 0', // Offers and report costs to be integrated in Phase 5
+                        price: 'EGP 0',   // بيتحدّث في loadPrice() تحت من تقرير الفحص/العرض المقبول
                         technician: null,
                         timeline: timeline
                     };
 
                     renderOrderDetails();
+                    loadRealPrice(req);
                 }
             } catch (err) {
                 console.error('Failed to load request detail:', err);
             }
+        }
+
+        // ==========================================
+        // عرض بيانات الفني الحقيقية
+        // ==========================================
+        async function renderTechnicianSection() {
+            var techInfo = document.getElementById('techInfo');
+            var noTechInfo = document.getElementById('noTechInfo');
+            var title = document.getElementById('techSectionTitle');
+            var actions = document.getElementById('techActions');
+
+            var providerId = currentRequest ? currentRequest.selectedProviderId : null;
+
+            // مفيش فني متعيّن لسه
+            if (!providerId) {
+                if (techInfo) techInfo.style.display = 'none';
+                if (noTechInfo) noTechInfo.style.display = 'block';
+                if (title) title.textContent = 'No Technician Assigned';
+                if (actions) actions.style.display = 'none';
+                return;
+            }
+
+            // فيه فني ✅
+            if (techInfo) techInfo.style.display = 'flex';
+            if (noTechInfo) noTechInfo.style.display = 'none';
+            if (title) title.textContent = 'Assigned Technician';
+            if (actions) actions.style.display = '';
+
+            try {
+                var profile = await api.get('/Profile/' + providerId, { showLoader: false, silent: true });
+                if (!profile) return;
+
+                var nameEl = document.getElementById('techName');
+                if (nameEl) nameEl.textContent = profile.fullName || 'Technician';
+
+                var avatarEl = document.getElementById('techAvatar');
+                if (avatarEl && profile.fullName) {
+                    avatarEl.textContent = profile.fullName.charAt(0).toUpperCase();
+                }
+
+                // ✅ التقييم الحقيقي (كان "⭐ 4.9 (128 reviews)" مكتوب بالإيد)
+                var ratingEl = document.getElementById('techRating');
+                if (ratingEl) {
+                    try {
+                        var summary = await api.get('/users/' + providerId + '/rating-summary',
+                                                    { showLoader: false, silent: true });
+                        ratingEl.textContent = (summary && summary.totalRatings > 0)
+                            ? '⭐ ' + summary.averageRating.toFixed(1) + ' (' + summary.totalRatings + ' reviews)'
+                            : 'No ratings yet';
+                    } catch (e) {
+                        ratingEl.textContent = 'No ratings yet';
+                    }
+                }
+            } catch (e) {
+                console.warn('Could not load technician profile:', e);
+            }
+        }
+
+        // ==========================================
+        // السعر الحقيقي
+        // ==========================================
+        // كان ثابت "EGP 0" مع كومنت "to be integrated in Phase 5".
+        // المصدر: تقرير الفحص (estimatedPrice) وإلا عرض المزوّد المختار.
+        async function loadRealPrice(req) {
+            var el = document.getElementById('detailPrice');
+            if (!el) return;
+
+            // 1) تقدير سعر الفحص
+            try {
+                var exam = await api.get('/service-requests/' + req.id + '/examination',
+                                         { showLoader: false, silent: true });
+                if (exam && exam.estimatedPrice != null) {
+                    el.textContent = 'EGP ' + exam.estimatedPrice;
+                    return;
+                }
+            } catch (e) { /* لسه مفيش فحص */ }
+
+            // 2) سعر العرض المقبول
+            if (req.selectedProviderId) {
+                try {
+                    var offers = await api.get('/service-requests/' + req.id + '/offers',
+                                               { showLoader: false, silent: true });
+                    var picked = (offers || []).find(function (o) {
+                        return o.providerId === req.selectedProviderId;
+                    });
+                    if (picked && picked.price != null) {
+                        el.textContent = 'EGP ' + picked.price;
+                        return;
+                    }
+                } catch (e) { /* مفيش عروض */ }
+            }
+
+            el.textContent = 'Not set yet';
         }
 
         function renderOrderDetails() {
@@ -429,11 +525,17 @@
                 detailStatus.innerHTML = '<span class="status-badge-sm ' + status.class + '">' + status.label + '</span>';
             }
 
-            // Technician Assigned (integrated in Phase 5)
-            document.getElementById('techInfo').style.display = 'none';
-            document.getElementById('noTechInfo').style.display = 'block';
-            document.getElementById('techSectionTitle').textContent = 'No Technician Assigned';
-            document.getElementById('techActions').style.display = 'none';
+            // ==========================================
+            // TECHNICIAN SECTION
+            // ==========================================
+            // ⚠️ الكود القديم كان مكتوب كده حرفيًا:
+            //      techInfo.style.display = 'none';
+            //      noTechInfo.style.display = 'block';
+            //      techSectionTitle.textContent = 'No Technician Assigned';
+            //    من غير أي شرط! فكانت الصفحة تقول "مفيش فني" حتى والحالة
+            //    Examined والخط الزمني بيقول Provider Selected.
+            //    الكومنت كان "(integrated in Phase 5)" — يعني اتساب ناقص.
+            renderTechnicianSection();
 
             // Timeline
             var timelineContainer = document.getElementById('timelineContainer');

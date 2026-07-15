@@ -52,17 +52,42 @@ const api = {
 
             // 6. Handle HTTP errors
             if (!response.ok) {
-                // Let the ErrorHandler parse and notify the user
-                await ErrorHandler.parseAndHandleError(response);
+                // ⚠️ بعض الـ 404 متوقّعة ومش أخطاء حقيقية.
+                //    مثال: السؤال "هل فيه تقرير فحص؟" قبل ما يتكتب أصلًا.
+                //    مرّري { silent: true } عشان الكود يمسك الخطأ من غير
+                //    ما يطلّع إشعار أحمر للمستخدم.
+                if (options.silent !== true) {
+                    await ErrorHandler.parseAndHandleError(response);
+                }
                 throw response;
             }
 
-            // 7. Parse and return JSON (204 No Content has no body)
-            if (response.status === 204) {
+            // 7. Parse the body — لو موجود أصلًا
+            // ⚠️ باج قديم: الكود كان بيتعامل مع 204 بس وبينادي response.json()
+            //    على طول. بس الـ Backend بيرجّع `return Ok();` في حاجات كتير
+            //    (سحب العرض، اختيار المزوّد...) = 200 بجسم فاضي.
+            //    response.json() على جسم فاضي بيرمي:
+            //      "SyntaxError: Unexpected end of JSON input"
+            //    فالعملية كانت بتنجح على السيرفر والواجهة تقول "فشل"!
+            if (response.status === 204 || response.status === 205) {
                 return null;
             }
 
-            return await response.json();
+            if (response.headers.get("content-length") === "0") {
+                return null;
+            }
+
+            const rawBody = await response.text();
+            if (!rawBody) {
+                return null;   // 200 بجسم فاضي = نجاح من غير بيانات
+            }
+
+            try {
+                return JSON.parse(rawBody);
+            } catch (parseError) {
+                // بعض الـ endpoints بترجّع text/plain (مثلًا register بيرجّع "true")
+                return rawBody;
+            }
 
         } catch (error) {
             // Hide loader in case of exceptions/network errors

@@ -105,35 +105,74 @@ async function loadBids() {
         // Fetch all offers for this request from database
         const offers = await api.get(`/service-requests/${activeRequestId}/offers`);
         if (offers) {
-            // Load provider profile statistics in parallel
-            const profilePromises = offers.map(o => api.get(`/profile/${o.providerId}`, { showLoader: false }));
-            const profiles = await Promise.all(profilePromises);
+            // لكل مقدم خدمة بنجيب 3 حاجات بالتوازي:
+            //  1) البروفايل  2) ملخّص التقييم  3) آخر المراجعات
+            const profilePromises = offers.map(o => api.get(`/Profile/${o.providerId}`, { showLoader: false }));
+            const summaryPromises = offers.map(o =>
+                api.get(`/users/${o.providerId}/rating-summary`, { showLoader: false }).catch(() => null));
+            const reviewPromises = offers.map(o =>
+                api.get(`/providers/${o.providerId}/ratings?pageNumber=1&pageSize=3`, { showLoader: false }).catch(() => null));
+
+            const [profiles, summaries, reviewPages] = await Promise.all([
+                Promise.all(profilePromises),
+                Promise.all(summaryPromises),
+                Promise.all(reviewPromises)
+            ]);
 
             currentBids = offers.map((offer, index) => {
                 const profile = profiles[index];
+                // ✅ ProviderProfileDto: bio, serviceCategory, serviceRadiusKm,
+                //    averageRating, availabilityStatus, experienceYears, profilePictureUrl
                 const providerProfile = profile?.providerProfile || profile?.companyProfile || {};
+
+                // ✅ RatingSummaryDto: totalRatings, averageRating, oneStarCount...
+                const summary = summaries[index];
+
+                // ✅ RatingDto[]: ratingValue, comment, senderName
+                const page = reviewPages[index];
+                const ratingItems = Array.isArray(page) ? page : (page?.items || []);
+
+                // التقييم: من ملخّص التقييمات، وإلا من البروفايل
+                let rating = 0;
+                if (summary && typeof summary.averageRating === 'number') {
+                    rating = summary.averageRating;
+                } else if (typeof providerProfile.averageRating === 'number') {
+                    rating = providerProfile.averageRating;
+                }
 
                 return {
                     id: offer.providerId,
                     offerId: offer.id,
                     name: profile?.fullName || 'Provider #' + offer.providerId.substring(0, 5).toUpperCase(),
-                    avatar: null,
-                    rating: parseFloat(profile?.rating || '4.8'),
-                    reviews: profile?.reviewsCount || 15,
+                    avatar: providerProfile.profilePictureUrl || null,
+                    rating: Math.round(rating * 10) / 10,
+                    reviews: summary?.totalRatings ?? 0,
                     price: offer.price,
                     currency: 'EGP',
-                    experience: providerProfile.experienceYears ? providerProfile.experienceYears + ' years' : '3 years',
-                    specialties: providerProfile.specialty ? [providerProfile.specialty] : ['Maintenance'],
+                    experience: providerProfile.experienceYears
+                        ? providerProfile.experienceYears + ' years'
+                        : 'New provider',
+                    // ✅ الحقل الصح اسمه serviceCategory (مش specialty)
+                    specialties: providerProfile.serviceCategory
+                        ? providerProfile.serviceCategory.split(',').map(x => x.trim()).filter(Boolean)
+                        : ['Maintenance'],
                     badges: ['verified'],
-                    availability: providerProfile.hourlyRate ? 'EGP ' + providerProfile.hourlyRate + '/hr' : 'Available',
-                    distance: 'Local Area',
-                    responseTime: '15 min',
-                    jobsDone: providerProfile.completedJobsCount || 10,
+                    // ✅ hourlyRate مش موجود في الـ DTO — بنستخدم حالة التوفّر الحقيقية
+                    availability: providerProfile.availabilityStatus || 'Offline',
+                    // ✅ serviceRadiusKm موجود فعلًا
+                    distance: providerProfile.serviceRadiusKm
+                        ? 'Within ' + providerProfile.serviceRadiusKm + ' km'
+                        : 'Local Area',
+                    responseTime: '—',
+                    // ✅ completedJobsCount مش موجود في الـ DTO
+                    jobsDone: summary?.totalRatings ?? 0,
                     bio: offer.notes || providerProfile.bio || 'Professional emergency maintenance specialist.',
-                    reviewsList: [
-                        { stars: 5, text: 'Arrived quickly and resolved the issue efficiently.', author: 'User A.' },
-                        { stars: 4, text: 'Good quality service, polite and neat.', author: 'User B.' }
-                    ]
+                    // ✅ مراجعات حقيقية من قاعدة البيانات بدل النصوص المخترعة
+                    reviewsList: ratingItems.map(r => ({
+                        stars: r.ratingValue,
+                        text: r.comment || 'No comment provided.',
+                        author: r.senderName || 'User'
+                    }))
                 };
             });
 

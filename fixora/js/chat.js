@@ -471,28 +471,50 @@ function closeNewChatModal() {
 // Fetch active service request contacts
 async function fetchNewChatContacts() {
     try {
-        // Fetch all user's service requests
-        const requests = await api.get('service-requests/my-requests');
+        // ⚠️ باج: الكود كان بينادي /service-requests/my-requests للكل،
+        //    بس الـ endpoint ده [Authorize(Roles = "Customer")] فقط.
+        //    فالمزوّد كان بياخد 403 Forbidden و"Failed to load contacts".
+        //    المزوّد لازم يجيب جهات اتصاله من العروض اللي قدّمها هو.
+        const isCustomer = (currentUser.role || '').toLowerCase() === 'customer';
+        let requests = [];
+
+        if (isCustomer) {
+            requests = await api.get('service-requests/my-requests') || [];
+        } else {
+            // المزوّد: كل طلب قدّم عليه عرض
+            const myOffers = await api.get('provider-offers/my-offers') || [];
+            const seen = new Set();
+            for (const offer of myOffers) {
+                if (seen.has(offer.serviceRequestId)) continue;
+                seen.add(offer.serviceRequestId);
+                try {
+                    const req = await api.get('service-requests/' + offer.serviceRequestId,
+                                              { showLoader: false, silent: true });
+                    if (req) requests.push(req);
+                } catch (e) { /* الطلب اتمسح */ }
+            }
+        }
+
         const contactMap = new Map();
 
         for (const req of requests) {
             let targetUserId = null;
-            if (currentUser.role === 'customer' || currentUser.role === 'Customer') {
-                targetUserId = req.selectedProviderId;
+            if (isCustomer) {
+                targetUserId = req.selectedProviderId;   // العميل بيكلّم المزوّد
             } else {
-                targetUserId = req.customerId;
+                targetUserId = req.customerId;           // المزوّد بيكلّم العميل
             }
 
             if (targetUserId && !contactMap.has(targetUserId)) {
                 try {
-                    const profile = await api.get(`profile/${targetUserId}`, { showLoader: false });
+                    const profile = await api.get(`Profile/${targetUserId}`, { showLoader: false });
                     if (profile) {
                         contactMap.set(targetUserId, {
                             id: targetUserId,
-                            name: profile.fullName || 'Technician',
+                            name: profile.fullName || (isCustomer ? 'Technician' : 'Customer'),
                             email: profile.email || '',
                             phone: profile.phoneNumber || '',
-                            role: currentUser.role === 'customer' ? 'provider' : 'customer',
+                            role: isCustomer ? 'provider' : 'customer',
                             serviceRequestId: req.id
                         });
                     }
@@ -629,3 +651,33 @@ window.startNewChat = startNewChat;
 window.viewChatInfo = viewChatInfo;
 window.callPartner = callPartner;
 window.viewImage = viewImage;
+
+// ==========================================
+// SEARCH USERS (كانت ناقصة)
+// ==========================================
+// ⚠️ chat.html فيه oninput="searchUsers(this.value)" بس الدالة
+//    مكانتش معرّفة في أي مكان → "ReferenceError: searchUsers is not defined"
+//    في كل حرف بيتكتب.
+function searchUsers(term) {
+    const container = document.getElementById('userList');
+    if (!container) return;
+
+    const q = (term || '').trim().toLowerCase();
+    if (!q) {
+        renderNewChatUsers();
+        return;
+    }
+
+    const matches = allUsers.filter(function (u) {
+        return (u.name || '').toLowerCase().includes(q) ||
+               (u.email || '').toLowerCase().includes(q) ||
+               (u.phone || '').toLowerCase().includes(q);
+    });
+
+    const original = allUsers;
+    allUsers = matches;
+    renderNewChatUsers();
+    allUsers = original;   // مانضيّعش القايمة الأصلية
+}
+
+window.searchUsers = searchUsers;
