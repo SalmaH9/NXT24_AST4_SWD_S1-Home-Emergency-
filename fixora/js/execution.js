@@ -2,6 +2,22 @@
 // EXECUTION.JS - Service Execution Logic
 // ==========================================
 
+// ==========================================
+// ⚠️ باج التوقيت: الـ .NET بيرجّع DateTime.UtcNow كـ
+//    "2026-07-15T13:13:02" — من غير حرف Z في الآخر.
+//    من غير الـ Z، المتصفح بيفترض إنها بتوقيت محلي مش UTC،
+//    فالمؤقّت كان بيبدأ من 03:00:00 على طول في مصر (UTC+3).
+// ==========================================
+function parseUtc(value) {
+    if (!value) return new Date();
+    var str = String(value);
+    // لو مفيهاش Z ولا فرق توقيت (+02:00) → نضيف Z عشان تتقري UTC
+    if (!/[Zz]$/.test(str) && !/[+-]\d{2}:\d{2}$/.test(str)) {
+        str += 'Z';
+    }
+    return new Date(str);
+}
+
 var executionTimer = null;
 var seconds = 0;
 var currentRole = null;
@@ -61,14 +77,20 @@ async function loadExecutionData() {
 
         // Fetch execution record
         try {
-            currentExecutionRecord = await api.get(`/service-requests/${reqId}/execution`, { showLoader: false });
+            // ⚠️ silent: الـ 404 هنا معناه "الشغل لسه مابدأش" — وده وضع عادي
+            //    مش خطأ. من غير silent كان بيطلّع إشعار أحمر "Not Found"
+            //    للمستخدم بعد ما العملية تنجح فعلًا!
+            currentExecutionRecord = await api.get(`/service-requests/${reqId}/execution`,
+                                                   { showLoader: false, silent: true });
         } catch (e) {
             currentExecutionRecord = null;
         }
 
         // Fetch examination report
         try {
-            currentExamination = await api.get(`/service-requests/${reqId}/examination`, { showLoader: false });
+            // silent: مفيش تقرير فحص لسه = وضع عادي مش خطأ
+            currentExamination = await api.get(`/service-requests/${reqId}/examination`,
+                                               { showLoader: false, silent: true });
         } catch (e) {
             currentExamination = null;
         }
@@ -165,19 +187,47 @@ function updateStatusUI() {
     var status = currentRequest.status;
 
     if (status === 'WaitingCustomerApproval') {
-        statusEl.innerHTML = '<i class="fas fa-clock"></i> Pending Approval';
-        statusEl.classList.add('pending');
+        // ⚠️ الحالة دي بتغطي وضعين مختلفين تمامًا:
+        //    (أ) العميل لسه ماردش       → IsApproved = false
+        //    (ب) العميل وافق وبيستنى الفني → IsApproved = true
+        //    الـ Backend مابيغيّرش الحالة عند الموافقة، فلازم نبص على
+        //    الفحص نفسه. من غير ده كان العميل يوافق وترجعله نفس
+        //    أزرار "Accept/Reject" تاني وكأن مفيش حاجة حصلت.
+        var isApproved = !!(currentExamination && currentExamination.isApproved);
+
         completedState.style.display = 'none';
         rejectionNote.style.display = 'none';
         reopenSection.style.display = 'none';
         completeSection.style.display = 'none';
         timerDisplay.style.display = 'none';
 
-        if (currentRole === 'customer') {
-            actionBtns.style.display = 'grid';
+        if (isApproved) {
+            // ✅ الموافقة اتسجّلت
+            statusEl.innerHTML = '<i class="fas fa-check"></i> Approved — Awaiting Start';
+            statusEl.classList.add('pending');
+
+            if (currentRole === 'customer') {
+                actionBtns.style.display = 'block';
+                actionBtns.innerHTML = '<div style="text-align:center; color:var(--text-secondary); padding:10px;">' +
+                    '<i class="fas fa-check-circle" style="color:#48bb78;"></i> ' +
+                    'You approved the repair. Waiting for the technician to start.</div>';
+            } else {
+                // الفني: يقدر يبدأ من هنا
+                actionBtns.style.display = 'block';
+                actionBtns.innerHTML = '<button class="btn-action btn-accept btn-full" onclick="startExecution()">' +
+                    '<i class="fas fa-play"></i> Start Repair</button>';
+            }
         } else {
-            actionBtns.style.display = 'block';
-            actionBtns.innerHTML = `<div style="text-align: center; color: var(--text-secondary); padding: 10px;"><i class="fas fa-spinner fa-spin"></i> Awaiting customer approval of your report.</div>`;
+            // لسه مستني قرار العميل
+            statusEl.innerHTML = '<i class="fas fa-clock"></i> Pending Approval';
+            statusEl.classList.add('pending');
+
+            if (currentRole === 'customer') {
+                actionBtns.style.display = 'grid';
+            } else {
+                actionBtns.style.display = 'block';
+                actionBtns.innerHTML = `<div style="text-align: center; color: var(--text-secondary); padding: 10px;"><i class="fas fa-spinner fa-spin"></i> Awaiting customer approval of your report.</div>`;
+            }
         }
     } 
     else if (status === 'InProgress') {
@@ -202,7 +252,7 @@ function updateStatusUI() {
 
         // Start timer counts based on startedAt timestamp if available
         if (currentExecutionRecord && currentExecutionRecord.startedAt) {
-            var diffMs = new Date() - new Date(currentExecutionRecord.startedAt);
+            var diffMs = new Date() - parseUtc(currentExecutionRecord.startedAt);
             seconds = Math.max(0, Math.floor(diffMs / 1000));
         }
         startTimer();
@@ -502,7 +552,7 @@ async function refreshTracking() {
 
         // آخر نقطة مسجّلة (TrackingLocationDto: latitude, longitude, recordedAt)
         var latest = points.reduce(function (a, b) {
-            return new Date(a.recordedAt) > new Date(b.recordedAt) ? a : b;
+            return parseUtc(a.recordedAt) > parseUtc(b.recordedAt) ? a : b;
         });
 
         var km = null;
@@ -519,7 +569,7 @@ async function refreshTracking() {
 
         if (etaEl) {
             var mins = (km === null) ? null : Math.max(1, Math.round((km / 30) * 60)); // ~30 كم/س في المدينة
-            var ago = Math.round((Date.now() - new Date(latest.recordedAt).getTime()) / 60000);
+            var ago = Math.round((Date.now() - parseUtc(latest.recordedAt).getTime()) / 60000);
             etaEl.textContent = (mins === null)
                 ? '⏱️ Updated ' + ago + ' min ago'
                 : '⏱️ ~' + mins + ' min away';
@@ -567,3 +617,24 @@ document.addEventListener('realtimeNotification', function(e) {
         }
     }
 });
+
+// ==========================================
+// START EXECUTION (الفني)
+// ==========================================
+// StartExecutionAsync هو اللي بينشئ سجل ServiceExecution
+// وبينقل الحالة لـ InProgress. من غيره زرار Complete بيرمي 404.
+async function startExecution() {
+    if (!currentRequest) return;
+
+    if (!confirm('▶️ Start the repair now?')) return;
+
+    try {
+        await api.post('/service-executions/start', { serviceRequestId: currentRequest.id });
+        ErrorHandler.showNotification('Started', 'Repair started. Tracking is now active.', 'success');
+        setTimeout(function () { location.reload(); }, 1200);
+    } catch (err) {
+        console.error('Failed to start execution:', err);
+    }
+}
+
+window.startExecution = startExecution;

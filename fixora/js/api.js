@@ -6,8 +6,12 @@ const api = {
     async request(endpoint, options = {}) {
         options.headers = options.headers || {};
 
+        // ✅ دعم silent لمنع عرض الأخطاء للمستخدم
+        //    بيستخدم في الطلبات الداخلية (مثل التحقق من وجود فحص)
+        const isSilent = options.silent === true;
+
         // 1. Show Global Loading Spinner
-        if (options.showLoader !== false) {
+        if (options.showLoader !== false && !isSilent) {
             Loading.show(options.loaderText || "Loading...");
         }
 
@@ -35,7 +39,6 @@ const api = {
 
                 if (refreshed) {
                     console.log("✅ Token refresh succeeded. Retrying original request...");
-                    // Re-inject the new token
                     options.headers["Authorization"] = `Bearer ${TokenManager.getAccessToken()}`;
                     response = await fetch(url, options);
                 } else {
@@ -46,17 +49,14 @@ const api = {
             }
 
             // Hide loader after response
-            if (options.showLoader !== false) {
+            if (options.showLoader !== false && !isSilent) {
                 Loading.hide();
             }
 
             // 6. Handle HTTP errors
             if (!response.ok) {
-                // ⚠️ بعض الـ 404 متوقّعة ومش أخطاء حقيقية.
-                //    مثال: السؤال "هل فيه تقرير فحص؟" قبل ما يتكتب أصلًا.
-                //    مرّري { silent: true } عشان الكود يمسك الخطأ من غير
-                //    ما يطلّع إشعار أحمر للمستخدم.
-                if (options.silent !== true) {
+                // ✅ لو silent، متعرضش إشعار للمستخدم (لأن 404 متوقعة)
+                if (!isSilent) {
                     await ErrorHandler.parseAndHandleError(response);
                 }
                 throw response;
@@ -73,15 +73,19 @@ const api = {
                 return null;
             }
 
-            if (response.headers.get("content-length") === "0") {
+            // ✅ التحقق من وجود محتوى قبل محاولة قراءته
+            const contentLength = response.headers.get("content-length");
+            if (contentLength === "0") {
                 return null;
             }
 
+            // ✅ قراءة النص أولاً عشان نعرف إذا كان فاضي
             const rawBody = await response.text();
-            if (!rawBody) {
+            if (!rawBody || rawBody.trim() === "") {
                 return null;   // 200 بجسم فاضي = نجاح من غير بيانات
             }
 
+            // ✅ محاولة تحويل JSON
             try {
                 return JSON.parse(rawBody);
             } catch (parseError) {
@@ -91,13 +95,16 @@ const api = {
 
         } catch (error) {
             // Hide loader in case of exceptions/network errors
-            if (options.showLoader !== false) {
+            if (options.showLoader !== false && !isSilent) {
                 Loading.hide();
             }
 
-            if (!(error instanceof Response)) {
-                // Network or connection errors
-                ErrorHandler.showNotification("Network Error", error.message || "Failed to reach backend server.");
+            // ✅ لو silent، متعرضش إشعار للمستخدم
+            if (!isSilent) {
+                if (!(error instanceof Response)) {
+                    // Network or connection errors
+                    ErrorHandler.showNotification("Network Error", error.message || "Failed to reach backend server.");
+                }
             }
             throw error;
         }

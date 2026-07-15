@@ -11,6 +11,7 @@
 </head>
 <body>
 
+    <!-- ===== NAVBAR ===== -->
     <nav class="navbar">
         <div class="nav-container">
             <div class="logo">
@@ -35,54 +36,115 @@
         </div>
     </nav>
 
+    <!-- ===== MAIN ===== -->
     <main class="main-content">
         <div class="container">
             <h1 class="page-title">
                 <i class="fas fa-screwdriver-wrench"></i> 
                 Our Services
             </h1>
+            <p class="page-subtitle">Professional home repair services at your doorstep</p>
 
-            <div class="plan-grid">
-                <div class="plan-card">
-                    <i class="fas fa-faucet"></i>
+            <div class="services-grid">
+                <!-- Plumbing -->
+                <div class="service-card" id="plumbing">
+                    <div class="service-icon">
+                        <i class="fas fa-faucet"></i>
+                    </div>
                     <h3>Plumbing</h3>
-                    <p>Pipe installation, leak repair, faucet replacement, water heater services</p>
-                    <span class="badge">From $50</span>
+                    <p>Pipe installation, leak repair, faucet replacement, water heater services, drain cleaning, and full bathroom remodeling.</p>
+                    <span class="service-tag">Popular</span>
                 </div>
-                <div class="plan-card">
-                    <i class="fas fa-bolt"></i>
+
+                <!-- Electrical -->
+                <div class="service-card" id="electrical">
+                    <div class="service-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
                     <h3>Electrical</h3>
-                    <p>Wiring, lighting installation, switch repair, circuit breaker services</p>
-                    <span class="badge">From $60</span>
+                    <p>Wiring installation, lighting fixtures, switch repair, circuit breaker services, fuse box upgrades, and smart home integration.</p>
+                    <span class="service-tag">Emergency</span>
                 </div>
-                <div class="plan-card">
-                    <i class="fas fa-snowflake"></i>
+
+                <!-- AC & HVAC -->
+                <div class="service-card" id="ac">
+                    <div class="service-icon">
+                        <i class="fas fa-snowflake"></i>
+                    </div>
                     <h3>AC & HVAC</h3>
-                    <p>Air conditioning repair, maintenance, installation, heating systems</p>
-                    <span class="badge">From $80</span>
+                    <p>Air conditioning repair, maintenance, installation, heating systems, ventilation, filter replacement, and duct cleaning.</p>
+                    <span class="service-tag">Seasonal</span>
                 </div>
-                <div class="plan-card">
-                    <i class="fas fa-hammer"></i>
+
+                <!-- Carpentry -->
+                <div class="service-card" id="carpentry">
+                    <div class="service-icon">
+                        <i class="fas fa-hammer"></i>
+                    </div>
                     <h3>Carpentry</h3>
-                    <p>Furniture repair, door installation, cabinet making, woodwork</p>
-                    <span class="badge">From $45</span>
+                    <p>Furniture repair, door installation, cabinet making, woodwork, deck building, custom shelving, and floor installation.</p>
                 </div>
-                <div class="plan-card">
-                    <i class="fas fa-paint-roller"></i>
+
+                <!-- Painting -->
+                <div class="service-card" id="painting">
+                    <div class="service-icon">
+                        <i class="fas fa-paint-roller"></i>
+                    </div>
                     <h3>Painting</h3>
-                    <p>Interior & exterior painting, wall repair, wallpaper installation</p>
-                    <span class="badge">From $40</span>
+                    <p>Interior & exterior painting, wall repair, wallpaper installation, texture coating, color consultation, and protective sealing.</p>
                 </div>
-                <div class="plan-card">
-                    <i class="fas fa-trowel"></i>
+
+                <!-- Masonry -->
+                <div class="service-card" id="masonry">
+                    <div class="service-icon">
+                        <i class="fas fa-trowel"></i>
+                    </div>
                     <h3>Masonry</h3>
-                    <p>Brickwork, tile installation, concrete repair, plastering</p>
-                    <span class="badge">From $70</span>
+                    <p>Brickwork, tile installation, concrete repair, plastering, stonework, foundation repair, and waterproofing.</p>
+                </div>
+
+                <!-- Cleaning -->
+                <div class="service-card" id="cleaning">
+                    <div class="service-icon">
+                        <i class="fas fa-broom"></i>
+                    </div>
+                    <h3>Cleaning</h3>
+                    <p>Deep cleaning, regular maintenance, carpet cleaning, window washing, post-construction cleaning, and sanitization.</p>
+                </div>
+
+                <!-- Gardening -->
+                <div class="service-card" id="gardening">
+                    <div class="service-icon">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                    <h3>Gardening</h3>
+                    <p>Lawn care, planting, garden design, irrigation systems, tree trimming, landscape maintenance, and pest control for plants.</p>
+                </div>
+
+                <!-- Appliance Repair -->
+                <div class="service-card" id="appliance">
+                    <div class="service-icon">
+                        <i class="fas fa-tv"></i>
+                    </div>
+                    <h3>Appliance Repair</h3>
+                    <p>Fridge repair, oven maintenance, washer/dryer service, dishwasher repair, microwave repair, and small appliance fixes.</p>
+                </div>
+
+                <!-- Pest Control -->
+                <div class="service-card" id="pest">
+                    <div class="service-icon">
+                        <i class="fas fa-bug"></i>
+                    </div>
+                    <h3>Pest Control</h3>
+                    <p>Pest inspection, extermination, rodent control, termite treatment, ant removal, spider prevention, and eco-friendly solutions.</p>
                 </div>
             </div>
         </div>
     </main>
 
+    <!-- ========================================== -->
+    <!-- FOOTER - موحد لجميع الصفحات                -->
+    <!-- ========================================== -->
     <footer class="footer">
         <div class="footer-container">
             <div class="footer-grid">
@@ -106,31 +168,31 @@
                     <ul>
                         <li><a href="index.html">Home</a></li>
                         <li><a href="services.html">Services</a></li>
-                        <li><a href="about.html">How it Works</a></li>
-                        <li><a href="contact.html">Contact Us</a></li>
-                        <li><a href="#">Testimonials</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="#" onclick="toggleChatbot()">AI Assistant</a></li>
                     </ul>
                 </div>
                 <div class="footer-col">
                     <h4>Services</h4>
                     <ul>
-                        <li><a href="services.html">Plumbing</a></li>
-                        <li><a href="services.html">Electrical</a></li>
-                        <li><a href="services.html">HVAC Repair</a></li>
-                        <li><a href="services.html">General Maintenance</a></li>
+                        <li><a href="services.html#plumbing">Plumbing</a></li>
+                        <li><a href="services.html#electrical">Electrical</a></li>
+                        <li><a href="services.html#ac">AC Repair</a></li>
+                        <li><a href="services.html#carpentry">Carpentry</a></li>
                     </ul>
                 </div>
                 <div class="footer-col">
                     <h4>Contact</h4>
                     <ul class="footer-contact">
-                        <li><i class="fas fa-phone"></i><a href="tel:+18001234567">+1 (800) 123-4567</a></li>
+                        <li><i class="fas fa-phone"></i><a href="tel:+201234567890">+20 123 456 7890</a></li>
                         <li><i class="fas fa-envelope"></i><a href="mailto:support@fixora.com">support@fixora.com</a></li>
                         <li><i class="fas fa-location-dot"></i><span>123 Service Street, Tech City</span></li>
                     </ul>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>© 2026 <strong>Fixora</strong>. All rights reserved.</p>
+                <p>© <span id="copyright-year">2026</span> <strong>Fixora</strong>. All rights reserved.</p>
                 <div class="footer-bottom-links">
                     <a href="#">Privacy Policy</a>
                     <a href="#">Terms of Service</a>
@@ -142,5 +204,97 @@
     <script src="../js/script.js"></script>
     <script src="../js/footer.js"></script>
     <script src="../js/chatbot.js"></script>
+
+    <style>
+        /* ===== Services Grid ===== */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+            margin-top: 30px;
+        }
+
+        .service-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-sm);
+            padding: 28px 24px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            text-align: center;
+            position: relative;
+        }
+
+        .service-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--accent);
+        }
+
+        .service-card .service-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: rgba(102, 126, 234, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 1.8rem;
+            color: var(--accent);
+            transition: var(--transition);
+        }
+
+        .service-card:hover .service-icon {
+            background: var(--gradient-primary);
+            color: white;
+        }
+
+        .service-card h3 {
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+        }
+
+        .service-card p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .service-card .service-tag {
+            display: inline-block;
+            padding: 2px 14px;
+            border-radius: 60px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            background: rgba(102, 126, 234, 0.12);
+            color: var(--accent);
+        }
+
+        .service-card .service-tag.popular {
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+        .service-card .service-tag.emergency {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .service-card .service-tag.seasonal {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .page-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-top: -8px;
+            margin-bottom: 8px;
+        }
+    </style>
+
 </body>
 </html>

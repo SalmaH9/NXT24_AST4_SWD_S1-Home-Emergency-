@@ -179,62 +179,73 @@
         </div>
     </main>
 
-    <!-- ===== FOOTER ===== -->
-    <footer class="footer">
-        <div class="footer-container">
-            <div class="footer-grid">
-                <div class="footer-col">
-                    <div class="footer-logo">
-                        <i class="fas fa-wrench"></i>
-                        <span>Fix<span class="logo-highlight">ora</span></span>
-                    </div>
-                    <p class="footer-desc">
-                        Connecting homeowners with trusted service providers for fast, reliable emergency repairs and maintenance.
-                    </p>
-                    <div class="footer-social">
-                        <a href="#"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-youtube"></i></a>
-                    </div>
+<!-- ========================================== -->
+<!-- FOOTER - موحد لجميع الصفحات                -->
+<!-- ========================================== -->
+<footer class="footer">
+    <div class="footer-container">
+        <div class="footer-grid">
+            <!-- العمود 1: الشعار -->
+            <div class="footer-col">
+                <div class="footer-logo">
+                    <i class="fas fa-wrench"></i>
+                    <span>Fix<span class="logo-highlight">ora</span></span>
                 </div>
-                <div class="footer-col">
-                    <h4>Quick Links</h4>
-                    <ul>
-                        <li><a href="index.html">Home</a></li>
-                        <li><a href="services.html">Services</a></li>
-                        <li><a href="about.html">How it Works</a></li>
-                        <li><a href="contact.html">Contact Us</a></li>
-                        <li><a href="#">Testimonials</a></li>
-                    </ul>
-                </div>
-                <div class="footer-col">
-                    <h4>Services</h4>
-                    <ul>
-                        <li><a href="services.html">Plumbing</a></li>
-                        <li><a href="services.html">Electrical</a></li>
-                        <li><a href="services.html">HVAC Repair</a></li>
-                        <li><a href="services.html">General Maintenance</a></li>
-                    </ul>
-                </div>
-                <div class="footer-col">
-                    <h4>Contact</h4>
-                    <ul class="footer-contact">
-                        <li><i class="fas fa-phone"></i><a href="tel:+18001234567">+1 (800) 123-4567</a></li>
-                        <li><i class="fas fa-envelope"></i><a href="mailto:support@fixora.com">support@fixora.com</a></li>
-                        <li><i class="fas fa-location-dot"></i><span>123 Service Street, Tech City</span></li>
-                    </ul>
+                <p class="footer-desc">
+                    Connecting homeowners with trusted service providers for fast, reliable emergency repairs and maintenance.
+                </p>
+                <div class="footer-social">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
                 </div>
             </div>
-            <div class="footer-bottom">
-                <p>© 2026 <strong>Fixora</strong>. All rights reserved.</p>
-                <div class="footer-bottom-links">
-                    <a href="#">Privacy Policy</a>
-                    <a href="#">Terms of Service</a>
-                </div>
+
+            <!-- العمود 2: روابط سريعة -->
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="services.html">Services</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                    <li><a href="#" onclick="toggleChatbot()">AI Assistant</a></li>
+                </ul>
+            </div>
+
+            <!-- العمود 3: الخدمات -->
+            <div class="footer-col">
+                <h4>Services</h4>
+                <ul>
+                    <li><a href="services.html#plumbing">Plumbing</a></li>
+                    <li><a href="services.html#electrical">Electrical</a></li>
+                    <li><a href="services.html#ac">AC Repair</a></li>
+                    <li><a href="services.html#carpentry">Carpentry</a></li>
+                </ul>
+            </div>
+
+            <!-- العمود 4: التواصل -->
+            <div class="footer-col">
+                <h4>Contact</h4>
+                <ul class="footer-contact">
+                    <li><i class="fas fa-phone"></i><a href="tel:+201234567890">+20 123 456 7890</a></li>
+                    <li><i class="fas fa-envelope"></i><a href="mailto:support@fixora.com">support@fixora.com</a></li>
+                    <li><i class="fas fa-location-dot"></i><span>123 Service Street, Tech City</span></li>
+                </ul>
             </div>
         </div>
-    </footer>
+
+        <!-- القاع -->
+        <div class="footer-bottom">
+            <p>© <span id="copyright-year">2026</span> <strong>Fixora</strong>. All rights reserved.</p>
+            <div class="footer-bottom-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+            </div>
+        </div>
+    </div>
+</footer>
 
     <script src="../js/script.js"></script>
     <script src="../js/footer.js"></script>

@@ -90,37 +90,47 @@ public class ExaminationService : IExaminationService
         if (examination == null)
             throw new KeyNotFoundException("Examination not found.");
 
-        // Verify the service request belongs to this customer
         var serviceRequest = await _unitOfWork.ServiceRequests.GetByIdAsync(examination.ServiceRequestId);
 
         if (serviceRequest == null || serviceRequest.CustomerId != customerId)
             throw new InvalidOperationException("You are not authorised to approve this examination.");
 
+        var oldStatus = serviceRequest.Status.ToString();
+
         examination.IsApproved = request.IsApproved;
-
         _unitOfWork.Examinations.Update(examination);
+
+        if (request.IsApproved)
+        {
+            // ✅ العميل وافق.
+            // ⚠️ ماتغيّريش الحالة هنا! لازم تفضل WaitingCustomerApproval
+            //    عشان StartExecutionAsync يقبلها. الفني هو اللي هينقلها
+            //    لـ InProgress لما يبدأ فعلًا — وساعتها هيتعمل سجل التنفيذ.
+            await RequestHistoryHelper.RecordAsync(
+                _unitOfWork,
+                serviceRequest.Id,
+                oldStatus: oldStatus,
+                newStatus: oldStatus,   // الحالة ما اتغيرتش — بنسجّل الموافقة بس
+                comment: "Customer approved the examination. Provider may now start the repair.",
+                changedBy: customerId);
+        }
+        else
+        {
+            // ❌ العميل رفض → الطلب يرجع للمزايدة
+            serviceRequest.Status = ServiceRequestStatus.SearchingForProviders;
+            serviceRequest.SelectedProviderId = null;   // نفك ارتباط الفني
+            _unitOfWork.ServiceRequests.Update(serviceRequest);
+
+            await RequestHistoryHelper.RecordAsync(
+                _unitOfWork,
+                serviceRequest.Id,
+                oldStatus: oldStatus,
+                newStatus: ServiceRequestStatus.SearchingForProviders.ToString(),
+                comment: "Customer rejected the repair cost. Request reopened for other providers.",
+                changedBy: customerId);
+        }
+
         await _unitOfWork.CompleteAsync();
-
-        try
-        {
-            var notificationType = request.IsApproved ? NotificationType.ExaminationAccepted : NotificationType.ExaminationRejected;
-            var notificationTitle = request.IsApproved ? "Examination Approved" : "Examination Rejected";
-            var notificationBody = request.IsApproved 
-                ? "The customer has approved your inspection report. You can now start the execution."
-                : "The customer has rejected your inspection report.";
-
-            await _notificationService.CreateAsync(
-                examination.ProviderId,
-                notificationType,
-                notificationTitle,
-                notificationBody
-            );
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Notification failed: {ex.Message}");
-        }
-
         return true;
     }
 

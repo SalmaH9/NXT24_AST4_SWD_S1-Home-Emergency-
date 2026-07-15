@@ -41,4 +41,6 @@ public class ServiceRequest : BaseEntity
     public Examination? Examination { get; set; }
 
     public ServiceExecution? ServiceExecution { get; set; }
+
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

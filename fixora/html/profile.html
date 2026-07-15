@@ -36,7 +36,8 @@
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
 
     <div class="page-wrapper">
-      <aside class="sidebar" id="sidebar">
+        <!-- SIDEBAR - ديناميكي -->
+        <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div class="logo">
                     <i class="fas fa-wrench"></i>
@@ -44,17 +45,8 @@
                 </div>
             </div>
             <nav class="sidebar-nav">
-                <ul>
-                    <li><a href="provider-dashboard.html" class="active"><i class="fas fa-gauge-high"></i> Dashboard</a></li>
-                    <li><a href="orders.html"><i class="fas fa-list-check"></i> Orders</a></li>
-                    <li><a href="schedule.html"><i class="fas fa-calendar-days"></i> Schedule</a></li>
-                    <li><a href="examination.html"><i class="fas fa-file-medical"></i> Examination</a></li>
-                    <li><a href="profile.html"><i class="fas fa-user-gear"></i> Profile</a></li>
-                    <li style="margin-top: 16px; border-top: 1px solid var(--border); padding-top: 12px;">
-                        <a href="index.html" onclick="handleLogout(event)" style="color: #ef4444; font-weight: 600;">
-                            <i class="fas fa-sign-out-alt" style="margin-right: 10px;"></i> Logout
-                        </a>
-                    </li>
+                <ul id="sidebarNav">
+                    <!-- سيتم إضافتها بواسطة JavaScript -->
                 </ul>
             </nav>
             <div class="sidebar-footer">
@@ -71,45 +63,58 @@
                         <i class="fas fa-user-gear"></i> Profile
                     </h1>
 
+                    <!-- HEADER -->
                     <div class="profile-header">
                         <div class="profile-avatar"><i class="fas fa-user-tie"></i></div>
                         <div class="profile-name">
-                            <h2 id="profileName">Khalid Al-Omari</h2>
-                            <span class="role-tag">Provider</span>
-                            <p id="profileSpecialty">⚡ Plumbing & Electrical Specialist</p>
+                            <h2 id="profileName">—</h2>
+                            <span class="role-tag" id="profileRoleTag">Provider</span>
+                            <p id="profileSpecialty">⚡ Loading...</p>
                         </div>
                         <div class="profile-stats">
-                            <div class="profile-stat"><h3 id="profileRating">4.8 ⭐</h3><p>Rating</p></div>
-                            <div class="profile-stat"><h3 id="profileJobs">48</h3><p>Completed Jobs</p></div>
-                            <div class="profile-stat"><h3 id="profileYears">5</h3><p>Years Experience</p></div>
+                            <div class="profile-stat"><h3 id="profileRating">— ⭐</h3><p>Rating</p></div>
+                            <div class="profile-stat"><h3 id="profileJobs">—</h3><p>Completed Jobs</p></div>
+                            <div class="profile-stat"><h3 id="profileYears">—</h3><p>Years Experience</p></div>
                         </div>
                     </div>
 
+                    <!-- DETAILS -->
                     <div class="profile-details">
                         <div class="detail-card">
                             <h3><i class="fas fa-circle-info"></i> Personal Information</h3>
-                            <div class="detail-item"><span class="label">Full Name</span><span class="value" id="profileName2">Khalid Al-Omari</span></div>
-                            <div class="detail-item"><span class="label">Email</span><span class="value" id="profileEmail">khalid@fixora.com</span></div>
-                            <div class="detail-item"><span class="label">Phone</span><span class="value" id="profilePhone">+966 50 123 4567</span></div>
-                            <div class="detail-item"><span class="label">Location</span><span class="value" id="profileLocation">Riyadh, Saudi Arabia</span></div>
+                            <div class="detail-item"><span class="label">Full Name</span><span class="value" id="profileName2">—</span></div>
+                            <div class="detail-item"><span class="label">Email</span><span class="value" id="profileEmail">—</span></div>
+                            <div class="detail-item"><span class="label">Phone</span><span class="value" id="profilePhone">—</span></div>
+                            <div class="detail-item"><span class="label">Location</span><span class="value" id="profileLocation">—</span></div>
                         </div>
                         <div class="detail-card">
                             <h3><i class="fas fa-briefcase"></i> Professional Info</h3>
-                            <div class="detail-item"><span class="label">Role</span><span class="value" id="profileRole2">Provider</span></div>
-                            <div class="detail-item"><span class="label">Specialty</span><span class="value" id="profileSpecialty2">Plumbing & Electrical</span></div>
-                            <div class="detail-item"><span class="label">Experience</span><span class="value" id="profileExperience">5 Years</span></div>
-                            <div class="detail-item"><span class="label">License</span><span class="value" style="color: #48bb78;">✅ Certified</span></div>
-                        </                        <div class="detail-card" style="grid-column: 1 / -1;">
+                            <div class="detail-item"><span class="label">Role</span><span class="value" id="profileRole2">—</span></div>
+                            <div class="detail-item"><span class="label">Specialty</span><span class="value" id="profileSpecialty2">—</span></div>
+                            <div class="detail-item"><span class="label">Experience</span><span class="value" id="profileExperience">—</span></div>
+                            <div class="detail-item"><span class="label">License</span><span class="value" id="profileLicense" style="color: #48bb78;">✅ Certified</span></div>
+                            <div class="detail-item"><span class="label">Member Since</span><span class="value" id="profileMemberSince">—</span></div>
+                        </div>
+                        <div class="detail-card" style="grid-column: 1 / -1;">
                             <h3><i class="fas fa-pen-to-square"></i> About Me</h3>
-                            <p id="profileBio" style="color: var(--text-secondary); line-height: 1.8;">Professional home repair specialist. Committed to providing high-quality, reliable, and affordable repairs.</p>
+                            <p id="profileBio" style="color: var(--text-secondary); line-height: 1.8;">—</p>
                             <button class="edit-btn" onclick="editProfile()"><i class="fas fa-pen"></i> Edit Profile</button>
                         </div>
                     </div>
+
                 </div>
             </main>
+
+            <footer class="footer">
+                <p>© 2026 <strong>Fixora</strong> — Professional Home Repair Services</p>
+                <p class="footer-update">Last updated: <span id="footer-date"></span></p>
+            </footer>
         </div>
     </div>
 
+    <!-- ========================================== -->
+    <!-- SCRIPTS                                     -->
+    <!-- ========================================== -->
     <script src="../js/config.js"></script>
     <script src="../js/tokenManager.js"></script>
     <script src="../js/loading.js"></script>
@@ -120,44 +125,138 @@
     <script>
         let currentProfileData = null;
 
+        // ==========================================
+        // تحديث الـ Sidebar حسب الدور
+        // ==========================================
+        function updateSidebarNavigation() {
+            const role = localStorage.getItem('userRole');
+            const sidebarNav = document.getElementById('sidebarNav');
+            if (!sidebarNav) return;
+
+            let links = '';
+
+            if (role === 'customer') {
+                links = `
+                    <li><a href="customer-dashboard.html"><i class="fas fa-gauge-high"></i> Dashboard</a></li>
+                    <li><a href="post-request.html"><i class="fas fa-plus-circle"></i> Post Request</a></li>
+                    <li><a href="my-orders.html"><i class="fas fa-list-check"></i> My Orders</a></li>
+                    <li><a href="track-order.html"><i class="fas fa-location-dot"></i> Track Order</a></li>
+                    <li><a href="chat.html"><i class="fas fa-comments"></i> Messages</a></li>
+                    <li><a href="customer-profile.html" class="active"><i class="fas fa-user"></i> Profile</a></li>
+                    <li style="margin-top: 16px; border-top: 1px solid var(--border); padding-top: 12px;">
+                        <a href="index.html" onclick="handleLogout(event)" style="color: #ef4444; font-weight: 600;">
+                            <i class="fas fa-sign-out-alt" style="margin-right: 10px;"></i> Logout
+                        </a>
+                    </li>
+                `;
+            } else if (role === 'provider' || role === 'company') {
+                links = `
+                    <li><a href="provider-dashboard.html"><i class="fas fa-gauge-high"></i> Dashboard</a></li>
+                    <li><a href="orders.html"><i class="fas fa-list-check"></i> Orders</a></li>
+                    <li><a href="schedule.html"><i class="fas fa-calendar-days"></i> Schedule</a></li>
+                    <li><a href="chat.html"><i class="fas fa-comments"></i> Messages</a></li>
+                    <li><a href="subscription.html"><i class="fas fa-crown"></i> Subscription</a></li>
+                    <li><a href="examination.html"><i class="fas fa-file-medical"></i> Examination</a></li>
+                    <li><a href="profile.html" class="active"><i class="fas fa-user-gear"></i> Profile</a></li>
+                    <li style="margin-top: 16px; border-top: 1px solid var(--border); padding-top: 12px;">
+                        <a href="index.html" onclick="handleLogout(event)" style="color: #ef4444; font-weight: 600;">
+                            <i class="fas fa-sign-out-alt" style="margin-right: 10px;"></i> Logout
+                        </a>
+                    </li>
+                `;
+            } else {
+                links = `
+                    <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="login.html"><i class="fas fa-right-to-bracket"></i> Login</a></li>
+                    <li><a href="register.html"><i class="fas fa-user-plus"></i> Sign Up</a></li>
+                `;
+            }
+
+            sidebarNav.innerHTML = links;
+        }
+
+        // ==========================================
+        // تحميل بيانات البروفايل
+        // ==========================================
         async function loadProfile() {
             try {
-                const profile = await api.get('/profile');
+                const profile = await api.get('/profile', { showLoader: false, silent: true });
                 if (profile) {
                     currentProfileData = profile;
                     
                     // Main Header Details
-                    document.getElementById('profileName').textContent = profile.fullName;
-                    document.getElementById('profileName2').textContent = profile.fullName;
-                    document.getElementById('profileEmail').textContent = profile.email;
+                    document.getElementById('profileName').textContent = profile.fullName || '—';
+                    document.getElementById('profileName2').textContent = profile.fullName || '—';
+                    document.getElementById('profileEmail').textContent = profile.email || '—';
                     document.getElementById('profilePhone').textContent = profile.phoneNumber || 'Not Set';
-                    document.getElementById('profileRole2').textContent = profile.role;
+                    document.getElementById('profileRole2').textContent = profile.role || '—';
+                    document.getElementById('profileRoleTag').textContent = profile.role || 'Provider';
 
                     // Provider Profile Details
-                    const subProfile = profile.providerProfile || profile.companyProfile;
-                    if (subProfile) {
-                        const specialty = subProfile.specialty || 'General Maintenance';
-                        const expYears = subProfile.experienceYears || 0;
-                        const rating = subProfile.averageRating !== undefined ? subProfile.averageRating.toFixed(1) : '5.0';
-                        const jobs = subProfile.completedRequestsCount || 0;
-                        const coverage = subProfile.coverageArea || 'Riyadh, Saudi Arabia';
-                        const bio = subProfile.bio || 'Professional service provider.';
+                    const subProfile = profile.providerProfile || profile.companyProfile || {};
+                    
+                    const specialty = subProfile.serviceCategory || 'General Maintenance';
+                    const expYears = subProfile.experienceYears || 0;
+                    const rating = subProfile.averageRating !== undefined ? subProfile.averageRating.toFixed(1) : '—';
+                    const coverage = subProfile.coverageArea || profile.address || 'Riyadh, Saudi Arabia';
+                    const bio = subProfile.bio || 'Professional service provider.';
 
-                        document.getElementById('profileSpecialty').textContent = `⚡ ${specialty} Specialist`;
-                        document.getElementById('profileSpecialty2').textContent = specialty;
-                        document.getElementById('profileExperience').textContent = `${expYears} Years`;
-                        document.getElementById('profileYears').textContent = `${expYears}`;
-                        document.getElementById('profileRating').textContent = `${rating} ⭐`;
-                        document.getElementById('profileJobs').textContent = `${jobs}`;
-                        document.getElementById('profileLocation').textContent = coverage;
-                        document.getElementById('profileBio').textContent = bio;
+                    document.getElementById('profileSpecialty').textContent = `⚡ ${specialty} Specialist`;
+                    document.getElementById('profileSpecialty2').textContent = specialty;
+                    document.getElementById('profileExperience').textContent = `${expYears} Years`;
+                    document.getElementById('profileYears').textContent = `${expYears}`;
+                    document.getElementById('profileRating').textContent = `${rating} ⭐`;
+                    document.getElementById('profileLocation').textContent = coverage;
+                    document.getElementById('profileBio').textContent = bio;
+
+                    // ✅ Member Since - من الـ API
+                    var memberSince = '—';
+                    if (profile.createdAt) {
+                        try {
+                            var date = new Date(profile.createdAt);
+                            if (!isNaN(date.getTime())) {
+                                memberSince = date.toLocaleDateString('en-US', {
+                                    year: 'numeric', 
+                                    month: 'long', 
+                                    day: 'numeric'
+                                });
+                            }
+                        } catch (e) {
+                            memberSince = '—';
+                        }
                     }
+                    document.getElementById('profileMemberSince').textContent = memberSince;
+
+                    // ✅ Completed Jobs - من الـ API مباشرة
+                    await loadCompletedJobs(profile.id || profile.userId);
                 }
             } catch (err) {
                 console.error('Failed to load provider profile:', err);
             }
         }
 
+        // ==========================================
+        // جلب عدد الطلبات المكتملة
+        // ==========================================
+        async function loadCompletedJobs(userId) {
+            try {
+                const allRequests = await api.get('/service-requests', { showLoader: false, silent: true }) || [];
+                
+                const completed = allRequests.filter(r => 
+                    r.selectedProviderId === userId && 
+                    r.status === 'Completed'
+                );
+                
+                document.getElementById('profileJobs').textContent = completed.length;
+            } catch (err) {
+                console.error('Failed to load completed jobs:', err);
+                document.getElementById('profileJobs').textContent = '—';
+            }
+        }
+
+        // ==========================================
+        // تعديل البروفايل
+        // ==========================================
         async function editProfile() {
             if (!currentProfileData) return;
 
@@ -201,14 +300,32 @@
             }
         }
 
+        // ==========================================
+        // تسجيل الخروج
+        // ==========================================
         function handleLogout(event) {
             event.preventDefault();
             Auth.logout();
         }
 
+        // ==========================================
+        // INIT
+        // ==========================================
         document.addEventListener('DOMContentLoaded', function() {
-            if (Auth.checkAuth(['provider', 'company'])) {
+            // ✅ تحديث الـ Sidebar حسب الدور
+            updateSidebarNavigation();
+            
+            // ✅ التحقق من الصلاحيات
+            if (Auth.checkAuth(['provider', 'company', 'customer'])) {
                 loadProfile();
+            }
+            
+            // ✅ تحديث تاريخ الفوتر
+            var footerDate = document.getElementById('footer-date');
+            if (footerDate) {
+                footerDate.textContent = new Date().toLocaleDateString('en-US', {
+                    year: 'numeric', month: 'short', day: 'numeric'
+                });
             }
         });
     </script>

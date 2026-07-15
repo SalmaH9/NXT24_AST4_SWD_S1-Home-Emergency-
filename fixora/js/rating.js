@@ -23,95 +23,156 @@ document.addEventListener('DOMContentLoaded', async function() {
         return;
     }
 
-    await loadOrderData();
-    updateFooterDate();
-    checkRole();
-});
-
-async function loadOrderData() {
-    // Load cached details from localStorage
+    // ✅ محاولة جلب الـ orderId من مصادر متعددة
+    var orderId = null;
+    
+    // 1. من localStorage (currentOrderDetails)
     var saved = localStorage.getItem('currentOrderDetails');
     if (saved) {
         try {
-            currentOrder = JSON.parse(saved);
+            var parsed = JSON.parse(saved);
+            if (parsed && parsed.id) {
+                orderId = parsed.id;
+                currentOrder = parsed;
+            }
         } catch(e) {}
     }
+    
+    // 2. من URL parameters (لو دخلت من مكان تاني)
+    if (!orderId) {
+        var params = new URLSearchParams(window.location.search);
+        orderId = params.get('id');
+    }
+    
+    // 3. من currentRequest في localStorage
+    if (!orderId) {
+        var req = localStorage.getItem('currentRequest');
+        if (req) {
+            try {
+                var parsed = JSON.parse(req);
+                if (parsed && parsed.id) {
+                    orderId = parsed.id;
+                }
+            } catch(e) {}
+        }
+    }
 
-    if (!currentOrder || !currentOrder.id) {
-        ErrorHandler.showNotification('Warning', 'No active completed request context found to rate.', 'warning');
+    if (!orderId) {
+        var orderIdEl = document.getElementById('orderId');
+        if (orderIdEl) orderIdEl.textContent = 'No order to rate';
+        ErrorHandler.showNotification('Info', 'No completed order found to rate. Complete a service first.', 'warning');
         return;
     }
 
-    try {
-        // Fetch fresh service request data from database
-        currentRequest = await api.get(`/service-requests/${currentOrder.id}`);
-        if (currentRequest) {
-            // Resolve Category Name
-            const categories = await api.get('/categories', { showLoader: false });
-            let categoryName = 'Emergency Repair';
-            if (categories) {
-                const cat = categories.find(c => c.id === currentRequest.categoryId);
-                if (cat) categoryName = cat.name;
-            }
-
-            // Resolve Provider Profile and stats
-            let providerName = 'Technician';
-            let providerRating = '0.0';   // مفيش تقييم لسه بدل رقم مخترع
-            let providerReviews = '0';
-
-            if (currentRequest.selectedProviderId) {
-                try {
-                    const profile = await api.get(`/Profile/${currentRequest.selectedProviderId}`, { showLoader: false });
-                    if (profile) {
-                        providerName = profile.fullName || providerName;
-
-                        // ⚠️ UserProfileDto مفيهوش rating ولا reviewsCount.
-                        //    التقييم الحقيقي في providerProfile.averageRating،
-                        //    وعدد المراجعات من /users/{id}/rating-summary
-                        const pp = profile.providerProfile || profile.companyProfile || {};
-                        if (typeof pp.averageRating === 'number') {
-                            providerRating = pp.averageRating.toFixed(1);
-                        }
-                    }
-
-                    // ✅ RatingSummaryDto: totalRatings, averageRating
-                    const summary = await api.get(
-                        `/users/${currentRequest.selectedProviderId}/rating-summary`,
-                        { showLoader: false }
-                    ).catch(() => null);
-
-                    if (summary) {
-                        if (typeof summary.averageRating === 'number') {
-                            providerRating = summary.averageRating.toFixed(1);
-                        }
-                        providerReviews = summary.totalRatings ?? 0;
-                    }
-                } catch(e) {}
-            }
-
-            // Display order info
-            document.getElementById('orderId').textContent = `#ID-${currentRequest.id.substring(0, 8).toUpperCase()}`;
-            document.getElementById('orderService').textContent = categoryName;
-            document.getElementById('orderDate').textContent = currentRequest.createdAt ? currentRequest.createdAt.split('T')[0] : 'Today';
-            document.getElementById('orderTechnician').textContent = providerName;
-            document.getElementById('techName').textContent = providerName;
-            // ✅ الاسم الحقيقي بدل "Customer #E8710"
-            var customerLabel = 'Customer #' + currentRequest.customerId.substring(0, 5).toUpperCase();
-            try {
-                var custProfile = await api.get('/Profile/' + currentRequest.customerId,
-                                                { showLoader: false, silent: true });
-                if (custProfile && custProfile.fullName) customerLabel = custProfile.fullName;
-            } catch (e) { /* البروفايل مش متاح */ }
-            document.getElementById('customerName').textContent = customerLabel;
-
-            // Populate reviews statistics on header
-            const headerRatingEl = document.querySelector('.tech-details .rating');
-            if (headerRatingEl) {
-                headerRatingEl.textContent = `★ ${providerRating} (${providerReviews} reviews)`;
-            }
+    await loadOrderData(orderId);
+    
+    if (typeof updateFooterDate === 'function') {
+        updateFooterDate();
+    } else {
+        var fd = document.getElementById('footer-date');
+        if (fd) {
+            fd.textContent = new Date().toLocaleDateString('en-US', {
+                year: 'numeric', month: 'short', day: 'numeric'
+            });
         }
+    }
+    
+    checkRole();
+});
+
+async function loadOrderData(orderId) {
+    try {
+        // ✅ جلب البيانات من الـ API مباشرة
+        currentRequest = await api.get(`/service-requests/${orderId}`, { showLoader: false, silent: true });
+        if (!currentRequest) {
+            ErrorHandler.showNotification('Error', 'Order not found.', 'error');
+            return;
+        }
+        
+        // Resolve Category Name
+        const categories = await api.get('/categories', { showLoader: false, silent: true });
+        let categoryName = 'Emergency Repair';
+        if (categories) {
+            const cat = categories.find(c => c.id === currentRequest.categoryId);
+            if (cat) categoryName = cat.name;
+        }
+
+        // Resolve Provider Profile and stats
+        let providerName = 'Technician';
+        let providerRating = '0.0';
+        let providerReviews = '0';
+
+        if (currentRequest.selectedProviderId) {
+            try {
+                const profile = await api.get(`/Profile/${currentRequest.selectedProviderId}`, { showLoader: false, silent: true });
+                if (profile) {
+                    providerName = profile.fullName || providerName;
+                    const pp = profile.providerProfile || profile.companyProfile || {};
+                    if (typeof pp.averageRating === 'number') {
+                        providerRating = pp.averageRating.toFixed(1);
+                    }
+                }
+
+                const summary = await api.get(
+                    `/users/${currentRequest.selectedProviderId}/rating-summary`,
+                    { showLoader: false, silent: true }
+                ).catch(() => null);
+
+                if (summary) {
+                    if (typeof summary.averageRating === 'number') {
+                        providerRating = summary.averageRating.toFixed(1);
+                    }
+                    providerReviews = summary.totalRatings ?? 0;
+                }
+            } catch(e) {}
+        }
+
+        // ✅ تحديث كل العناصر في الصفحة
+        var orderIdEl = document.getElementById('orderId');
+        if (orderIdEl) orderIdEl.textContent = `#ID-${currentRequest.id.substring(0, 8).toUpperCase()}`;
+        
+        var orderServiceEl = document.getElementById('orderService');
+        if (orderServiceEl) orderServiceEl.textContent = categoryName;
+        
+        var orderDateEl = document.getElementById('orderDate');
+        if (orderDateEl) orderDateEl.textContent = currentRequest.createdAt ? currentRequest.createdAt.split('T')[0] : 'Today';
+        
+        var orderTechnicianEl = document.getElementById('orderTechnician');
+        if (orderTechnicianEl) orderTechnicianEl.textContent = providerName;
+        
+        var techNameEl = document.getElementById('techName');
+        if (techNameEl) techNameEl.textContent = providerName;
+        
+        // ✅ اسم العميل الحقيقي بدل "Customer #E8710"
+        var customerLabel = 'Customer #' + currentRequest.customerId.substring(0, 5).toUpperCase();
+        try {
+            var custProfile = await api.get('/Profile/' + currentRequest.customerId,
+                                            { showLoader: false, silent: true });
+            if (custProfile && custProfile.fullName) {
+                customerLabel = custProfile.fullName;
+            }
+        } catch (e) { /* البروفايل مش متاح */ }
+        
+        var customerNameEl = document.getElementById('customerName');
+        if (customerNameEl) customerNameEl.textContent = customerLabel;
+
+        // Populate reviews statistics on header
+        const headerRatingEl = document.querySelector('.tech-details .rating');
+        if (headerRatingEl) {
+            headerRatingEl.textContent = `★ ${providerRating} (${providerReviews} reviews)`;
+        }
+        
+        // ✅ تمكين الزر بعد تحميل البيانات
+        var submitBtn = document.querySelector('.btn-submit-rating');
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.style.opacity = '1';
+            submitBtn.style.cursor = 'pointer';
+        }
+        
     } catch (err) {
         console.error('Failed to load order ratings context:', err);
+        ErrorHandler.showNotification('Error', 'Failed to load order details.', 'error');
     }
 }
 
@@ -258,10 +319,16 @@ if (photoUpload) {
 
 // ===== SUBMIT RATING =====
 async function submitRating() {
-    if (!currentRequest) return;
+    console.log('submitRating called');
+    
+    if (!currentRequest) {
+        ErrorHandler.showNotification('Error', 'No request found to rate.', 'error');
+        return;
+    }
 
     try {
         if (currentRole === 'customer') {
+            // ✅ كود العميل - تقييم الفني
             if (selectedRating === 0) {
                 ErrorHandler.showNotification('Validation Error', 'Please select a rating before submitting.', 'error');
                 return;
@@ -273,7 +340,6 @@ async function submitRating() {
                 return;
             }
 
-            // Combine category sub-scores into comment block
             const combinedComment = `[Quality: ${categoryRatings.quality}, Comm: ${categoryRatings.communication}, Punctuality: ${categoryRatings.punctuality}, Value: ${categoryRatings.value}] ${reviewText}`;
 
             await api.post('/ratings', {
@@ -282,11 +348,11 @@ async function submitRating() {
                 providerId: currentRequest.selectedProviderId,
                 ratingValue: selectedRating,
                 comment: combinedComment,
-                ratingStage: 2 // ServiceCompletion stage
+                ratingStage: 2 // ServiceCompletion
             });
         } 
         else {
-            // Provider rating customer
+            // ✅ كود الـ Provider - تقييم العميل
             if (customerRating === 0) {
                 ErrorHandler.showNotification('Validation Error', 'Please select a customer rating before submitting.', 'error');
                 return;
@@ -296,27 +362,55 @@ async function submitRating() {
 
             await api.post('/ratings', {
                 serviceRequestId: currentRequest.id,
-                receiverUserId: currentRequest.customerId,
+                receiverUserId: currentRequest.customerId,  // ✅ العميل هو المستقبل
                 ratingValue: customerRating,
                 comment: customerReviewText || 'Satisfactory client interaction.',
-                ratingStage: 3 // CustomerExperience stage
+                ratingStage: 3 // CustomerExperience
             });
         }
 
-        // Show success screen
+        // ✅ إخفاء كل حاجة وعرض رسالة النجاح
         var rateProviderCard = document.querySelector('.rating-card');
         if (rateProviderCard) rateProviderCard.style.display = 'none';
         
         var rateCustomerCard = document.getElementById('rateCustomerCard');
         if (rateCustomerCard) rateCustomerCard.style.display = 'none';
         
-        document.querySelector('.rating-actions').style.display = 'none';
-        document.getElementById('ratingSuccess').style.display = 'block';
+        var actionsEl = document.querySelector('.rating-actions');
+        if (actionsEl) actionsEl.style.display = 'none';
+        
+        var successEl = document.getElementById('ratingSuccess');
+        if (successEl) {
+            successEl.style.display = 'block';
+            
+            // ✅ أزرار التوجيه حسب الدور
+            var role = localStorage.getItem('userRole');
+            var dashboardLink = (role === 'customer') ? 'customer-dashboard.html' : 'provider-dashboard.html';
+            var ordersLink = (role === 'customer') ? 'my-orders.html' : 'orders.html';
+            
+            successEl.innerHTML = `
+                <div class="success-icon">
+                    <i class="fas fa-check"></i>
+                </div>
+                <h2>Thank You for Your Feedback! ⭐</h2>
+                <p>Your rating has been submitted successfully. Your feedback helps us improve our service quality.</p>
+                <div class="success-actions" style="display: flex; gap: 12px; justify-content: center; margin-top: 20px; flex-wrap: wrap;">
+                    <a href="${dashboardLink}" class="btn-primary" style="text-decoration: none; display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; background: var(--gradient-primary); color: white; border-radius: 12px; font-weight: 600;">
+                        <i class="fas fa-gauge-high"></i> Dashboard
+                    </a>
+                    <a href="${ordersLink}" class="btn-secondary" style="text-decoration: none; display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border); border-radius: 12px; font-weight: 600;">
+                        <i class="fas fa-list-check"></i> My Orders
+                    </a>
+                </div>
+            `;
+        }
 
-        // Clear cached order details
         localStorage.removeItem('currentOrderDetails');
+        ErrorHandler.showNotification('Success', 'Your rating has been submitted!', 'success');
+
     } catch (err) {
         console.error('Failed to submit rating:', err);
+        ErrorHandler.showNotification('Error', 'Failed to submit rating. Please try again.', 'error');
     }
 }
 

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Net;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -79,6 +79,9 @@ public class ExceptionHandlingMiddleware
             ArgumentException => (HttpStatusCode.BadRequest, "Invalid request"),
             InvalidOperationException invalidOperationException when IsConflict(invalidOperationException.Message)
                 => (HttpStatusCode.Conflict, "Conflict"),
+            // أخطاء قاعدة البيانات مشكلة سيرفر (500) مش مشكلة بيانات المستخدم (400)
+            InvalidOperationException ex when IsDatabaseFailure(ex.Message)
+                => (HttpStatusCode.ServiceUnavailable, "Database unavailable"),
             InvalidOperationException => (HttpStatusCode.BadRequest, "Invalid operation"),
             UnauthorizedAccessException unauthorizedAccessException when IsForbidden(unauthorizedAccessException.Message)
                 => (HttpStatusCode.Forbidden, "Forbidden"),
@@ -94,6 +97,14 @@ public class ExceptionHandlingMiddleware
                 message.Contains("duplicate", StringComparison.OrdinalIgnoreCase) ||
                 message.Contains("reuse", StringComparison.OrdinalIgnoreCase) ||
                 message.Contains("conflict", StringComparison.OrdinalIgnoreCase));
+    }
+
+    private static bool IsDatabaseFailure(string? message)
+    {
+        return !string.IsNullOrWhiteSpace(message) &&
+               (message.Contains("transient failure", StringComparison.OrdinalIgnoreCase) ||
+                message.Contains("EnableRetryOnFailure", StringComparison.OrdinalIgnoreCase) ||
+                message.Contains("UseSqlServer", StringComparison.OrdinalIgnoreCase));
     }
 
     private static bool IsForbidden(string? message)
