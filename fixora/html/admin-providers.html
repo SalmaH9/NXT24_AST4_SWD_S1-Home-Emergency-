@@ -4,15 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin - Providers</title>
+    <link rel="stylesheet" href="../css/style.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <style>
-        /* ===== نفس استايل admin-customers.html مع تعديلات بسيطة ===== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
             --bg-primary: #f0f4f8;
@@ -47,11 +43,7 @@
             --shadow-hover: 0 30px 80px rgba(0, 0, 0, 0.6);
         }
 
-        /* ===== SIDEBAR ===== */
-        .page-wrapper {
-            display: flex;
-            min-height: 100vh;
-        }
+        .page-wrapper { display: flex; min-height: 100vh; }
 
         .sidebar {
             width: 260px;
@@ -60,9 +52,7 @@
             display: flex;
             flex-direction: column;
             position: fixed;
-            top: 0;
-            left: 0;
-            bottom: 0;
+            top: 0; left: 0; bottom: 0;
             z-index: 1000;
             transition: transform 0.3s ease;
             overflow-y: auto;
@@ -82,10 +72,7 @@
             color: var(--text-primary);
         }
 
-        .sidebar-header .logo i {
-            color: var(--accent);
-            font-size: 1.6rem;
-        }
+        .sidebar-header .logo i { color: var(--accent); font-size: 1.6rem; }
 
         .sidebar-header .logo .logo-highlight {
             background: var(--gradient-primary);
@@ -101,18 +88,9 @@
             display: block;
         }
 
-        .sidebar-nav {
-            flex: 1;
-            padding: 16px 12px;
-        }
-
-        .sidebar-nav ul {
-            list-style: none;
-        }
-
-        .sidebar-nav ul li {
-            margin-bottom: 4px;
-        }
+        .sidebar-nav { flex: 1; padding: 16px 12px; }
+        .sidebar-nav ul { list-style: none; }
+        .sidebar-nav ul li { margin-bottom: 4px; }
 
         .sidebar-nav ul li a {
             display: flex;
@@ -127,10 +105,7 @@
             transition: all 0.3s ease;
         }
 
-        .sidebar-nav ul li a i {
-            width: 20px;
-            font-size: 1.1rem;
-        }
+        .sidebar-nav ul li a i { width: 20px; font-size: 1.1rem; }
 
         .sidebar-nav ul li a:hover {
             background: rgba(102, 126, 234, 0.08);
@@ -176,7 +151,6 @@
             color: var(--accent);
         }
 
-        /* ===== MAIN AREA ===== */
         .main-area {
             flex: 1;
             margin-left: 260px;
@@ -185,17 +159,9 @@
             min-height: 100vh;
         }
 
-        .main-content {
-            flex: 1;
-            padding: 30px 30px 20px;
-        }
+        .main-content { flex: 1; padding: 30px 30px 20px; }
+        .container { max-width: 1100px; margin: 0 auto; }
 
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-        }
-
-        /* ===== PAGE HEADER ===== */
         .page-header {
             display: flex;
             justify-content: space-between;
@@ -214,8 +180,59 @@
             gap: 12px;
         }
 
-        .page-title i {
-            color: var(--accent);
+        .page-title i { color: var(--accent); }
+
+        /* ===== SEARCH & FILTERS ===== */
+        .toolbar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 14px 10px 40px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .search-box input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.06);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+        }
+
+        .filter-select {
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            outline: none;
+            cursor: pointer;
+            min-width: 140px;
         }
 
         /* ===== TABLE ===== */
@@ -250,11 +267,9 @@
             border-bottom: 1px solid var(--border);
         }
 
-        .table-container tr:hover {
-            background: rgba(102, 126, 234, 0.02);
-        }
+        .table-container tr:hover { background: rgba(102, 126, 234, 0.02); }
 
-        .table-container .provider-name {
+        .table-container .customer-name {
             color: var(--text-primary);
             font-weight: 600;
         }
@@ -267,90 +282,121 @@
             display: inline-block;
         }
 
-        .status-approved {
-            background: #d1fae5;
-            color: #065f46;
-        }
-
-        .status-pending {
-            background: #fef3c7;
-            color: #b45309;
-        }
-
-        .status-rejected {
-            background: #fee2e2;
-            color: #991b1b;
-        }
+        .status-active { background: #d1fae5; color: #065f46; }
+        .status-inactive { background: #fee2e2; color: #991b1b; }
+        .status-pending { background: #fef3c7; color: #b45309; }
 
         .action-btn {
-            padding: 4px 12px;
+            padding: 6px 12px;
             border: none;
-            border-radius: 6px;
-            font-size: 0.75rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
             font-weight: 600;
             cursor: pointer;
             transition: 0.3s;
             font-family: 'Inter', sans-serif;
-            margin-right: 4px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
 
-        .action-btn.approve {
-            background: rgba(72, 187, 120, 0.1);
-            color: #48bb78;
+        .action-btn.warn {
+            background: rgba(245, 158, 11, 0.1);
+            color: #f59e0b;
         }
 
-        .action-btn.approve:hover {
-            background: #48bb78;
-            color: white;
+        .action-btn.warn:hover { background: #f59e0b; color: white; }
+
+        .action-btn.suspend {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
         }
 
-        .action-btn.reject {
-            background: rgba(229, 62, 62, 0.1);
-            color: #e53e3e;
+        .action-btn.suspend:hover { background: #ef4444; color: white; }
+
+        .action-btn.unsuspend {
+            background: rgba(34, 197, 94, 0.1);
+            color: #22c55e;
         }
 
-        .action-btn.reject:hover {
-            background: #e53e3e;
-            color: white;
-        }
+        .action-btn.unsuspend:hover { background: #22c55e; color: white; }
 
-        .action-btn.edit {
-            background: rgba(102, 126, 234, 0.1);
-            color: #667eea;
-        }
-
-        .action-btn.edit:hover {
-            background: #667eea;
-            color: white;
-        }
-
-        .btn-add {
-            padding: 10px 20px;
-            background: var(--gradient-primary);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.3s;
-            font-family: 'Inter', sans-serif;
+        /* ===== PAGINATION ===== */
+        .pagination {
             display: flex;
+            justify-content: center;
             align-items: center;
             gap: 8px;
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
         }
 
-        .btn-add:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        .pagination button {
+            padding: 8px 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+
+        .pagination button:hover:not(:disabled) {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .pagination button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .pagination button.active {
+            background: var(--gradient-primary);
+            color: white;
+            border-color: transparent;
+        }
+
+        .pagination-info {
+            color: var(--text-light);
+            font-size: 0.85rem;
+        }
+
+        /* ===== EMPTY STATE ===== */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-light);
+        }
+
+        .empty-state i { font-size: 3rem; margin-bottom: 16px; opacity: 0.5; }
+        .empty-state h3 { color: var(--text-primary); margin-bottom: 8px; font-size: 1.1rem; }
+
+        /* ===== SKELETON ===== */
+        .skeleton {
+            background: linear-gradient(90deg, var(--border) 25%, rgba(102,126,234,0.1) 50%, var(--border) 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+            border-radius: 6px;
+        }
+
+        .skeleton-row td { padding: 16px; }
+        .skeleton-text { height: 14px; margin: 4px 0; }
+
+        @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
         }
 
         /* ===== SIDEBAR TOGGLE ===== */
         .sidebar-toggle {
             display: none;
             position: fixed;
-            top: 16px;
-            left: 16px;
+            top: 16px; left: 16px;
             z-index: 1001;
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -365,101 +411,53 @@
         .sidebar-overlay {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.4);
             z-index: 999;
         }
 
         /* ===== FOOTER ===== */
         .footer {
-            background: var(--bg-card);
-            border-top: 1px solid var(--border);
-            color: var(--text-secondary);
+            background: #0f1724 !important;
+            color: rgba(255, 255, 255, 0.6) !important;
+            border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
             text-align: center;
             padding: 20px;
         }
 
-        .footer p {
-            margin: 4px 0;
-            font-weight: 400;
-            font-size: 0.9rem;
-        }
-
-        .footer strong {
-            color: var(--text-primary);
-        }
+        .footer p { margin: 4px 0; font-weight: 400; font-size: 0.9rem; color: rgba(255,255,255,0.5) !important; }
+        .footer strong { color: white !important; }
 
         /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-                width: 280px;
-            }
-            .sidebar.open {
-                transform: translateX(0);
-            }
-            .sidebar-overlay.open {
-                display: block;
-            }
-            .sidebar-toggle {
-                display: block;
-            }
-            .main-area {
-                margin-left: 0;
-                padding-top: 60px;
-            }
-            .main-content {
-                padding: 20px 16px;
-            }
-            .page-title {
-                font-size: 1.4rem;
-            }
+            .sidebar { transform: translateX(-100%); width: 280px; }
+            .sidebar.open { transform: translateX(0); }
+            .sidebar-overlay.open { display: block; }
+            .sidebar-toggle { display: block; }
+            .main-area { margin-left: 0; padding-top: 60px; }
+            .main-content { padding: 20px 16px; }
+            .page-title { font-size: 1.4rem; }
+            .toolbar { flex-direction: column; }
+            .search-box { min-width: 100%; }
         }
 
         @media (max-width: 480px) {
-            .table-container {
-                padding: 16px;
-            }
-            .table-container th,
-            .table-container td {
-                padding: 8px 10px;
-                font-size: 0.8rem;
-            }
+            .table-container { padding: 16px; }
+            .table-container th, .table-container td { padding: 10px 12px; font-size: 0.8rem; }
+            .action-btn { padding: 4px 8px; font-size: 0.75rem; }
         }
-        .footer {
-    background: #0f1724 !important;
-    color: rgba(255, 255, 255, 0.6) !important;
-    border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
-}
-
-.footer p {
-    color: rgba(255, 255, 255, 0.5) !important;
-}
-
-.footer strong {
-    color: white !important;
-}
-
-.footer-update {
-    color: rgba(255, 255, 255, 0.3) !important;
-}
     </style>
+<base target="_blank">
 </head>
 <body>
 
-    <!-- ===== SIDEBAR TOGGLE ===== -->
-    <button class="sidebar-toggle" id="sidebarToggle">
+    <button class="sidebar-toggle" id="sidebar-toggle">
         <i class="fas fa-bars"></i>
     </button>
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
 
-    <!-- ===== PAGE WRAPPER ===== -->
     <div class="page-wrapper">
-
-        <!-- ===== SIDEBAR ===== -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div class="logo">
@@ -472,7 +470,7 @@
                 <ul>
                     <li><a href="admin-dashboard.html"><i class="fas fa-gauge-high"></i> Dashboard</a></li>
                     <li><a href="admin-customers.html"><i class="fas fa-users"></i> Customers</a></li>
-                    <li><a href="admin-providers.html" class="active"><i class="fas fa-user-tie"></i> Providers</a></li>
+                    <li><a href="admin-providers.html"><i class="fas fa-user-tie"></i> Providers</a></li>
                     <li><a href="admin-orders.html"><i class="fas fa-clipboard-list"></i> Orders</a></li>
                     <li><a href="admin-reports.html"><i class="fas fa-chart-line"></i> Reports</a></li>
                     <li><a href="admin-settings.html"><i class="fas fa-gear"></i> Settings</a></li>
@@ -485,130 +483,83 @@
                 </ul>
             </nav>
             <div class="sidebar-footer">
-                <button id="themeToggle" class="theme-btn-sidebar">
+                <button id="theme-toggle" class="theme-btn-sidebar">
                     <i class="fas fa-moon"></i> Dark Mode
                 </button>
             </div>
         </aside>
 
-        <!-- ===== MAIN AREA ===== -->
         <div class="main-area">
-
             <main class="main-content">
                 <div class="container">
 
-                    <!-- ===== PENDING VERIFICATIONS ===== -->
-                    <div class="page-header" style="margin-top: 40px; margin-bottom: 12px;">
-                        <h2 style="color: var(--text-primary); font-size: 1.4rem;">
-                            <i class="fas fa-file-shield"></i> Pending Document Verifications
-                        </h2>
-                    </div>
-                    <div class="table-container" style="margin-bottom: 30px;">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>User ID</th>
-                                    <th>Document Type</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="pendingDocsList">
-                                <tr>
-                                    <td colspan="4" style="text-align:center;padding:20px;color:var(--text-light);">Loading verifications...</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- ===== HEADER ===== -->
                     <div class="page-header">
                         <h1 class="page-title">
                             <i class="fas fa-user-tie"></i> Providers
                         </h1>
                     </div>
 
-                    <!-- ===== TABLE ===== -->
+                    <!-- Toolbar -->
+                    <div class="toolbar">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="searchInput" placeholder="Search by name or email..." />
+                        </div>
+                        <select class="filter-select" id="statusFilter">
+                            <option value="">All Status</option>
+                            <option value="Active">Active</option>
+                            <option value="Suspended">Suspended</option>
+                            <option value="Pending">Pending</option>
+                        </select>
+                    </div>
+
+                    <!-- Table -->
                     <div class="table-container">
                         <table>
                             <thead>
                                 <tr>
                                     <th>Name</th>
                                     <th>Email</th>
-                                    <th>Specialty</th>
+                                    <th>Phone</th>
                                     <th>Status</th>
                                     <th>Joined</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="provider-name">Khalid Al-Omari</td>
-                                    <td>khalid@email.com</td>
-                                    <td>Plumbing & Electrical</td>
-                                    <td><span class="status-badge status-approved">Approved</span></td>
-                                    <td>Jan 2024</td>
-                                    <td>
-                                        <button class="action-btn edit" onclick="editProvider('Khalid Al-Omari')"><i class="fas fa-edit"></i></button>
-                                        <button class="action-btn reject" onclick="rejectProvider('Khalid Al-Omari')"><i class="fas fa-times"></i></button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="provider-name">Sultan Al-Ghamdi</td>
-                                    <td>sultan@email.com</td>
-                                    <td>AC Repair</td>
-                                    <td><span class="status-badge status-pending">Pending</span></td>
-                                    <td>Feb 2024</td>
-                                    <td>
-                                        <button class="action-btn approve" onclick="approveProvider('Sultan Al-Ghamdi')"><i class="fas fa-check"></i></button>
-                                        <button class="action-btn reject" onclick="rejectProvider('Sultan Al-Ghamdi')"><i class="fas fa-times"></i></button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="provider-name">Nora Al-Fahd</td>
-                                    <td>nora@email.com</td>
-                                    <td>Carpentry</td>
-                                    <td><span class="status-badge status-approved">Approved</span></td>
-                                    <td>Mar 2024</td>
-                                    <td>
-                                        <button class="action-btn edit" onclick="editProvider('Nora Al-Fahd')"><i class="fas fa-edit"></i></button>
-                                        <button class="action-btn reject" onclick="rejectProvider('Nora Al-Fahd')"><i class="fas fa-times"></i></button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="provider-name">Mohammed Al-Otaibi</td>
-                                    <td>mohammed@email.com</td>
-                                    <td>Electrical</td>
-                                    <td><span class="status-badge status-rejected">Rejected</span></td>
-                                    <td>Apr 2024</td>
-                                    <td>
-                                        <button class="action-btn edit" onclick="editProvider('Mohammed Al-Otaibi')"><i class="fas fa-edit"></i></button>
-                                        <button class="action-btn approve" onclick="approveProvider('Mohammed Al-Otaibi')"><i class="fas fa-check"></i></button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="provider-name">Fatima Al-Zahra</td>
-                                    <td>fatima@email.com</td>
-                                    <td>Painting</td>
-                                    <td><span class="status-badge status-pending">Pending</span></td>
-                                    <td>May 2024</td>
-                                    <td>
-                                        <button class="action-btn approve" onclick="approveProvider('Fatima Al-Zahra')"><i class="fas fa-check"></i></button>
-                                        <button class="action-btn reject" onclick="rejectProvider('Fatima Al-Zahra')"><i class="fas fa-times"></i></button>
-                                    </td>
-                                </tr>
+                            <tbody id="customersTableBody">
+                                <!-- Skeleton loading -->
+                                <tr class="skeleton-row"><td colspan="6">
+                                    <div class="skeleton skeleton-text" style="width: 100%;"></div>
+                                </td></tr>
+                                <tr class="skeleton-row"><td colspan="6">
+                                    <div class="skeleton skeleton-text" style="width: 90%;"></div>
+                                </td></tr>
+                                <tr class="skeleton-row"><td colspan="6">
+                                    <div class="skeleton skeleton-text" style="width: 95%;"></div>
+                                </td></tr>
+                                <tr class="skeleton-row"><td colspan="6">
+                                    <div class="skeleton skeleton-text" style="width: 85%;"></div>
+                                </td></tr>
+                                <tr class="skeleton-row"><td colspan="6">
+                                    <div class="skeleton skeleton-text" style="width: 100%;"></div>
+                                </td></tr>
                             </tbody>
                         </table>
+
+                        <!-- Pagination -->
+                        <div class="pagination" id="pagination">
+                            <button onclick="changePage(-1)" id="prevBtn"><i class="fas fa-chevron-left"></i></button>
+                            <span class="pagination-info" id="pageInfo">Page 1 of 1</span>
+                            <button onclick="changePage(1)" id="nextBtn"><i class="fas fa-chevron-right"></i></button>
+                        </div>
                     </div>
 
                 </div>
             </main>
 
-            <!-- ===== FOOTER ===== -->
             <footer class="footer">
                 <p>© 2026 <strong>Fixora</strong> — Admin Panel</p>
             </footer>
-
         </div>
     </div>
 
@@ -619,69 +570,153 @@
     <script src="../js/api.js"></script>
     <script src="../js/auth.js"></script>
     <script src="../js/signalr.js"></script>
-    <script src="../js/script.js"></script>
-    <script src="../js/footer.js"></script>
+    <script src="../js/admin-utils.js"></script>
     <script>
         // ==========================================
-        // CHECK LOGIN & LOAD DATA
+        // STATE
+        // ==========================================
+        let allCustomers = [];
+        let filteredCustomers = [];
+        let currentPage = 1;
+        const pageSize = 10;
+
+        // ==========================================
+        // INIT
         // ==========================================
         document.addEventListener('DOMContentLoaded', async function() {
-            if (!Auth.checkAuth(['Admin'])) {
-                return;
-            }
-            await loadProviders();
-            await loadPendingDocuments();
+            if (!Auth.checkAuth(['Admin'])) return;
+            await loadCustomers();
+
+            // Search & filter listeners
+            document.getElementById('searchInput').addEventListener('input', debounce(() => {
+                currentPage = 1;
+                applyFilters();
+            }, 300));
+
+            document.getElementById('statusFilter').addEventListener('change', () => {
+                currentPage = 1;
+                applyFilters();
+            });
         });
 
-        async function loadProviders() {
+        // ==========================================
+        // LOAD CUSTOMERS
+        // ==========================================
+        async function loadCustomers() {
             try {
-                const response = await api.get('admin/users/search?roleFilter=Provider&pageSize=100');
-                const list = response.items || [];
-                renderProviders(list);
+                const timeout = (ms) => new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), ms));
+                // 🔴 الباج: كان roleFilter=Customer — الصفحة اتعملت نسخ ولصق من
+                //    admin-customers.html والفلتر ماتغيّرش، فصفحة "Providers"
+                //    كانت بتعرض العملاء!
+                const response = await Promise.race([api.get('admin/users/search?roleFilter=Provider&pageSize=100'), timeout(8000)]);
+                // ⚠️ باج: كان pageSize=1000، بس UserSearchFilterValidator
+                //    بيفرض InclusiveBetween(1, 100) → السيرفر بيرفض بـ 400،
+                //    و api.js بيرمي، فـ response بيبقى null و
+                //    response.items بيرمي "Cannot read properties of null".
+                //    وكمان لازم نحمي نفسنا لو الرد فاضي لأي سبب.
+                allCustomers = (response && response.items) || [];
+
+                // ✅ AdminUserSummaryDto مفيهوش phoneNumber — لازم نجيبه من /Profile/{id}
+                await loadPhones(allCustomers);
+
+                applyFilters();
             } catch (err) {
                 console.error("Failed to load providers:", err);
+                document.getElementById('customersTableBody').innerHTML = `
+                    <tr><td colspan="6" class="empty-state">
+                        <i class="fas fa-circle-exclamation"></i>
+                        <h3>Failed to load providers</h3>
+                        <p>Please try again later</p>
+                    </td></tr>
+                `;
             }
         }
 
-        function renderProviders(providers) {
-            const tbody = document.querySelector('tbody:not(#pendingDocsList)');
-            if (!tbody) return;
+        // ==========================================
+        // أرقام التليفون
+        // ==========================================
+        // ⚠️ user.phoneNumber مش موجود في AdminUserSummaryDto (اللي فيه:
+        //    id, fullName, email, role, status, isVerified, createdAt فقط).
+        //    فعمود Phone كان بيقول "N/A" دايمًا والبحث بالتليفون مش شغال.
+        var phones = {};
 
-            if (providers.length === 0) {
+        async function loadPhones(users) {
+            await Promise.all((users || []).map(async function (u) {
+                if (!u.id || phones[u.id]) return;
+                try {
+                    var p = await api.get('Profile/' + u.id, { showLoader: false, silent: true });
+                    if (p && p.phoneNumber) phones[u.id] = p.phoneNumber;
+                } catch (e) { /* مش متاح */ }
+            }));
+        }
+
+        // ==========================================
+        // FILTER & PAGINATE
+        // ==========================================
+        function applyFilters() {
+            const search = document.getElementById('searchInput').value.toLowerCase().trim();
+            const status = document.getElementById('statusFilter').value;
+
+            filteredCustomers = allCustomers.filter(user => {
+                const matchesSearch = !search || 
+                    (user.fullName || '').toLowerCase().includes(search) ||
+                    (user.email || '').toLowerCase().includes(search) ||
+                    (phones[user.id] || '').includes(search);
+
+                const matchesStatus = !status || user.status === status;
+
+                return matchesSearch && matchesStatus;
+            });
+
+            renderTable();
+            renderPagination();
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('customersTableBody');
+
+            if (filteredCustomers.length === 0) {
                 tbody.innerHTML = `
-                    <tr>
-                        <td colspan="6" style="text-align:center;padding:20px;color:var(--text-light);">
-                            No providers found.
-                        </td>
-                    </tr>
+                    <tr><td colspan="6" class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <h3>No customers found</h3>
+                        <p>Try adjusting your search or filters</p>
+                    </td></tr>
                 `;
                 return;
             }
 
-            tbody.innerHTML = providers.map(user => {
-                const isSuspended = user.status.toLowerCase() === 'suspended';
-                const statusClass = isSuspended ? 'status-inactive' : 'status-active';
-                const joinedDate = new Date(user.createdAt).toLocaleDateString('en-US', {
-                    year: 'numeric', month: 'short', day: 'numeric'
-                });
+            const start = (currentPage - 1) * pageSize;
+            const pageItems = filteredCustomers.slice(start, start + pageSize);
 
-                const warnBtnHtml = `<button class="action-btn edit" style="background:#f59e0b;" onclick="warnUser('${user.id}', '${user.fullName}')" title="Issue Warning"><i class="fas fa-triangle-exclamation"></i></button>`;
-
-                const suspendBtnHtml = isSuspended
-                    ? `<button class="action-btn approve" onclick="unsuspendUser('${user.id}', '${user.fullName}')" title="Unsuspend"><i class="fas fa-user-check"></i></button>`
-                    : `<button class="action-btn reject" onclick="suspendUser('${user.id}', '${user.fullName}')" title="Suspend"><i class="fas fa-user-slash"></i></button>`;
+            tbody.innerHTML = pageItems.map(user => {
+                const isSuspended = (user.status || '').toLowerCase() === 'suspended';
+                const statusClass = isSuspended ? 'status-inactive' : 
+                                   (user.status || '').toLowerCase() === 'pending' ? 'status-pending' : 'status-active';
+                const joinedDate = user.createdAt 
+                    ? new Date(user.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+                    : 'N/A';
 
                 return `
                     <tr>
-                        <td class="provider-name">${user.fullName}</td>
-                        <td>${user.email}</td>
-                        <td>Provider Profile</td>
-                        <td><span class="status-badge ${statusClass}">${user.status}</span></td>
+                        <td class="customer-name">${user.fullName || 'N/A'}</td>
+                        <td>${user.email || 'N/A'}</td>
+                        <td>${phones[user.id] || '—'}</td>
+                        <td><span class="status-badge ${statusClass}">${user.status || 'Active'}</span></td>
                         <td>${joinedDate}</td>
                         <td>
-                            <div style="display:flex;gap:6px;">
-                                ${warnBtnHtml}
-                                ${suspendBtnHtml}
+                            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                                <button class="action-btn warn" onclick="warnUser('${user.id}', '${escapeHtml(user.fullName || '')}')" title="Issue Warning">
+                                    <i class="fas fa-triangle-exclamation"></i>
+                                </button>
+                                ${isSuspended 
+                                    ? `<button class="action-btn unsuspend" onclick="unsuspendUser('${user.id}', '${escapeHtml(user.fullName || '')}')" title="Unsuspend">
+                                        <i class="fas fa-user-check"></i>
+                                       </button>`
+                                    : `<button class="action-btn suspend" onclick="suspendUser('${user.id}', '${escapeHtml(user.fullName || '')}')" title="Suspend">
+                                        <i class="fas fa-user-slash"></i>
+                                       </button>`
+                                }
                             </div>
                         </td>
                     </tr>
@@ -689,120 +724,39 @@
             }).join('');
         }
 
-        async function loadPendingDocuments() {
-            try {
-                const list = await api.get('admin/documents/pending');
-                const tbody = document.getElementById('pendingDocsList');
-                if (!tbody) return;
+        function renderPagination() {
+            const totalPages = Math.ceil(filteredCustomers.length / pageSize) || 1;
+            document.getElementById('pageInfo').textContent = `Page ${currentPage} of ${totalPages} (${filteredCustomers.length} total)`;
+            document.getElementById('prevBtn').disabled = currentPage <= 1;
+            document.getElementById('nextBtn').disabled = currentPage >= totalPages;
+        }
 
-                if (!list || list.length === 0) {
-                    tbody.innerHTML = `
-                        <tr>
-                            <td colspan="4" style="text-align:center;padding:20px;color:var(--text-light);">
-                                No pending verification documents.
-                            </td>
-                        </tr>
-                    `;
-                    return;
-                }
-
-                tbody.innerHTML = list.map(doc => {
-                    const downloadBtnHtml = `<button class="action-btn edit" style="background:#3b82f6;" onclick="downloadDoc('${doc.id}', '${doc.documentType}.pdf')" title="Download file"><i class="fas fa-download"></i></button>`;
-                    const approveBtnHtml = `<button class="action-btn approve" onclick="approveDoc('${doc.id}')" title="Approve Document"><i class="fas fa-check"></i></button>`;
-                    const rejectBtnHtml = `<button class="action-btn reject" onclick="rejectDoc('${doc.id}')" title="Reject Document"><i class="fas fa-times"></i></button>`;
-
-                    return `
-                        <tr>
-                            <td>${doc.userId}</td>
-                            <td>${doc.documentType}</td>
-                            <td><span class="status-badge status-pending">${doc.status}</span></td>
-                            <td>
-                                <div style="display:flex;gap:6px;">
-                                    ${downloadBtnHtml}
-                                    ${approveBtnHtml}
-                                    ${rejectBtnHtml}
-                                </div>
-                            </td>
-                        </tr>
-                    `;
-                }).join('');
-            } catch (err) {
-                console.error("Failed to load pending verifications:", err);
+        function changePage(delta) {
+            const totalPages = Math.ceil(filteredCustomers.length / pageSize) || 1;
+            const newPage = currentPage + delta;
+            if (newPage >= 1 && newPage <= totalPages) {
+                currentPage = newPage;
+                renderTable();
+                renderPagination();
+                document.querySelector('.table-container').scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         }
 
         // ==========================================
-        // DOCUMENT ACTIONS
-        // ==========================================
-        async function downloadDoc(docId, fileName) {
-            try {
-                const response = await fetch(`${CONFIG.API_BASE_URL.replace(/\/$/, '')}/admin/documents/${docId}/download`, {
-                    headers: {
-                        "Authorization": `Bearer ${TokenManager.getAccessToken()}`
-                    }
-                });
-                if (!response.ok) throw new Error("Failed to download file");
-                const blob = await response.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = fileName || 'document.pdf';
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
-                window.URL.revokeObjectURL(url);
-            } catch (err) {
-                console.error(err);
-                alert("Failed to download document.");
-            }
-        }
-
-        async function approveDoc(docId) {
-            if (!confirm("✅ Are you sure you want to approve this verification document?")) return;
-
-            try {
-                await api.put(`admin/documents/${docId}/approve`);
-                ErrorHandler.showNotification("Success", "Document has been approved successfully.", "success");
-                await loadPendingDocuments();
-                await loadProviders(); // reload providers to reflect any status change
-            } catch (err) {
-                console.error("Failed to approve document:", err);
-            }
-        }
-
-        async function rejectDoc(docId) {
-            const reason = prompt("❌ Enter rejection reason:");
-            if (reason === null) return;
-            if (!reason.trim()) {
-                alert("Rejection reason is required.");
-                return;
-            }
-
-            try {
-                await api.put(`admin/documents/${docId}/reject`, { comment: reason });
-                ErrorHandler.showNotification("Success", "Document has been rejected.", "success");
-                await loadPendingDocuments();
-                await loadProviders();
-            } catch (err) {
-                console.error("Failed to reject document:", err);
-            }
-        }
-
-        // ==========================================
-        // USER SUSPENSION & WARNINGS
+        // USER ACTIONS
         // ==========================================
         async function suspendUser(userId, name) {
             const reason = prompt(`⚠️ Enter suspension reason for ${name}:`);
             if (reason === null) return;
             if (!reason.trim()) {
-                alert("Reason is required to suspend a user.");
+                ErrorHandler.showNotification("Error", "Reason is required to suspend a user.", "error");
                 return;
             }
 
             try {
                 await api.put(`admin/users/${userId}/suspend`, { reason: reason });
-                ErrorHandler.showNotification("Success", `${name} has been suspended successfully.`, "success");
-                await loadProviders();
+                ErrorHandler.showNotification("Success", `${name} has been suspended.`, "success");
+                await loadCustomers();
             } catch (err) {
                 console.error("Failed to suspend user:", err);
             }
@@ -813,8 +767,8 @@
 
             try {
                 await api.put(`admin/users/${userId}/unsuspend`);
-                ErrorHandler.showNotification("Success", `${name} has been unsuspended successfully.`, "success");
-                await loadProviders();
+                ErrorHandler.showNotification("Success", `${name} has been unsuspended.`, "success");
+                await loadCustomers();
             } catch (err) {
                 console.error("Failed to unsuspend user:", err);
             }
@@ -822,12 +776,16 @@
 
         async function warnUser(userId, name) {
             const title = prompt(`📢 Enter Warning Title for ${name}:`);
-            if (title === null) return;
-            if (!title.trim()) return;
+            if (title === null || !title.trim()) {
+                ErrorHandler.showNotification("Error", "Title is required.", "error");
+                return;
+            }
 
             const reason = prompt(`📝 Enter Warning Description/Reason:`);
-            if (reason === null) return;
-            if (!reason.trim()) return;
+            if (reason === null || !reason.trim()) {
+                ErrorHandler.showNotification("Error", "Description is required.", "error");
+                return;
+            }
 
             const severity = prompt(`⚡ Enter Severity Level (Low, Medium, High):`, "Low");
             if (severity === null) return;
@@ -838,14 +796,31 @@
                     reason: reason,
                     severityLevel: severity
                 });
-                ErrorHandler.showNotification("Success", `Compliance warning issued to ${name}.`, "success");
+                ErrorHandler.showNotification("Success", `Warning issued to ${name}.`, "success");
             } catch (err) {
                 console.error("Failed to issue warning:", err);
             }
         }
 
         // ==========================================
-        // SIDEBAR TOGGLE
+        // UTILS
+        // ==========================================
+        function debounce(fn, delay) {
+            let timeout;
+            return function(...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => fn.apply(this, args), delay);
+            };
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ==========================================
+        // SIDEBAR & THEME
         // ==========================================
         const sidebarToggle = document.getElementById('sidebarToggle');
         const sidebar = document.getElementById('sidebar');
@@ -859,9 +834,6 @@
         if (sidebarToggle) sidebarToggle.addEventListener('click', toggleSidebar);
         if (sidebarOverlay) sidebarOverlay.addEventListener('click', toggleSidebar);
 
-        // ==========================================
-        // THEME TOGGLE
-        // ==========================================
         const themeToggle = document.getElementById('themeToggle');
         const body = document.body;
 
@@ -883,9 +855,15 @@
             });
         }
 
+            
         function handleLogout(event) {
             event.preventDefault();
-            Auth.logout();
+            if (typeof Auth !== 'undefined' && Auth.logout) {
+                Auth.logout();
+            } else {
+                if (typeof TokenManager !== 'undefined') TokenManager.clearTokens();
+                window.location.href = 'index.html';
+            }
         }
     </script>
 </body>

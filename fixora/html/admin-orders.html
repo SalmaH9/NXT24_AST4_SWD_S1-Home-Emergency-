@@ -4,16 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin - Orders</title>
-     <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/style.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <style>
-        /* ===== نفس استايل admin-customers.html ===== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
             --bg-primary: #f0f4f8;
@@ -48,11 +43,7 @@
             --shadow-hover: 0 30px 80px rgba(0, 0, 0, 0.6);
         }
 
-        /* ===== SIDEBAR ===== */
-        .page-wrapper {
-            display: flex;
-            min-height: 100vh;
-        }
+        .page-wrapper { display: flex; min-height: 100vh; }
 
         .sidebar {
             width: 260px;
@@ -61,9 +52,7 @@
             display: flex;
             flex-direction: column;
             position: fixed;
-            top: 0;
-            left: 0;
-            bottom: 0;
+            top: 0; left: 0; bottom: 0;
             z-index: 1000;
             transition: transform 0.3s ease;
             overflow-y: auto;
@@ -83,10 +72,7 @@
             color: var(--text-primary);
         }
 
-        .sidebar-header .logo i {
-            color: var(--accent);
-            font-size: 1.6rem;
-        }
+        .sidebar-header .logo i { color: var(--accent); font-size: 1.6rem; }
 
         .sidebar-header .logo .logo-highlight {
             background: var(--gradient-primary);
@@ -102,18 +88,9 @@
             display: block;
         }
 
-        .sidebar-nav {
-            flex: 1;
-            padding: 16px 12px;
-        }
-
-        .sidebar-nav ul {
-            list-style: none;
-        }
-
-        .sidebar-nav ul li {
-            margin-bottom: 4px;
-        }
+        .sidebar-nav { flex: 1; padding: 16px 12px; }
+        .sidebar-nav ul { list-style: none; }
+        .sidebar-nav ul li { margin-bottom: 4px; }
 
         .sidebar-nav ul li a {
             display: flex;
@@ -128,10 +105,7 @@
             transition: all 0.3s ease;
         }
 
-        .sidebar-nav ul li a i {
-            width: 20px;
-            font-size: 1.1rem;
-        }
+        .sidebar-nav ul li a i { width: 20px; font-size: 1.1rem; }
 
         .sidebar-nav ul li a:hover {
             background: rgba(102, 126, 234, 0.08);
@@ -177,7 +151,6 @@
             color: var(--accent);
         }
 
-        /* ===== MAIN AREA ===== */
         .main-area {
             flex: 1;
             margin-left: 260px;
@@ -186,17 +159,9 @@
             min-height: 100vh;
         }
 
-        .main-content {
-            flex: 1;
-            padding: 30px 30px 20px;
-        }
+        .main-content { flex: 1; padding: 30px 30px 20px; }
+        .container { max-width: 1100px; margin: 0 auto; }
 
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-        }
-
-        /* ===== PAGE HEADER ===== */
         .page-header {
             display: flex;
             justify-content: space-between;
@@ -215,8 +180,59 @@
             gap: 12px;
         }
 
-        .page-title i {
-            color: var(--accent);
+        .page-title i { color: var(--accent); }
+
+        /* ===== TOOLBAR ===== */
+        .toolbar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 14px 10px 40px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .search-box input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.06);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+        }
+
+        .filter-select {
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            outline: none;
+            cursor: pointer;
+            min-width: 140px;
         }
 
         /* ===== TABLE ===== */
@@ -251,13 +267,12 @@
             border-bottom: 1px solid var(--border);
         }
 
-        .table-container tr:hover {
-            background: rgba(102, 126, 234, 0.02);
-        }
+        .table-container tr:hover { background: rgba(102, 126, 234, 0.02); }
 
         .order-id {
             color: var(--text-primary);
             font-weight: 600;
+            font-family: monospace;
         }
 
         .status-badge {
@@ -268,36 +283,25 @@
             display: inline-block;
         }
 
-        .status-completed {
-            background: #d1fae5;
-            color: #065f46;
-        }
-
-        .status-progress {
-            background: #dbeafe;
-            color: #1e40af;
-        }
-
-        .status-pending {
-            background: #fef3c7;
-            color: #b45309;
-        }
-
-        .status-cancelled {
-            background: #fee2e2;
-            color: #991b1b;
-        }
+        .status-completed { background: #d1fae5; color: #065f46; }
+        .status-progress { background: #dbeafe; color: #1e40af; }
+        .status-pending { background: #fef3c7; color: #b45309; }
+        .status-cancelled { background: #fee2e2; color: #991b1b; }
+        .status-examination { background: #e0e7ff; color: #3730a3; }
+        .status-offer { background: #fce7f3; color: #be185d; }
 
         .action-btn {
-            padding: 4px 12px;
+            padding: 6px 12px;
             border: none;
-            border-radius: 6px;
-            font-size: 0.75rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
             font-weight: 600;
             cursor: pointer;
             transition: 0.3s;
             font-family: 'Inter', sans-serif;
-            margin-right: 4px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .action-btn.view {
@@ -305,27 +309,91 @@
             color: #667eea;
         }
 
-        .action-btn.view:hover {
-            background: #667eea;
-            color: white;
-        }
+        .action-btn.view:hover { background: #667eea; color: white; }
 
         .action-btn.delete {
-            background: rgba(229, 62, 62, 0.1);
-            color: #e53e3e;
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
         }
 
-        .action-btn.delete:hover {
-            background: #e53e3e;
+        .action-btn.delete:hover { background: #ef4444; color: white; }
+
+        /* ===== PAGINATION ===== */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .pagination button {
+            padding: 8px 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+
+        .pagination button:hover:not(:disabled) {
+            background: var(--accent);
             color: white;
+            border-color: var(--accent);
+        }
+
+        .pagination button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .pagination button.active {
+            background: var(--gradient-primary);
+            color: white;
+            border-color: transparent;
+        }
+
+        .pagination-info {
+            color: var(--text-light);
+            font-size: 0.85rem;
+        }
+
+        /* ===== EMPTY STATE ===== */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-light);
+        }
+
+        .empty-state i { font-size: 3rem; margin-bottom: 16px; opacity: 0.5; }
+        .empty-state h3 { color: var(--text-primary); margin-bottom: 8px; font-size: 1.1rem; }
+
+        /* ===== SKELETON ===== */
+        .skeleton {
+            background: linear-gradient(90deg, var(--border) 25%, rgba(102,126,234,0.1) 50%, var(--border) 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+            border-radius: 6px;
+        }
+
+        .skeleton-row td { padding: 16px; }
+        .skeleton-text { height: 14px; margin: 4px 0; }
+
+        @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
         }
 
         /* ===== SIDEBAR TOGGLE ===== */
         .sidebar-toggle {
             display: none;
             position: fixed;
-            top: 16px;
-            left: 16px;
+            top: 16px; left: 16px;
             z-index: 1001;
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -340,102 +408,53 @@
         .sidebar-overlay {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.4);
             z-index: 999;
         }
 
         /* ===== FOOTER ===== */
         .footer {
-            background: var(--bg-card);
-            border-top: 1px solid var(--border);
-            color: var(--text-secondary);
+            background: #0f1724 !important;
+            color: rgba(255, 255, 255, 0.6) !important;
+            border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
             text-align: center;
             padding: 20px;
         }
 
-        .footer p {
-            margin: 4px 0;
-            font-weight: 400;
-            font-size: 0.9rem;
-        }
-
-        .footer strong {
-            color: var(--text-primary);
-        }
+        .footer p { margin: 4px 0; font-weight: 400; font-size: 0.9rem; color: rgba(255,255,255,0.5) !important; }
+        .footer strong { color: white !important; }
 
         /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-                width: 280px;
-            }
-            .sidebar.open {
-                transform: translateX(0);
-            }
-            .sidebar-overlay.open {
-                display: block;
-            }
-            .sidebar-toggle {
-                display: block;
-            }
-            .main-area {
-                margin-left: 0;
-                padding-top: 60px;
-            }
-            .main-content {
-                padding: 20px 16px;
-            }
-            .page-title {
-                font-size: 1.4rem;
-            }
+            .sidebar { transform: translateX(-100%); width: 280px; }
+            .sidebar.open { transform: translateX(0); }
+            .sidebar-overlay.open { display: block; }
+            .sidebar-toggle { display: block; }
+            .main-area { margin-left: 0; padding-top: 60px; }
+            .main-content { padding: 20px 16px; }
+            .page-title { font-size: 1.4rem; }
+            .toolbar { flex-direction: column; }
+            .search-box { min-width: 100%; }
         }
 
         @media (max-width: 480px) {
-            .table-container {
-                padding: 16px;
-            }
-            .table-container th,
-            .table-container td {
-                padding: 8px 10px;
-                font-size: 0.8rem;
-            }
+            .table-container { padding: 16px; }
+            .table-container th, .table-container td { padding: 10px 12px; font-size: 0.8rem; }
+            .action-btn { padding: 4px 8px; font-size: 0.75rem; }
         }
-
-        .footer {
-    background: #0f1724 !important;
-    color: rgba(255, 255, 255, 0.6) !important;
-    border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
-}
-
-.footer p {
-    color: rgba(255, 255, 255, 0.5) !important;
-}
-
-.footer strong {
-    color: white !important;
-}
-
-.footer-update {
-    color: rgba(255, 255, 255, 0.3) !important;
-}
     </style>
+<base target="_blank">
 </head>
 <body>
 
-    <!-- ===== SIDEBAR TOGGLE ===== -->
-    <button class="sidebar-toggle" id="sidebarToggle">
+    <button class="sidebar-toggle" id="sidebar-toggle">
         <i class="fas fa-bars"></i>
     </button>
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
 
-    <!-- ===== PAGE WRAPPER ===== -->
     <div class="page-wrapper">
-
-        <!-- ===== SIDEBAR ===== -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div class="logo">
@@ -461,26 +480,40 @@
                 </ul>
             </nav>
             <div class="sidebar-footer">
-                <button id="themeToggle" class="theme-btn-sidebar">
+                <button id="theme-toggle" class="theme-btn-sidebar">
                     <i class="fas fa-moon"></i> Dark Mode
                 </button>
             </div>
         </aside>
 
-        <!-- ===== MAIN AREA ===== -->
         <div class="main-area">
-
             <main class="main-content">
                 <div class="container">
 
-                    <!-- ===== HEADER ===== -->
                     <div class="page-header">
                         <h1 class="page-title">
                             <i class="fas fa-clipboard-list"></i> Orders
                         </h1>
                     </div>
 
-                    <!-- ===== TABLE ===== -->
+                    <!-- Toolbar -->
+                    <div class="toolbar">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="searchInput" placeholder="Search by customer or service..." />
+                        </div>
+                        <select class="filter-select" id="statusFilter">
+                            <option value="">All Status</option>
+                            <option value="Pending">Pending</option>
+                            <option value="OfferPhase">Offer Phase</option>
+                            <option value="Examination">Examination</option>
+                            <option value="ExecutionStarted">In Progress</option>
+                            <option value="Completed">Completed</option>
+                            <option value="Cancelled">Cancelled</option>
+                        </select>
+                    </div>
+
+                    <!-- Table -->
                     <div class="table-container">
                         <table>
                             <thead>
@@ -494,81 +527,38 @@
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="order-id">#ORD-001</td>
-                                    <td>Ahmed Al-Saud</td>
-                                    <td>Plumbing</td>
-                                    <td>Khalid Al-Omari</td>
-                                    <td><span class="status-badge status-completed">Completed</span></td>
-                                    <td>2026-07-10</td>
-                                    <td>
-                                        <button class="action-btn view" onclick="viewOrder('#ORD-001')"><i class="fas fa-eye"></i></button>
-                                        <button class="action-btn delete" onclick="deleteOrder('#ORD-001')"><i class="fas fa-trash"></i></button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="order-id">#ORD-002</td>
-                                    <td>Fatima Al-Zahra</td>
-                                    <td>Electrical</td>
-                                    <td>Mohammed Al-Otaibi</td>
-                                    <td><span class="status-badge status-progress">In Progress</span></td>
-                                    <td>2026-07-11</td>
-                                    <td>
-                                        <button class="action-btn view" onclick="viewOrder('#ORD-002')"><i class="fas fa-eye"></i></button>
-                                        <button class="action-btn delete" onclick="deleteOrder('#ORD-002')"><i class="fas fa-trash"></i></button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="order-id">#ORD-003</td>
-                                    <td>Mohammed Al-Otaibi</td>
-                                    <td>AC Repair</td>
-                                    <td>Sultan Al-Ghamdi</td>
-                                    <td><span class="status-badge status-pending">Pending</span></td>
-                                    <td>2026-07-12</td>
-                                    <td>
-                                        <button class="action-btn view" onclick="viewOrder('#ORD-003')"><i class="fas fa-eye"></i></button>
-                                        <button class="action-btn delete" onclick="deleteOrder('#ORD-003')"><i class="fas fa-trash"></i></button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="order-id">#ORD-004</td>
-                                    <td>Nora Al-Fahd</td>
-                                    <td>Carpentry</td>
-                                    <td>Nora Al-Fahd</td>
-                                    <td><span class="status-badge status-cancelled">Cancelled</span></td>
-                                    <td>2026-07-13</td>
-                                    <td>
-                                        <button class="action-btn view" onclick="viewOrder('#ORD-004')"><i class="fas fa-eye"></i></button>
-                                        <button class="action-btn delete" onclick="deleteOrder('#ORD-004')"><i class="fas fa-trash"></i></button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="order-id">#ORD-005</td>
-                                    <td>Sultan Al-Ghamdi</td>
-                                    <td>Painting</td>
-                                    <td>Fatima Al-Zahra</td>
-                                    <td><span class="status-badge status-progress">In Progress</span></td>
-                                    <td>2026-07-14</td>
-                                    <td>
-                                        <button class="action-btn view" onclick="viewOrder('#ORD-005')"><i class="fas fa-eye"></i></button>
-                                        <button class="action-btn delete" onclick="deleteOrder('#ORD-005')"><i class="fas fa-trash"></i></button>
-                                    </td>
-                                </tr>
+                            <tbody id="ordersTableBody">
+                                <tr class="skeleton-row"><td colspan="7">
+                                    <div class="skeleton skeleton-text" style="width: 100%;"></div>
+                                </td></tr>
+                                <tr class="skeleton-row"><td colspan="7">
+                                    <div class="skeleton skeleton-text" style="width: 90%;"></div>
+                                </td></tr>
+                                <tr class="skeleton-row"><td colspan="7">
+                                    <div class="skeleton skeleton-text" style="width: 95%;"></div>
+                                </td></tr>
+                                <tr class="skeleton-row"><td colspan="7">
+                                    <div class="skeleton skeleton-text" style="width: 85%;"></div>
+                                </td></tr>
                             </tbody>
                         </table>
+
+                        <div class="pagination" id="pagination">
+                            <button onclick="changePage(-1)" id="prevBtn"><i class="fas fa-chevron-left"></i></button>
+                            <span class="pagination-info" id="pageInfo">Page 1 of 1</span>
+                            <button onclick="changePage(1)" id="nextBtn"><i class="fas fa-chevron-right"></i></button>
+                        </div>
                     </div>
 
                 </div>
             </main>
 
-            <!-- ===== FOOTER ===== -->
             <footer class="footer">
                 <p>© 2026 <strong>Fixora</strong> — Admin Panel</p>
             </footer>
-
         </div>
     </div>
+
     <script src="../js/config.js"></script>
     <script src="../js/tokenManager.js"></script>
     <script src="../js/loading.js"></script>
@@ -576,97 +566,230 @@
     <script src="../js/api.js"></script>
     <script src="../js/auth.js"></script>
     <script src="../js/signalr.js"></script>
-    <script src="../js/script.js"></script>
-    <script src="../js/footer.js"></script>
+    <script src="../js/admin-utils.js"></script>
     <script>
+        // ==========================================
+        // STATE
+        // ==========================================
         let categoriesMap = {};
+        let allOrders = [];
+        let filteredOrders = [];
+        let currentPage = 1;
+        const pageSize = 10;
 
         // ==========================================
-        // CHECK LOGIN & LOAD ORDERS
+        // INIT
         // ==========================================
         document.addEventListener('DOMContentLoaded', async function() {
-            if (!Auth.checkAuth(['Admin'])) {
-                return;
-            }
+            if (!Auth.checkAuth(['Admin'])) return;
+
             await loadCategories();
             await loadOrders();
+
+            document.getElementById('searchInput').addEventListener('input', debounce(() => {
+                currentPage = 1;
+                applyFilters();
+            }, 300));
+
+            document.getElementById('statusFilter').addEventListener('change', () => {
+                currentPage = 1;
+                applyFilters();
+            });
         });
 
+        // ==========================================
+        // TIMEOUT HELPER
+        // ==========================================
+        // ⚠️ باج: الدالة دي كانت معرّفة بـ const جوه loadOrders() بس،
+        //    فكانت محلية عليها. و loadCategories() بتناديها كمان:
+        //        Promise.race([api.get('categories'), timeout(5000)])
+        //    → "ReferenceError: timeout is not defined"
+        //    → التصنيفات مابتتحمّلش خالص
+        //    → عمود Service بيقول "Unknown" لكل الطلبات.
+        function timeout(ms) {
+            return new Promise(function (_, reject) {
+                setTimeout(function () { reject(new Error('Timeout')); }, ms);
+            });
+        }
+
+        // ==========================================
+        // LOAD CATEGORIES
+        // ==========================================
         async function loadCategories() {
             try {
-                const list = await api.get('categories');
+                const list = await Promise.race([api.get('categories'), timeout(5000)]);
                 (list || []).forEach(cat => {
                     categoriesMap[cat.id] = cat.name;
                 });
             } catch (err) {
-                console.error("Failed to load categories map:", err);
+                console.error("Failed to load categories:", err);
             }
         }
 
+        // ==========================================
+        // LOAD ORDERS
+        // ==========================================
         async function loadOrders() {
             try {
-                const list = await api.get('service-requests');
-                renderOrders(list || []);
+                const list = await Promise.race([api.get('service-requests'), timeout(8000)]);
+                allOrders = list || [];
+
+                // ✅ ServiceRequestDto مفيهوش customerName ولا providerName —
+                //    فيه customerId و selectedProviderId (GUIDs) بس.
+                //    لازم نجيب الأسماء من /Profile/{userId}.
+                await loadUserNames(allOrders);
+
+                applyFilters();
             } catch (err) {
                 console.error("Failed to load orders:", err);
+                document.getElementById('ordersTableBody').innerHTML = `
+                    <tr><td colspan="7" class="empty-state">
+                        <i class="fas fa-circle-exclamation"></i>
+                        <h3>Failed to load orders</h3>
+                        <p>Please try again later</p>
+                    </td></tr>
+                `;
             }
         }
 
-        function renderOrders(orders) {
-            const tbody = document.querySelector('tbody');
-            if (!tbody) return;
+        // ==========================================
+        // أسماء المستخدمين الحقيقية
+        // ==========================================
+        // ⚠️ الكود كان بيقرا order.customerName و order.providerName —
+        //    والحقلين دول مش موجودين في أي DTO في المشروع كله.
+        //    فكان عمود Customer بيعرض GUID خام، وعمود Provider بيقول
+        //    "Not Assigned" دايمًا حتى لما يكون فيه فني متعيّن،
+        //    والبحث بالاسم مكانش شغال خالص (بيدوّر في undefined).
+        var userNames = {};   // userId → الاسم الحقيقي
 
-            if (orders.length === 0) {
+        async function loadUserNames(orders) {
+            var ids = [];
+            (orders || []).forEach(function (o) {
+                [o.customerId, o.selectedProviderId].forEach(function (id) {
+                    if (id && !userNames[id] && ids.indexOf(id) === -1) ids.push(id);
+                });
+            });
+            if (!ids.length) return;
+
+            await Promise.all(ids.map(async function (id) {
+                try {
+                    var p = await api.get('Profile/' + id, { showLoader: false, silent: true });
+                    if (p && p.fullName) userNames[id] = p.fullName;
+                } catch (e) { /* البروفايل مش متاح */ }
+            }));
+        }
+
+        // ==========================================
+        // FILTER & PAGINATE
+        // ==========================================
+        function applyFilters() {
+            const search = document.getElementById('searchInput').value.toLowerCase().trim();
+            const status = document.getElementById('statusFilter').value;
+
+            filteredOrders = allOrders.filter(order => {
+                const matchesSearch = !search || 
+                    (userNames[order.customerId] || '').toLowerCase().includes(search) ||
+                    (userNames[order.selectedProviderId] || '').toLowerCase().includes(search) ||
+                    (categoriesMap[order.categoryId] || '').toLowerCase().includes(search) ||
+                    order.id.toLowerCase().includes(search);
+
+                const matchesStatus = !status || order.status === status;
+
+                return matchesSearch && matchesStatus;
+            });
+
+            renderTable();
+            renderPagination();
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('ordersTableBody');
+
+            if (filteredOrders.length === 0) {
                 tbody.innerHTML = `
-                    <tr>
-                        <td colspan="7" style="text-align:center;padding:20px;color:var(--text-light);">
-                            No service requests found on the platform.
-                        </td>
-                    </tr>
+                    <tr><td colspan="7" class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <h3>No orders found</h3>
+                        <p>Try adjusting your search or filters</p>
+                    </td></tr>
                 `;
                 return;
             }
 
-            tbody.innerHTML = orders.map(order => {
+            const start = (currentPage - 1) * pageSize;
+            const pageItems = filteredOrders.slice(start, start + pageSize);
+
+            tbody.innerHTML = pageItems.map(order => {
                 const shortId = `#${order.id.substring(0, 8)}`;
                 const categoryName = categoriesMap[order.categoryId] || 'Unknown';
-                const createdDate = new Date(order.createdAt).toLocaleDateString();
-                
-                // Map status badges
+                const createdDate = order.createdAt 
+                    ? new Date(order.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+                    : 'N/A';
+
                 let badgeClass = 'status-pending';
-                if (order.status === 'Completed') badgeClass = 'status-completed';
-                else if (order.status === 'InProgress' || order.status === 'ExecutionStarted') badgeClass = 'status-progress';
-                else if (order.status === 'Cancelled') badgeClass = 'status-cancelled';
+                let statusLabel = order.status || 'Pending';
+
+                switch(order.status) {
+                    case 'Completed': badgeClass = 'status-completed'; break;
+                    case 'ExecutionStarted': badgeClass = 'status-progress'; statusLabel = 'In Progress'; break;
+                    case 'Examination': badgeClass = 'status-examination'; break;
+                    case 'OfferPhase': badgeClass = 'status-offer'; break;
+                    case 'Cancelled': badgeClass = 'status-cancelled'; break;
+                }
 
                 return `
                     <tr>
                         <td class="order-id">${shortId}</td>
-                        <td>${order.customerName || order.customerId}</td>
+                        <td>${userNames[order.customerId] || 'Customer #' + (order.customerId || '').substring(0, 5).toUpperCase()}</td>
                         <td>${categoryName}</td>
-                        <td>${order.providerName || 'Not Assigned'}</td>
-                        <td><span class="status-badge ${badgeClass}">${order.status}</span></td>
+                        <td>${order.selectedProviderId ? (userNames[order.selectedProviderId] || 'Provider #' + order.selectedProviderId.substring(0, 5).toUpperCase()) : 'Not Assigned'}</td>
+                        <td><span class="status-badge ${badgeClass}">${statusLabel}</span></td>
                         <td>${createdDate}</td>
                         <td>
-                            <button class="action-btn view" onclick="viewOrder('${order.id}')" title="View Details"><i class="fas fa-eye"></i></button>
-                            <button class="action-btn delete" onclick="deleteOrder('${order.id}')" title="Cancel/Delete Request"><i class="fas fa-trash"></i></button>
+                            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                                <button class="action-btn view" onclick="viewOrder('${order.id}')" title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="action-btn delete" onclick="deleteOrder('${order.id}')" title="Cancel/Delete">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
                         </td>
                     </tr>
                 `;
             }).join('');
         }
 
+        function renderPagination() {
+            const totalPages = Math.ceil(filteredOrders.length / pageSize) || 1;
+            document.getElementById('pageInfo').textContent = `Page ${currentPage} of ${totalPages} (${filteredOrders.length} total)`;
+            document.getElementById('prevBtn').disabled = currentPage <= 1;
+            document.getElementById('nextBtn').disabled = currentPage >= totalPages;
+        }
+
+        function changePage(delta) {
+            const totalPages = Math.ceil(filteredOrders.length / pageSize) || 1;
+            const newPage = currentPage + delta;
+            if (newPage >= 1 && newPage <= totalPages) {
+                currentPage = newPage;
+                renderTable();
+                renderPagination();
+            }
+        }
+
+        // ==========================================
+        // ORDER ACTIONS
+        // ==========================================
         function viewOrder(orderId) {
             window.location.href = `order-details.html?id=${orderId}`;
         }
 
         async function deleteOrder(orderId) {
-            if (!confirm(`⚠️ Are you sure you want to cancel/delete service request ${orderId.substring(0, 8)}?`)) {
-                return;
-            }
+            if (!confirm(`⚠️ Cancel/delete order #${orderId.substring(0, 8)}?`)) return;
 
             try {
                 await api.delete(`service-requests/${orderId}`);
-                ErrorHandler.showNotification("Success", "Service request has been cancelled/deleted successfully.", "success");
+                ErrorHandler.showNotification("Success", "Order cancelled successfully.", "success");
                 await loadOrders();
             } catch (err) {
                 console.error("Failed to delete order:", err);
@@ -674,7 +797,18 @@
         }
 
         // ==========================================
-        // SIDEBAR TOGGLE
+        // UTILS
+        // ==========================================
+        function debounce(fn, delay) {
+            let timeout;
+            return function(...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => fn.apply(this, args), delay);
+            };
+        }
+
+        // ==========================================
+        // SIDEBAR & THEME
         // ==========================================
         const sidebarToggle = document.getElementById('sidebarToggle');
         const sidebar = document.getElementById('sidebar');
@@ -688,9 +822,6 @@
         if (sidebarToggle) sidebarToggle.addEventListener('click', toggleSidebar);
         if (sidebarOverlay) sidebarOverlay.addEventListener('click', toggleSidebar);
 
-        // ==========================================
-        // THEME TOGGLE
-        // ==========================================
         const themeToggle = document.getElementById('themeToggle');
         const body = document.body;
 
@@ -712,11 +843,16 @@
             });
         }
 
+            
         function handleLogout(event) {
             event.preventDefault();
-            Auth.logout();
+            if (typeof Auth !== 'undefined' && Auth.logout) {
+                Auth.logout();
+            } else {
+                if (typeof TokenManager !== 'undefined') TokenManager.clearTokens();
+                window.location.href = 'index.html';
+            }
         }
     </script>
-
 </body>
 </html>

@@ -4,18 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin Dashboard - Fixora</title>
-     <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/style.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <style>
-        /* ==========================================
-           RESET & ROOT
-           ========================================== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
             --bg-primary: #f0f4f8;
@@ -50,13 +43,7 @@
             --shadow-hover: 0 30px 80px rgba(0, 0, 0, 0.6);
         }
 
-        /* ==========================================
-           SIDEBAR
-           ========================================== */
-        .page-wrapper {
-            display: flex;
-            min-height: 100vh;
-        }
+        .page-wrapper { display: flex; min-height: 100vh; }
 
         .sidebar {
             width: 260px;
@@ -65,9 +52,7 @@
             display: flex;
             flex-direction: column;
             position: fixed;
-            top: 0;
-            left: 0;
-            bottom: 0;
+            top: 0; left: 0; bottom: 0;
             z-index: 1000;
             transition: transform 0.3s ease;
             overflow-y: auto;
@@ -87,10 +72,7 @@
             color: var(--text-primary);
         }
 
-        .sidebar-header .logo i {
-            color: var(--accent);
-            font-size: 1.6rem;
-        }
+        .sidebar-header .logo i { color: var(--accent); font-size: 1.6rem; }
 
         .sidebar-header .logo .logo-highlight {
             background: var(--gradient-primary);
@@ -106,18 +88,9 @@
             display: block;
         }
 
-        .sidebar-nav {
-            flex: 1;
-            padding: 16px 12px;
-        }
-
-        .sidebar-nav ul {
-            list-style: none;
-        }
-
-        .sidebar-nav ul li {
-            margin-bottom: 4px;
-        }
+        .sidebar-nav { flex: 1; padding: 16px 12px; }
+        .sidebar-nav ul { list-style: none; }
+        .sidebar-nav ul li { margin-bottom: 4px; }
 
         .sidebar-nav ul li a {
             display: flex;
@@ -132,10 +105,7 @@
             transition: all 0.3s ease;
         }
 
-        .sidebar-nav ul li a i {
-            width: 20px;
-            font-size: 1.1rem;
-        }
+        .sidebar-nav ul li a i { width: 20px; font-size: 1.1rem; }
 
         .sidebar-nav ul li a:hover {
             background: rgba(102, 126, 234, 0.08);
@@ -181,9 +151,6 @@
             color: var(--accent);
         }
 
-        /* ==========================================
-           MAIN AREA
-           ========================================== */
         .main-area {
             flex: 1;
             margin-left: 260px;
@@ -192,19 +159,9 @@
             min-height: 100vh;
         }
 
-        .main-content {
-            flex: 1;
-            padding: 30px 30px 20px;
-        }
+        .main-content { flex: 1; padding: 30px 30px 20px; }
+        .container { max-width: 1100px; margin: 0 auto; }
 
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-        }
-
-        /* ==========================================
-           PAGE HEADER
-           ========================================== */
         .page-header {
             display: flex;
             justify-content: space-between;
@@ -223,18 +180,13 @@
             gap: 12px;
         }
 
-        .page-title i {
-            color: var(--accent);
-        }
+        .page-title i { color: var(--accent); }
 
         .page-date {
             color: var(--text-secondary);
             font-size: 0.9rem;
         }
 
-        /* ==========================================
-           STATS GRID
-           ========================================== */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -290,9 +242,74 @@
             margin: 0;
         }
 
-        /* ==========================================
-           RECENT ACTIVITY
-           ========================================== */
+        .skeleton {
+            background: linear-gradient(90deg, var(--border) 25%, rgba(102,126,234,0.1) 50%, var(--border) 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+            border-radius: 8px;
+        }
+
+        .skeleton-text { height: 16px; margin-bottom: 8px; }
+        .skeleton-title { height: 28px; width: 60%; margin-bottom: 4px; }
+        .skeleton-icon { width: 52px; height: 52px; border-radius: 14px; }
+
+        @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+
+        .quick-action-card {
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .quick-action-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--accent);
+        }
+
+        .quick-action-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            flex-shrink: 0;
+        }
+
+        .quick-action-info h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .quick-action-info p {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin: 2px 0 0;
+        }
+
         .activity-section {
             background: var(--bg-card);
             border-radius: var(--radius-sm);
@@ -310,9 +327,7 @@
             gap: 10px;
         }
 
-        .activity-section h3 i {
-            color: var(--accent);
-        }
+        .activity-section h3 i { color: var(--accent); }
 
         .activity-item {
             display: flex;
@@ -322,9 +337,7 @@
             border-bottom: 1px solid var(--border);
         }
 
-        .activity-item:last-child {
-            border-bottom: none;
-        }
+        .activity-item:last-child { border-bottom: none; }
 
         .activity-icon {
             width: 38px;
@@ -343,18 +356,9 @@
         .activity-icon.red { background: rgba(229, 62, 62, 0.12); color: #e53e3e; }
         .activity-icon.purple { background: rgba(118, 75, 162, 0.12); color: #764ba2; }
 
-        .activity-text {
-            flex: 1;
-        }
-
-        .activity-text strong {
-            color: var(--text-primary);
-        }
-
-        .activity-text span {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-        }
+        .activity-text { flex: 1; }
+        .activity-text strong { color: var(--text-primary); }
+        .activity-text span { color: var(--text-secondary); font-size: 0.9rem; }
 
         .activity-time {
             color: var(--text-light);
@@ -362,40 +366,30 @@
             white-space: nowrap;
         }
 
-        /* ==========================================
-           FOOTER
-           ========================================== */
+        .activity-empty {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-light);
+        }
+
+        .activity-empty i { font-size: 2.5rem; margin-bottom: 12px; opacity: 0.5; }
+
         .footer {
-            background: var(--bg-card);
-            border-top: 1px solid var(--border);
-            color: var(--text-secondary);
+            background: #0f1724 !important;
+            color: rgba(255, 255, 255, 0.6) !important;
+            border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
             text-align: center;
             padding: 20px;
         }
 
-        .footer p {
-            margin: 4px 0;
-            font-weight: 400;
-            font-size: 0.9rem;
-        }
+        .footer p { margin: 4px 0; font-weight: 400; font-size: 0.9rem; color: rgba(255,255,255,0.5) !important; }
+        .footer strong { color: white !important; }
+        .footer-update { font-size: 0.8rem; color: rgba(255,255,255,0.3) !important; }
 
-        .footer strong {
-            color: var(--text-primary);
-        }
-
-        .footer-update {
-            font-size: 0.8rem;
-            color: var(--text-light);
-        }
-
-        /* ==========================================
-           SIDEBAR TOGGLE (للجوال)
-           ========================================== */
         .sidebar-toggle {
             display: none;
             position: fixed;
-            top: 16px;
-            left: 16px;
+            top: 16px; left: 16px;
             z-index: 1001;
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -410,100 +404,42 @@
         .sidebar-overlay {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.4);
             z-index: 999;
         }
 
-        /* ==========================================
-           RESPONSIVE
-           ========================================== */
         @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-                width: 280px;
-            }
-            .sidebar.open {
-                transform: translateX(0);
-            }
-            .sidebar-overlay.open {
-                display: block;
-            }
-            .sidebar-toggle {
-                display: block;
-            }
-            .main-area {
-                margin-left: 0;
-                padding-top: 60px;
-            }
-            .main-content {
-                padding: 20px 16px;
-            }
-            .stats-grid {
-                grid-template-columns: 1fr 1fr;
-                gap: 12px;
-            }
-            .stat-card {
-                padding: 16px 14px;
-                flex-direction: column;
-                text-align: center;
-            }
-            .stat-info h3 {
-                font-size: 1.4rem;
-            }
-            .page-title {
-                font-size: 1.4rem;
-            }
+            .sidebar { transform: translateX(-100%); width: 280px; }
+            .sidebar.open { transform: translateX(0); }
+            .sidebar-overlay.show { display: block; }
+            .sidebar-toggle { display: block; }
+            .main-area { margin-left: 0; padding-top: 60px; }
+            .main-content { padding: 20px 16px; }
+            .stats-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+            .stat-card { padding: 16px 14px; flex-direction: column; text-align: center; }
+            .stat-info h3 { font-size: 1.4rem; }
+            .page-title { font-size: 1.4rem; }
+            .quick-actions { grid-template-columns: 1fr; }
         }
 
         @media (max-width: 480px) {
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-            .activity-item {
-                flex-wrap: wrap;
-            }
-            .activity-time {
-                width: 100%;
-                padding-left: 52px;
-            }
+            .stats-grid { grid-template-columns: 1fr; }
+            .activity-item { flex-wrap: wrap; }
+            .activity-time { width: 100%; padding-left: 52px; }
         }
-
-
-        .footer {
-    background: #0f1724 !important;
-    color: rgba(255, 255, 255, 0.6) !important;
-    border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
-}
-
-.footer p {
-    color: rgba(255, 255, 255, 0.5) !important;
-}
-
-.footer strong {
-    color: white !important;
-}
-
-.footer-update {
-    color: rgba(255, 255, 255, 0.3) !important;
-}
     </style>
+<base target="_blank">
 </head>
 <body>
 
-    <!-- ===== SIDEBAR TOGGLE (للجوال) ===== -->
-    <button class="sidebar-toggle" id="sidebarToggle">
+    <button class="sidebar-toggle" id="sidebar-toggle">
         <i class="fas fa-bars"></i>
     </button>
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
 
-    <!-- ===== PAGE WRAPPER ===== -->
     <div class="page-wrapper">
-
-        <!-- ===== SIDEBAR ===== -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div class="logo">
@@ -529,149 +465,127 @@
                 </ul>
             </nav>
             <div class="sidebar-footer">
-                <button id="themeToggle" class="theme-btn-sidebar">
+                <button id="theme-toggle" class="theme-btn-sidebar">
                     <i class="fas fa-moon"></i> Dark Mode
                 </button>
             </div>
         </aside>
 
-        <!-- ===== MAIN AREA ===== -->
         <div class="main-area">
-
             <main class="main-content">
                 <div class="container">
 
-                    <!-- ===== HEADER ===== -->
                     <div class="page-header">
                         <h1 class="page-title">
                             <i class="fas fa-gauge-high"></i> Admin Dashboard
                         </h1>
                         <span class="page-date">
-                            <i class="fas fa-calendar"></i> <span id="todayDate"></span>
+                            <i class="fas fa-calendar"></i> <span id="todayDate">--</span>
                         </span>
                     </div>
 
-                    <!-- ===== STATS (مظبوطة) ===== -->
-                    <div class="stats-grid">
-                        <!-- 1. Customers -->
+                    <div class="quick-actions">
+                        <a href="admin-customers.html" class="quick-action-card">
+                            <div class="quick-action-icon" style="background: rgba(102,126,234,0.12); color: #667eea;">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="quick-action-info">
+                                <h4>Manage Customers</h4>
+                                <p>View & control user accounts</p>
+                            </div>
+                        </a>
+                        <a href="admin-providers.html" class="quick-action-card">
+                            <div class="quick-action-icon" style="background: rgba(118,75,162,0.12); color: #764ba2;">
+                                <i class="fas fa-user-tie"></i>
+                            </div>
+                            <div class="quick-action-info">
+                                <h4>Manage Providers</h4>
+                                <p>Verify & approve providers</p>
+                            </div>
+                        </a>
+                        <a href="admin-orders.html" class="quick-action-card">
+                            <div class="quick-action-icon" style="background: rgba(237,137,54,0.12); color: #ed8936;">
+                                <i class="fas fa-clipboard-list"></i>
+                            </div>
+                            <div class="quick-action-info">
+                                <h4>View Orders</h4>
+                                <p>Track service requests</p>
+                            </div>
+                        </a>
+                        <a href="admin-settings.html" class="quick-action-card">
+                            <div class="quick-action-icon" style="background: rgba(56,178,172,0.12); color: #38b2ac;">
+                                <i class="fas fa-gear"></i>
+                            </div>
+                            <div class="quick-action-info">
+                                <h4>Settings</h4>
+                                <p>Categories, plans & more</p>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="stats-grid" id="statsGrid">
                         <div class="stat-card">
-                            <div class="stat-icon blue"><i class="fas fa-users"></i></div>
-                            <div class="stat-info">
-                                <h3 id="totalCustomers">156</h3>
-                                <p>Total Customers</p>
+                            <div class="skeleton skeleton-icon"></div>
+                            <div class="stat-info" style="width: 100%;">
+                                <div class="skeleton skeleton-title"></div>
+                                <div class="skeleton skeleton-text" style="width: 60%;"></div>
                             </div>
                         </div>
-
-                        <!-- 2. Providers -->
                         <div class="stat-card">
-                            <div class="stat-icon purple"><i class="fas fa-user-tie"></i></div>
-                            <div class="stat-info">
-                                <h3 id="totalProviders">42</h3>
-                                <p>Total Providers</p>
+                            <div class="skeleton skeleton-icon"></div>
+                            <div class="stat-info" style="width: 100%;">
+                                <div class="skeleton skeleton-title"></div>
+                                <div class="skeleton skeleton-text" style="width: 60%;"></div>
                             </div>
                         </div>
-
-                        <!-- 3. Orders -->
                         <div class="stat-card">
-                            <div class="stat-icon orange"><i class="fas fa-clipboard-list"></i></div>
-                            <div class="stat-info">
-                                <h3 id="totalOrders">89</h3>
-                                <p>Total Orders</p>
+                            <div class="skeleton skeleton-icon"></div>
+                            <div class="stat-info" style="width: 100%;">
+                                <div class="skeleton skeleton-title"></div>
+                                <div class="skeleton skeleton-text" style="width: 60%;"></div>
                             </div>
                         </div>
-
-                        <!-- 4. Completed -->
                         <div class="stat-card">
-                            <div class="stat-icon green"><i class="fas fa-check-circle"></i></div>
-                            <div class="stat-info">
-                                <h3 id="completedOrders">64</h3>
-                                <p>Completed Orders</p>
+                            <div class="skeleton skeleton-icon"></div>
+                            <div class="stat-info" style="width: 100%;">
+                                <div class="skeleton skeleton-title"></div>
+                                <div class="skeleton skeleton-text" style="width: 60%;"></div>
                             </div>
                         </div>
-
-                        <!-- 5. Pending -->
                         <div class="stat-card">
-                            <div class="stat-icon red"><i class="fas fa-clock"></i></div>
-                            <div class="stat-info">
-                                <h3 id="pendingOrders">25</h3>
-                                <p>Pending Orders</p>
+                            <div class="skeleton skeleton-icon"></div>
+                            <div class="stat-info" style="width: 100%;">
+                                <div class="skeleton skeleton-title"></div>
+                                <div class="skeleton skeleton-text" style="width: 60%;"></div>
                             </div>
                         </div>
-
-                        <!-- 6. Revenue (مظبوط زي الباقي) -->
                         <div class="stat-card">
-                            <div class="stat-icon teal"><i class="fas fa-dollar-sign"></i></div>
-                            <div class="stat-info">
-                                <h3 id="totalRevenue">12,450</h3>
-                                <p>Total Revenue</p>
+                            <div class="skeleton skeleton-icon"></div>
+                            <div class="stat-info" style="width: 100%;">
+                                <div class="skeleton skeleton-title"></div>
+                                <div class="skeleton skeleton-text" style="width: 60%;"></div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- ===== RECENT ACTIVITY ===== -->
                     <div class="activity-section" id="activityList">
                         <h3><i class="fas fa-clock-rotate-left"></i> Recent Activity</h3>
-
-                        <div class="activity-item">
-                            <div class="activity-icon green"><i class="fas fa-user-plus"></i></div>
-                            <div class="activity-text">
-                                <strong>Ahmed Al-Saud</strong> <span>registered as a new customer</span>
-                            </div>
-                            <span class="activity-time">2 min ago</span>
-                        </div>
-
-                        <div class="activity-item">
-                            <div class="activity-icon orange"><i class="fas fa-file-signature"></i></div>
-                            <div class="activity-text">
-                                <strong>#ORD-004</strong> <span>was placed by Fatima Al-Zahra</span>
-                            </div>
-                            <span class="activity-time">15 min ago</span>
-                        </div>
-
-                        <div class="activity-item">
-                            <div class="activity-icon blue"><i class="fas fa-user-check"></i></div>
-                            <div class="activity-text">
-                                <strong>Khalid Al-Omari</strong> <span>was approved as a provider</span>
-                            </div>
-                            <span class="activity-time">1 hour ago</span>
-                        </div>
-
-                        <div class="activity-item">
-                            <div class="activity-icon green"><i class="fas fa-check-circle"></i></div>
-                            <div class="activity-text">
-                                <strong>#ORD-002</strong> <span>was marked as completed</span>
-                            </div>
-                            <span class="activity-time">2 hours ago</span>
-                        </div>
-
-                        <div class="activity-item">
-                            <div class="activity-icon red"><i class="fas fa-user-slash"></i></div>
-                            <div class="activity-text">
-                                <strong>Mohammed Al-Otaibi</strong> <span>account was deactivated</span>
-                            </div>
-                            <span class="activity-time">3 hours ago</span>
-                        </div>
-
-                        <div class="activity-item">
-                            <div class="activity-icon purple"><i class="fas fa-star"></i></div>
-                            <div class="activity-text">
-                                <strong>Sultan Al-Ghamdi</strong> <span>gave a 5-star review</span>
-                            </div>
-                            <span class="activity-time">5 hours ago</span>
+                        <div class="activity-empty">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <p>Loading activities...</p>
                         </div>
                     </div>
 
                 </div>
             </main>
 
-            <!-- ===== FOOTER ===== -->
             <footer class="footer">
                 <p>© 2026 <strong>Fixora</strong> — Admin Panel</p>
-                <p class="footer-update">Last updated: <span id="footerDate"></span></p>
+                <p class="footer-update">Last updated: <span id="footerDate">--</span></p>
             </footer>
-
         </div>
     </div>
+
     <script src="../js/config.js"></script>
     <script src="../js/tokenManager.js"></script>
     <script src="../js/loading.js"></script>
@@ -679,19 +593,11 @@
     <script src="../js/api.js"></script>
     <script src="../js/auth.js"></script>
     <script src="../js/signalr.js"></script>
-    <script src="../js/script.js"></script>
-    <script src="../js/footer.js"></script>
+    <script src="../js/admin-utils.js"></script>
     <script>
-        // ==========================================
-        // CHECK ADMIN LOGIN & LOAD DASHBOARD DATA
-        // ==========================================
         document.addEventListener('DOMContentLoaded', async function() {
-            // Verify roles
-            if (!Auth.checkAuth(['Admin'])) {
-                return;
-            }
-            
-            // Set today's date
+            if (!Auth.checkAuth(['Admin'])) return;
+
             const today = new Date();
             const options = { year: 'numeric', month: 'long', day: 'numeric' };
             const todayDateEl = document.getElementById('todayDate');
@@ -699,149 +605,155 @@
             const footerDateEl = document.getElementById('footerDate');
             if (footerDateEl) footerDateEl.textContent = today.toLocaleDateString('en-US', options);
 
-            await loadDashboardSummary();
-            await loadRecentActivities();
+            await Promise.all([
+                loadDashboardSummary(),
+                loadRecentActivities()
+            ]);
         });
 
         async function loadDashboardSummary() {
             try {
-                const summary = await api.get('admin/dashboard/summary');
-                
-                // Fetch service requests to calculate order counts
-                let requests = [];
-                try {
-                    requests = await api.get('service-requests');
-                } catch(e) {
-                    console.error("Failed to load requests count", e);
-                }
+                const [summary, requests, pendingDocs] = await Promise.all([
+                    api.get('admin/dashboard/summary').catch(() => ({})),
+                    api.get('service-requests').catch(() => []),
+                    api.get('admin/documents/pending', { silent: true }).catch(() => [])
+                ]);
 
                 const totalOrders = requests.length;
                 const completedOrders = requests.filter(r => r.status === 'Completed').length;
-                const pendingOrders = totalOrders - completedOrders;
-                
-                // Active subscriptions revenue calculation (e.g. 99 SAR per sub)
-                const revenue = summary.activeSubscriptions * 99;
+                const pendingOrders = requests.filter(r =>
+                    r.status !== 'Completed' && r.status !== 'Cancelled').length;
 
-                // Update DOM elements
-                document.getElementById('totalCustomers').textContent = summary.customers;
-                document.getElementById('totalProviders').textContent = summary.providers;
-                document.getElementById('totalOrders').textContent = totalOrders;
-                document.getElementById('completedOrders').textContent = completedOrders;
-                document.getElementById('pendingOrders').textContent = pendingOrders;
-                document.getElementById('totalRevenue').textContent = `SAR ${revenue.toLocaleString()}`;
+                // 🔴 الكود القديم كان بيحسب: revenue = summary.activeSubscriptions * 99
+                //    الرقم 99 مخترع — الخطط الحقيقية 50 و 100 جنيه، مفيش خطة بـ 99.
+                //    ومفيش أي حقل إيرادات في DashboardSummaryDto ولا في أي DTO تاني.
+                //    فبنعرض pendingVerifications (رقم حقيقي) بدل ما نخترع فلوس.
+                renderStats({
+                    customers: summary.customers || 0,
+                    providers: summary.providers || 0,
+                    totalOrders,
+                    completedOrders,
+                    pendingOrders,
+                    pendingVerifications: summary.pendingVerifications
+                });
             } catch (err) {
-                console.error("Failed to load dashboard summary:", err);
+                console.error("Failed to load dashboard:", err);
+                ErrorHandler.showNotification("Error", "Failed to load dashboard data", "error");
             }
         }
 
+        function num(v) {
+            return (typeof v === 'number') ? v.toLocaleString() : '—';
+        }
+
+        function renderStats(data) {
+            data = data || {};
+            const grid = document.getElementById('statsGrid');
+            if (!grid) return;
+
+            grid.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-icon blue"><i class="fas fa-users"></i></div>
+                    <div class="stat-info"><h3>${num(data.customers)}</h3><p>Total Customers</p></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon purple"><i class="fas fa-user-tie"></i></div>
+                    <div class="stat-info"><h3>${num(data.providers)}</h3><p>Total Providers</p></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon orange"><i class="fas fa-clipboard-list"></i></div>
+                    <div class="stat-info"><h3>${num(data.totalOrders)}</h3><p>Total Orders</p></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green"><i class="fas fa-check-circle"></i></div>
+                    <div class="stat-info"><h3>${num(data.completedOrders)}</h3><p>Completed Orders</p></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon red"><i class="fas fa-clock"></i></div>
+                    <div class="stat-info"><h3>${num(data.pendingOrders)}</h3><p>Active Orders</p></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon teal"><i class="fas fa-file-shield"></i></div>
+                    <div class="stat-info"><h3>${num(data.pendingVerifications)}</h3><p>Pending Verifications</p></div>
+                </div>
+            `;
+        }
+
         async function loadRecentActivities() {
+            const listEl = document.getElementById('activityList');
+            if (!listEl) return;
+
             try {
-                const activities = await api.get('admin/dashboard/recent-activity?pageSize=10');
-                const listEl = document.getElementById('activityList');
-                if (!listEl) return;
+                const timeout = (ms) => new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), ms));
+                // ⚠️ الـ endpoint بيرجّع PaginatedListDto<RecentActivityItemDto>
+                //    يعني { items: [...], pageIndex, totalPages, totalCount }
+                //    مش مصفوفة! فـ activities.forEach كان بيرمي
+                //    "activities.forEach is not a function" → "Failed to load activities"
+                const activityResponse = await Promise.race([
+                    api.get('admin/dashboard/recent-activity?pageSize=10'),
+                    timeout(8000)
+                ]);
+                const activities = (activityResponse && activityResponse.items) || [];
 
                 let html = '<h3><i class="fas fa-clock-rotate-left"></i> Recent Activity</h3>';
+
                 if (!activities || activities.length === 0) {
-                    html += '<div style="padding:20px;text-align:center;color:var(--text-light);">No recent activities found</div>';
+                    html += `<div class="activity-empty"><i class="fas fa-inbox"></i><p>No recent activities found</p></div>`;
                     listEl.innerHTML = html;
                     return;
                 }
 
                 activities.forEach(item => {
-                    let iconClass = 'blue';
-                    let iconHtml = '<i class="fas fa-info-circle"></i>';
-                    const desc = item.description.toLowerCase();
-
-                    if (desc.includes('register') || desc.includes('user')) {
-                        iconClass = 'green';
-                        iconHtml = '<i class="fas fa-user-plus"></i>';
-                    } else if (desc.includes('placed') || desc.includes('request') || desc.includes('order')) {
-                        iconClass = 'orange';
-                        iconHtml = '<i class="fas fa-file-signature"></i>';
-                    } else if (desc.includes('complete')) {
-                        iconClass = 'green';
-                        iconHtml = '<i class="fas fa-check-circle"></i>';
-                    } else if (desc.includes('deactivate') || desc.includes('suspend') || desc.includes('warn')) {
-                        iconClass = 'red';
-                        iconHtml = '<i class="fas fa-user-slash"></i>';
-                    } else if (desc.includes('star') || desc.includes('review') || desc.includes('rate')) {
-                        iconClass = 'purple';
-                        iconHtml = '<i class="fas fa-star"></i>';
-                    }
-
+                    const { iconClass, iconHtml } = getActivityIcon(item.description);
                     const timeAgo = formatTime(item.createdAt);
-
                     html += `
                         <div class="activity-item">
                             <div class="activity-icon ${iconClass}">${iconHtml}</div>
-                            <div class="activity-text">
-                                <span>${item.description}</span>
-                            </div>
+                            <div class="activity-text"><span>${item.description}</span></div>
                             <span class="activity-time">${timeAgo}</span>
-                        </div>
-                    `;
+                        </div>`;
                 });
 
                 listEl.innerHTML = html;
             } catch (err) {
-                console.error("Failed to load recent activities:", err);
+                console.error("Failed to load activities:", err);
+                listEl.innerHTML = `
+                    <h3><i class="fas fa-clock-rotate-left"></i> Recent Activity</h3>
+                    <div class="activity-empty"><i class="fas fa-circle-exclamation"></i><p>Failed to load activities</p></div>`;
             }
+        }
+
+        function getActivityIcon(description) {
+            const desc = (description || '').toLowerCase();
+            if (desc.includes('register') || desc.includes('user')) return { iconClass: 'green', iconHtml: '<i class="fas fa-user-plus"></i>' };
+            if (desc.includes('placed') || desc.includes('request') || desc.includes('order')) return { iconClass: 'orange', iconHtml: '<i class="fas fa-file-signature"></i>' };
+            if (desc.includes('complete')) return { iconClass: 'green', iconHtml: '<i class="fas fa-check-circle"></i>' };
+            if (desc.includes('deactivate') || desc.includes('suspend') || desc.includes('warn')) return { iconClass: 'red', iconHtml: '<i class="fas fa-user-slash"></i>' };
+            if (desc.includes('star') || desc.includes('review') || desc.includes('rate')) return { iconClass: 'purple', iconHtml: '<i class="fas fa-star"></i>' };
+            if (desc.includes('approve') || desc.includes('verify')) return { iconClass: 'blue', iconHtml: '<i class="fas fa-user-check"></i>' };
+            return { iconClass: 'blue', iconHtml: '<i class="fas fa-info-circle"></i>' };
         }
 
         function formatTime(isoString) {
             if (!isoString) return '';
-            var date = new Date(isoString);
-            var now = new Date();
-            var diff = Math.floor((now - date) / (1000 * 60));
-
+            const date = new Date(isoString);
+            const now = new Date();
+            const diff = Math.floor((now - date) / (1000 * 60));
             if (diff < 1) return 'Just now';
             if (diff < 60) return diff + 'm ago';
             if (diff < 1440) return Math.floor(diff / 60) + 'h ago';
+            if (diff < 10080) return Math.floor(diff / 1440) + 'd ago';
             return date.toLocaleDateString();
         }
-
-        // ==========================================
-        // SIDEBAR TOGGLE
-        // ==========================================
-        const sidebarToggle = document.getElementById('sidebarToggle');
-        const sidebar = document.getElementById('sidebar');
-        const sidebarOverlay = document.getElementById('sidebarOverlay');
-
-        function toggleSidebar() {
-            sidebar.classList.toggle('open');
-            sidebarOverlay.classList.toggle('open');
-        }
-
-        if (sidebarToggle) sidebarToggle.addEventListener('click', toggleSidebar);
-        if (sidebarOverlay) sidebarOverlay.addEventListener('click', toggleSidebar);
-
-        // ==========================================
-        // THEME TOGGLE
-        // ==========================================
-        const themeToggle = document.getElementById('themeToggle');
-        const body = document.body;
-
-        if (localStorage.getItem('adminTheme') === 'dark') {
-            body.classList.add('dark-mode');
-            if (themeToggle) themeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
-        }
-
-        if (themeToggle) {
-            themeToggle.addEventListener('click', function() {
-                body.classList.toggle('dark-mode');
-                if (body.classList.contains('dark-mode')) {
-                    localStorage.setItem('adminTheme', 'dark');
-                    this.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
-                } else {
-                    localStorage.setItem('adminTheme', 'light');
-                    this.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
-                }
-            });
-        }
-
+    
         function handleLogout(event) {
             event.preventDefault();
-            Auth.logout();
+            if (typeof Auth !== 'undefined' && Auth.logout) {
+                Auth.logout();
+            } else {
+                if (typeof TokenManager !== 'undefined') TokenManager.clearTokens();
+                window.location.href = 'index.html';
+            }
         }
     </script>
 </body>

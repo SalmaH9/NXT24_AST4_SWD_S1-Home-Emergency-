@@ -12,9 +12,15 @@ const Auth = {
 
         if (allowedRoles.length > 0) {
             const role = TokenManager.getUserRole();
-            if (!allowedRoles.includes(role)) {
+
+            
+            const normalized = String(role || '').toLowerCase();
+            const allowed = allowedRoles.map(function (r) {
+                return String(r || '').toLowerCase();
+            });
+
+            if (!allowed.includes(normalized)) {
                 console.error(`Access denied. Role "${role}" is not authorized.`);
-                // Redirect to home page or unauthorized page
                 window.location.href = "index.html";
                 return false;
             }

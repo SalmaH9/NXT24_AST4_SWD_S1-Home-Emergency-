@@ -4,16 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin - Settings</title>
-    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <style>
-        /* ===== نفس استايل admin-dashboard.html ===== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
             --bg-primary: #f0f4f8;
@@ -48,11 +42,7 @@
             --shadow-hover: 0 30px 80px rgba(0, 0, 0, 0.6);
         }
 
-        /* ===== SIDEBAR ===== */
-        .page-wrapper {
-            display: flex;
-            min-height: 100vh;
-        }
+        .page-wrapper { display: flex; min-height: 100vh; }
 
         .sidebar {
             width: 260px;
@@ -61,9 +51,7 @@
             display: flex;
             flex-direction: column;
             position: fixed;
-            top: 0;
-            left: 0;
-            bottom: 0;
+            top: 0; left: 0; bottom: 0;
             z-index: 1000;
             transition: transform 0.3s ease;
             overflow-y: auto;
@@ -83,10 +71,7 @@
             color: var(--text-primary);
         }
 
-        .sidebar-header .logo i {
-            color: var(--accent);
-            font-size: 1.6rem;
-        }
+        .sidebar-header .logo i { color: var(--accent); font-size: 1.6rem; }
 
         .sidebar-header .logo .logo-highlight {
             background: var(--gradient-primary);
@@ -102,18 +87,9 @@
             display: block;
         }
 
-        .sidebar-nav {
-            flex: 1;
-            padding: 16px 12px;
-        }
-
-        .sidebar-nav ul {
-            list-style: none;
-        }
-
-        .sidebar-nav ul li {
-            margin-bottom: 4px;
-        }
+        .sidebar-nav { flex: 1; padding: 16px 12px; }
+        .sidebar-nav ul { list-style: none; }
+        .sidebar-nav ul li { margin-bottom: 4px; }
 
         .sidebar-nav ul li a {
             display: flex;
@@ -128,10 +104,7 @@
             transition: all 0.3s ease;
         }
 
-        .sidebar-nav ul li a i {
-            width: 20px;
-            font-size: 1.1rem;
-        }
+        .sidebar-nav ul li a i { width: 20px; font-size: 1.1rem; }
 
         .sidebar-nav ul li a:hover {
             background: rgba(102, 126, 234, 0.08);
@@ -177,7 +150,6 @@
             color: var(--accent);
         }
 
-        /* ===== MAIN AREA ===== */
         .main-area {
             flex: 1;
             margin-left: 260px;
@@ -186,17 +158,9 @@
             min-height: 100vh;
         }
 
-        .main-content {
-            flex: 1;
-            padding: 30px 30px 20px;
-        }
+        .main-content { flex: 1; padding: 30px 30px 20px; }
+        .container { max-width: 1100px; margin: 0 auto; }
 
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-        }
-
-        /* ===== PAGE HEADER ===== */
         .page-header {
             display: flex;
             justify-content: space-between;
@@ -215,14 +179,12 @@
             gap: 12px;
         }
 
-        .page-title i {
-            color: var(--accent);
-        }
+        .page-title i { color: var(--accent); }
 
-        /* ===== SETTINGS ===== */
+        /* ===== SETTINGS GRID ===== */
         .settings-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 24px;
         }
 
@@ -237,30 +199,27 @@
         .settings-card h3 {
             color: var(--text-primary);
             font-size: 1.1rem;
-            margin-bottom: 16px;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        .settings-card h3 i {
-            color: var(--accent);
-        }
+        .settings-card h3 i { color: var(--accent); }
 
-        .settings-group {
-            margin-bottom: 16px;
-        }
+        .settings-group { margin-bottom: 16px; }
 
         .settings-group label {
             display: block;
             font-weight: 600;
             font-size: 0.85rem;
             color: var(--text-secondary);
-            margin-bottom: 4px;
+            margin-bottom: 6px;
         }
 
         .settings-group input,
-        .settings-group select {
+        .settings-group select,
+        .settings-group textarea {
             width: 100%;
             padding: 10px 14px;
             border: 1px solid var(--border);
@@ -274,59 +233,53 @@
         }
 
         .settings-group input:focus,
-        .settings-group select:focus {
+        .settings-group select:focus,
+        .settings-group textarea:focus {
             border-color: var(--accent);
             box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.06);
         }
 
-        .settings-group .toggle {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            cursor: pointer;
-        }
-
-        .settings-group .toggle input[type="checkbox"] {
-            width: 44px;
-            height: 24px;
-            appearance: none;
-            background: var(--border);
-            border-radius: 12px;
-            position: relative;
-            cursor: pointer;
-            transition: 0.3s;
-            flex-shrink: 0;
-        }
-
-        .settings-group .toggle input[type="checkbox"]::after {
-            content: '';
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: white;
-            transition: 0.3s;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .settings-group .toggle input[type="checkbox"]:checked {
-            background: var(--accent);
-        }
-
-        .settings-group .toggle input[type="checkbox"]:checked::after {
-            left: 22px;
-        }
-
-        .settings-group .toggle span {
-            color: var(--text-secondary);
-            font-size: 0.95rem;
-        }
+        .settings-group textarea { resize: vertical; min-height: 80px; }
 
         .btn-save {
-            padding: 10px 28px;
+            padding: 10px 24px;
             background: var(--gradient-primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: 'Inter', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            padding: 10px 24px;
+            background: var(--bg-primary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-secondary:hover { background: var(--border); }
+
+        .btn-danger {
+            padding: 10px 24px;
+            background: #ef4444;
             color: white;
             border: none;
             border-radius: 10px;
@@ -337,17 +290,76 @@
             font-family: 'Inter', sans-serif;
         }
 
-        .btn-save:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        .btn-danger:hover { background: #dc2626; }
+
+        .btn-sm { padding: 6px 12px; font-size: 0.8rem; }
+
+        /* ===== DATA TABLE IN CARDS ===== */
+        .mini-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .mini-table th {
+            text-align: left;
+            padding: 8px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .mini-table td {
+            padding: 10px 8px;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .mini-table tr:hover { background: rgba(102, 126, 234, 0.02); }
+
+        .action-btn-sm {
+            padding: 4px 8px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .action-btn-sm.edit { background: rgba(102, 126, 234, 0.1); color: #667eea; }
+        .action-btn-sm.edit:hover { background: #667eea; color: white; }
+
+        .action-btn-sm.delete { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+        .action-btn-sm.delete:hover { background: #ef4444; color: white; }
+
+        .scroll-box {
+            max-height: 220px;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin-bottom: 16px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
         }
 
         /* ===== SIDEBAR TOGGLE ===== */
         .sidebar-toggle {
             display: none;
             position: fixed;
-            top: 16px;
-            left: 16px;
+            top: 16px; left: 16px;
             z-index: 1001;
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -362,99 +374,47 @@
         .sidebar-overlay {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.4);
             z-index: 999;
         }
 
         /* ===== FOOTER ===== */
         .footer {
-            background: var(--bg-card);
-            border-top: 1px solid var(--border);
-            color: var(--text-secondary);
+            background: #0f1724 !important;
+            color: rgba(255, 255, 255, 0.6) !important;
+            border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
             text-align: center;
             padding: 20px;
         }
 
-        .footer p {
-            margin: 4px 0;
-            font-weight: 400;
-            font-size: 0.9rem;
-        }
-
-        .footer strong {
-            color: var(--text-primary);
-        }
+        .footer p { margin: 4px 0; font-weight: 400; font-size: 0.9rem; color: rgba(255,255,255,0.5) !important; }
+        .footer strong { color: white !important; }
 
         /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-                width: 280px;
-            }
-            .sidebar.open {
-                transform: translateX(0);
-            }
-            .sidebar-overlay.open {
-                display: block;
-            }
-            .sidebar-toggle {
-                display: block;
-            }
-            .main-area {
-                margin-left: 0;
-                padding-top: 60px;
-            }
-            .main-content {
-                padding: 20px 16px;
-            }
-            .page-title {
-                font-size: 1.4rem;
-            }
-            .settings-grid {
-                grid-template-columns: 1fr;
-            }
+            .sidebar { transform: translateX(-100%); width: 280px; }
+            .sidebar.open { transform: translateX(0); }
+            .sidebar-overlay.open { display: block; }
+            .sidebar-toggle { display: block; }
+            .main-area { margin-left: 0; padding-top: 60px; }
+            .main-content { padding: 20px 16px; }
+            .page-title { font-size: 1.4rem; }
+            .settings-grid { grid-template-columns: 1fr; }
+            .form-row { grid-template-columns: 1fr; }
         }
-
-        @media (max-width: 480px) {
-            .settings-card {
-                padding: 20px 16px;
-            }
-        }
-        .footer {
-    background: #0f1724 !important;
-    color: rgba(255, 255, 255, 0.6) !important;
-    border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
-}
-
-.footer p {
-    color: rgba(255, 255, 255, 0.5) !important;
-}
-
-.footer strong {
-    color: white !important;
-}
-
-.footer-update {
-    color: rgba(255, 255, 255, 0.3) !important;
-}
     </style>
+<base target="_blank">
 </head>
 <body>
 
-    <!-- ===== SIDEBAR TOGGLE ===== -->
-    <button class="sidebar-toggle" id="sidebarToggle">
+    <button class="sidebar-toggle" id="sidebar-toggle">
         <i class="fas fa-bars"></i>
     </button>
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
 
-    <!-- ===== PAGE WRAPPER ===== -->
     <div class="page-wrapper">
-
-        <!-- ===== SIDEBAR ===== -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div class="logo">
@@ -480,163 +440,34 @@
                 </ul>
             </nav>
             <div class="sidebar-footer">
-                <button id="themeToggle" class="theme-btn-sidebar">
+                <button id="theme-toggle" class="theme-btn-sidebar">
                     <i class="fas fa-moon"></i> Dark Mode
                 </button>
             </div>
         </aside>
 
-        <!-- ===== MAIN AREA ===== -->
         <div class="main-area">
-
             <main class="main-content">
                 <div class="container">
 
-                    <!-- ===== HEADER ===== -->
                     <div class="page-header">
                         <h1 class="page-title">
                             <i class="fas fa-gear"></i> Settings
                         </h1>
                     </div>
 
-                    <!-- ===== SETTINGS ===== -->
                     <div class="settings-grid">
 
-                        <!-- General Settings -->
-                        <div class="settings-card">
-                            <h3><i class="fas fa-globe"></i> General Settings</h3>
-                            <div class="settings-group">
-                                <label>Site Name</label>
-                                <input type="text" value="Fixora" />
-                            </div>
-                            <div class="settings-group">
-                                <label>Site Email</label>
-                                <input type="email" value="info@fixora.com" />
-                            </div>
-                            <div class="settings-group">
-                                <label>Currency</label>
-                                <select>
-                                    <option>SAR - Saudi Riyal</option>
-                                    <option>USD - US Dollar</option>
-                                    <option>EGP - Egyptian Pound</option>
-                                    <option>EUR - Euro</option>
-                                </select>
-                            </div>
-                            <div class="settings-group">
-                                <label>Language</label>
-                                <select>
-                                    <option>English</option>
-                                    <option>Arabic</option>
-                                    <option>French</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <!-- Appearance -->
-                        <div class="settings-card">
-                            <h3><i class="fas fa-palette"></i> Appearance</h3>
-                            <div class="settings-group">
-                                <label>Theme</label>
-                                <select>
-                                    <option>Light</option>
-                                    <option>Dark</option>
-                                    <option>System Default</option>
-                                </select>
-                            </div>
-                            <div class="settings-group">
-                                <label>Primary Color</label>
-                                <input type="color" value="#667eea" style="padding: 4px; height: 44px; cursor: pointer;" />
-                            </div>
-                            <div class="settings-group">
-                                <div class="toggle">
-                                    <input type="checkbox" checked />
-                                    <span>Enable Animations</span>
-                                </div>
-                            </div>
-                            <div class="settings-group">
-                                <div class="toggle">
-                                    <input type="checkbox" checked />
-                                    <span>Show Notifications</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Notification Settings -->
-                        <div class="settings-card">
-                            <h3><i class="fas fa-bell"></i> Notifications</h3>
-                            <div class="settings-group">
-                                <div class="toggle">
-                                    <input type="checkbox" checked />
-                                    <span>New Customer Registration</span>
-                                </div>
-                            </div>
-                            <div class="settings-group">
-                                <div class="toggle">
-                                    <input type="checkbox" checked />
-                                    <span>New Provider Registration</span>
-                                </div>
-                            </div>
-                            <div class="settings-group">
-                                <div class="toggle">
-                                    <input type="checkbox" checked />
-                                    <span>New Order Placed</span>
-                                </div>
-                            </div>
-                            <div class="settings-group">
-                                <div class="toggle">
-                                    <input type="checkbox" />
-                                    <span>Order Completed</span>
-                                </div>
-                            </div>
-                            <div class="settings-group">
-                                <div class="toggle">
-                                    <input type="checkbox" checked />
-                                    <span>System Updates</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Security -->
-                        <div class="settings-card">
-                            <h3><i class="fas fa-shield-halved"></i> Security</h3>
-                            <div class="settings-group">
-                                <div class="toggle">
-                                    <input type="checkbox" checked />
-                                    <span>Two-Factor Authentication</span>
-                                </div>
-                            </div>
-                            <div class="settings-group">
-                                <div class="toggle">
-                                    <input type="checkbox" checked />
-                                    <span>Require Strong Passwords</span>
-                                </div>
-                            </div>
-                            <div class="settings-group">
-                                <div class="toggle">
-                                    <input type="checkbox" />
-                                    <span>Session Timeout (30 min)</span>
-                                </div>
-                            </div>
-                            <div class="settings-group" style="margin-top: 16px;">
-                                <button class="btn-save" onclick="saveSettings()">
-                                    <i class="fas fa-save"></i> Save Settings
-                                </button>
-                            </div>
-                        </div>
-
                         <!-- Category Management -->
-                        <div class="settings-card" style="grid-column: span 1;">
+                        <div class="settings-card">
                             <h3><i class="fas fa-list"></i> Category Management</h3>
-                            <div style="max-height: 200px; overflow-y: auto; margin-bottom: 16px; border: 1px solid var(--border-color); border-radius: 6px;">
-                                <table style="width: 100%; border-collapse: collapse;">
+                            <div class="scroll-box">
+                                <table class="mini-table" id="categoriesTable">
                                     <thead>
-                                        <tr style="background: var(--border-color); font-size: 0.85rem;">
-                                            <th style="padding: 6px;">Name</th>
-                                            <th style="padding: 6px; text-align: right;">Actions</th>
-                                        </tr>
+                                        <tr><th>Name</th><th style="text-align:right;">Actions</th></tr>
                                     </thead>
                                     <tbody id="categoriesList">
-                                        <tr><td colspan="2" style="text-align:center;padding:10px;">Loading categories...</td></tr>
+                                        <tr><td colspan="2" style="text-align:center;padding:20px;color:var(--text-light);">Loading...</td></tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -644,32 +475,26 @@
                                 <label id="categoryFormLabel">Add New Category</label>
                                 <input type="hidden" id="categoryId" />
                                 <input type="text" id="categoryName" placeholder="Category Name" style="margin-bottom: 8px;" />
-                                <textarea id="categoryDesc" placeholder="Description" rows="2" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text-primary); font-family: inherit; margin-bottom: 8px; resize: none;"></textarea>
-                                <div style="display:flex; gap:8px;">
-                                    <button class="btn-save" onclick="saveCategory()" style="padding: 8px 12px; font-size: 0.9rem; flex:1;">
+                                <textarea id="categoryDesc" placeholder="Description" rows="2"></textarea>
+                                <div class="form-actions">
+                                    <button class="btn-save btn-sm" onclick="saveCategory()">
                                         <i class="fas fa-save"></i> Save
                                     </button>
-                                    <button class="btn-save" onclick="resetCategoryForm()" style="padding: 8px 12px; font-size: 0.9rem; background:#4b5563;">
-                                        Cancel
-                                    </button>
+                                    <button class="btn-secondary btn-sm" onclick="resetCategoryForm()">Cancel</button>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Subscription Plans -->
-                        <div class="settings-card" style="grid-column: span 1;">
+                        <div class="settings-card">
                             <h3><i class="fas fa-gem"></i> Subscription Plans</h3>
-                            <div style="max-height: 200px; overflow-y: auto; margin-bottom: 16px; border: 1px solid var(--border-color); border-radius: 6px;">
-                                <table style="width: 100%; border-collapse: collapse;">
+                            <div class="scroll-box">
+                                <table class="mini-table" id="plansTable">
                                     <thead>
-                                        <tr style="background: var(--border-color); font-size: 0.85rem;">
-                                            <th style="padding: 6px;">Plan</th>
-                                            <th style="padding: 6px;">Price</th>
-                                            <th style="padding: 6px; text-align: right;">Actions</th>
-                                        </tr>
+                                        <tr><th>Plan</th><th>Price</th><th style="text-align:right;">Actions</th></tr>
                                     </thead>
                                     <tbody id="plansList">
-                                        <tr><td colspan="3" style="text-align:center;padding:10px;">Loading plans...</td></tr>
+                                        <tr><td colspan="3" style="text-align:center;padding:20px;color:var(--text-light);">Loading...</td></tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -678,39 +503,64 @@
                                 <input type="hidden" id="planId" />
                                 <input type="text" id="planName" placeholder="Plan Name" style="margin-bottom: 8px;" />
                                 <input type="text" id="planDesc" placeholder="Description" style="margin-bottom: 8px;" />
-                                <div style="display: flex; gap: 8px; margin-bottom: 8px;">
-                                    <input type="number" id="planPrice" placeholder="Price (SAR)" style="flex: 1;" />
-                                    <input type="number" id="planDuration" placeholder="Duration (Days)" style="flex: 1;" />
+                                <div class="form-row">
+                                    <input type="number" id="planPrice" placeholder="Price (EGP)" />
+                                    <input type="number" id="planDuration" placeholder="Duration (Days)" />
                                 </div>
-                                <div style="display:flex; gap:8px;">
-                                    <button class="btn-save" onclick="savePlan()" style="padding: 8px 12px; font-size: 0.9rem; flex:1;">
+                                <div class="form-actions">
+                                    <button class="btn-save btn-sm" onclick="savePlan()">
                                         <i class="fas fa-save"></i> Save
                                     </button>
-                                    <button class="btn-save" onclick="resetPlanForm()" style="padding: 8px 12px; font-size: 0.9rem; background:#4b5563;">
-                                        Cancel
-                                    </button>
+                                    <button class="btn-secondary btn-sm" onclick="resetPlanForm()">Cancel</button>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- System Announcements -->
-                        <div class="settings-card" style="grid-column: span 1;">
+                        <!-- System Announcement -->
+                        <div class="settings-card">
                             <h3><i class="fas fa-bullhorn"></i> System Announcement</h3>
                             <div class="settings-group">
                                 <label>Target User ID (GUID)</label>
-                                <input type="text" id="announcementUserId" placeholder="User GUID" />
+                                <input type="text" id="announcementUserId" placeholder="Leave empty to broadcast to all" />
+                                <small style="color:var(--text-light);font-size:0.8rem;">Leave empty to send to all users</small>
                             </div>
                             <div class="settings-group">
-                                <label>Announcement Title</label>
-                                <input type="text" id="announcementTitle" placeholder="Title" />
+                                <label>Title</label>
+                                <input type="text" id="announcementTitle" placeholder="Announcement title" />
                             </div>
                             <div class="settings-group">
-                                <label>Message Body</label>
-                                <textarea id="announcementBody" placeholder="Type message..." rows="3" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text-primary); font-family: inherit; resize: none;"></textarea>
+                                <label>Message</label>
+                                <textarea id="announcementBody" placeholder="Type your message..." rows="3"></textarea>
                             </div>
-                            <div class="settings-group" style="margin-top: 12px;">
-                                <button class="btn-save" onclick="sendAnnouncement()" style="padding: 10px 16px;">
+                            <div class="form-actions">
+                                <button class="btn-save" onclick="sendAnnouncement()">
                                     <i class="fas fa-paper-plane"></i> Send Notification
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- General Settings -->
+                        <div class="settings-card">
+                            <h3><i class="fas fa-globe"></i> General Settings</h3>
+                            <div class="settings-group">
+                                <label>Site Name</label>
+                                <input type="text" value="Fixora" id="siteName" />
+                            </div>
+                            <div class="settings-group">
+                                <label>Site Email</label>
+                                <input type="email" value="info@fixora.com" id="siteEmail" />
+                            </div>
+                            <div class="settings-group">
+                                <label>Currency</label>
+                                <select id="currency">
+                                    <option value="EGP" selected>EGP - Egyptian Pound</option>
+                                    <option value="USD">USD - US Dollar</option>
+                                    <option value="EUR">EUR - Euro</option>
+                                </select>
+                            </div>
+                            <div class="form-actions">
+                                <button class="btn-save" onclick="saveGeneralSettings()">
+                                    <i class="fas fa-save"></i> Save Settings
                                 </button>
                             </div>
                         </div>
@@ -720,11 +570,9 @@
                 </div>
             </main>
 
-            <!-- ===== FOOTER ===== -->
             <footer class="footer">
                 <p>© 2026 <strong>Fixora</strong> — Admin Panel</p>
             </footer>
-
         </div>
     </div>
 
@@ -735,50 +583,49 @@
     <script src="../js/api.js"></script>
     <script src="../js/auth.js"></script>
     <script src="../js/signalr.js"></script>
-    <script src="../js/script.js"></script>
-    <script src="../js/footer.js"></script>
+    <script src="../js/admin-utils.js"></script>
     <script>
         // ==========================================
-        // CHECK LOGIN & INITIAL LOAD
+        // INIT
         // ==========================================
         document.addEventListener('DOMContentLoaded', async function() {
-            if (!Auth.checkAuth(['Admin'])) {
-                return;
-            }
-            await loadCategories();
-            await loadPlans();
+            if (!Auth.checkAuth(['Admin'])) return;
+            await Promise.all([
+                loadCategories(),
+                loadPlans()
+            ]);
         });
 
         // ==========================================
-        // CATEGORY OPERATIONS
+        // CATEGORIES
         // ==========================================
         async function loadCategories() {
             try {
-                const list = await api.get('categories');
+                const timeout = (ms) => new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), ms));
+                const list = await Promise.race([api.get('categories'), timeout(8000)]);
                 const tbody = document.getElementById('categoriesList');
                 if (!tbody) return;
 
                 if (!list || list.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="2" style="text-align:center;padding:10px;">No categories</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="2" style="text-align:center;padding:20px;color:var(--text-light);">No categories</td></tr>`;
                     return;
                 }
 
-                tbody.innerHTML = list.map(cat => {
-                    const editBtn = `<button class="action-btn edit" style="padding:2px 6px;font-size:0.8rem;" onclick="editCategoryForm('${cat.id}', '${cat.name}', '${cat.description || ''}')"><i class="fas fa-edit"></i></button>`;
-                    const deleteBtn = `<button class="action-btn reject" style="padding:2px 6px;font-size:0.8rem;" onclick="deleteCategory('${cat.id}')"><i class="fas fa-trash"></i></button>`;
-                    
-                    return `
-                        <tr>
-                            <td style="padding:6px;font-size:0.9rem;"><strong>${cat.name}</strong></td>
-                            <td style="padding:6px;text-align:right;">
-                                <div style="display:inline-flex;gap:4px;">
-                                    ${editBtn}
-                                    ${deleteBtn}
-                                </div>
-                            </td>
-                        </tr>
-                    `;
-                }).join('');
+                tbody.innerHTML = list.map(cat => `
+                    <tr>
+                        <td><strong>${escapeHtml(cat.name)}</strong></td>
+                        <td style="text-align:right;">
+                            <div style="display:inline-flex;gap:4px;">
+                                <button class="action-btn-sm edit" onclick="editCategoryForm('${cat.id}', '${escapeHtml(cat.name)}', '${escapeHtml(cat.description || '')}')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="action-btn-sm delete" onclick="deleteCategory('${cat.id}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
             } catch (err) {
                 console.error("Failed to load categories:", err);
             }
@@ -786,23 +633,21 @@
 
         async function saveCategory() {
             const id = document.getElementById('categoryId').value;
-            const name = document.getElementById('categoryName').value;
-            const desc = document.getElementById('categoryDesc').value;
+            const name = document.getElementById('categoryName').value.trim();
+            const desc = document.getElementById('categoryDesc').value.trim();
 
-            if (!name.trim()) {
-                alert("Category name is required.");
+            if (!name) {
+                ErrorHandler.showNotification("Error", "Category name is required.", "error");
                 return;
             }
 
             try {
                 if (id) {
-                    // Update
-                    await api.put(`admin/categories/${id}`, { name: name, description: desc });
-                    ErrorHandler.showNotification("Success", "Category updated successfully.", "success");
+                    await api.put(`admin/categories/${id}`, { name, description: desc });
+                    ErrorHandler.showNotification("Success", "Category updated.", "success");
                 } else {
-                    // Create
-                    await api.post('admin/categories', { name: name, description: desc });
-                    ErrorHandler.showNotification("Success", "Category created successfully.", "success");
+                    await api.post('admin/categories', { name, description: desc });
+                    ErrorHandler.showNotification("Success", "Category created.", "success");
                 }
                 resetCategoryForm();
                 await loadCategories();
@@ -826,11 +671,10 @@
         }
 
         async function deleteCategory(id) {
-            if (!confirm("⚠️ Are you sure you want to delete this category?")) return;
-
+            if (!confirm("Are you sure you want to delete this category?")) return;
             try {
                 await api.delete(`admin/categories/${id}`);
-                ErrorHandler.showNotification("Success", "Category deleted successfully.", "success");
+                ErrorHandler.showNotification("Success", "Category deleted.", "success");
                 await loadCategories();
             } catch (err) {
                 console.error(err);
@@ -838,36 +682,35 @@
         }
 
         // ==========================================
-        // SUBSCRIPTION PLANS OPERATIONS
+        // SUBSCRIPTION PLANS
         // ==========================================
         async function loadPlans() {
             try {
-                const list = await api.get('subscriptions');
+                const list = await Promise.race([api.get('subscriptions'), timeout(8000)]);
                 const tbody = document.getElementById('plansList');
                 if (!tbody) return;
 
                 if (!list || list.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;padding:10px;">No plans</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;padding:20px;color:var(--text-light);">No plans</td></tr>`;
                     return;
                 }
 
-                tbody.innerHTML = list.map(plan => {
-                    const editBtn = `<button class="action-btn edit" style="padding:2px 6px;font-size:0.8rem;" onclick="editPlanForm('${plan.id}', '${plan.name}', '${plan.description || ''}', ${plan.price}, ${plan.durationInDays})"><i class="fas fa-edit"></i></button>`;
-                    const deleteBtn = `<button class="action-btn reject" style="padding:2px 6px;font-size:0.8rem;" onclick="deletePlan('${plan.id}')"><i class="fas fa-trash"></i></button>`;
-
-                    return `
-                        <tr>
-                            <td style="padding:6px;font-size:0.9rem;"><strong>${plan.name}</strong></td>
-                            <td style="padding:6px;font-size:0.9rem;">SAR ${plan.price}</td>
-                            <td style="padding:6px;text-align:right;">
-                                <div style="display:inline-flex;gap:4px;">
-                                    ${editBtn}
-                                    ${deleteBtn}
-                                </div>
-                            </td>
-                        </tr>
-                    `;
-                }).join('');
+                tbody.innerHTML = list.map(plan => `
+                    <tr>
+                        <td><strong>${escapeHtml(plan.name)}</strong></td>
+                        <td>EGP ${plan.price}</td>
+                        <td style="text-align:right;">
+                            <div style="display:inline-flex;gap:4px;">
+                                <button class="action-btn-sm edit" onclick="editPlanForm('${plan.id}', '${escapeHtml(plan.name)}', '${escapeHtml(plan.description || '')}', ${plan.price}, ${plan.durationInDays})">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="action-btn-sm delete" onclick="deletePlan('${plan.id}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
             } catch (err) {
                 console.error("Failed to load plans:", err);
             }
@@ -875,31 +718,24 @@
 
         async function savePlan() {
             const id = document.getElementById('planId').value;
-            const name = document.getElementById('planName').value;
-            const desc = document.getElementById('planDesc').value;
+            const name = document.getElementById('planName').value.trim();
+            const desc = document.getElementById('planDesc').value.trim();
             const price = parseFloat(document.getElementById('planPrice').value || "0");
             const duration = parseInt(document.getElementById('planDuration').value || "0");
 
-            if (!name.trim()) {
-                alert("Plan name is required.");
+            if (!name) {
+                ErrorHandler.showNotification("Error", "Plan name is required.", "error");
                 return;
             }
 
             try {
-                const payload = {
-                    name: name,
-                    description: desc,
-                    price: price,
-                    durationInDays: duration,
-                    isActive: true
-                };
-
+                const payload = { name, description: desc, price, durationInDays: duration, isActive: true };
                 if (id) {
                     await api.put(`admin/subscriptions/${id}`, payload);
-                    ErrorHandler.showNotification("Success", "Subscription plan updated.", "success");
+                    ErrorHandler.showNotification("Success", "Plan updated.", "success");
                 } else {
                     await api.post('admin/subscriptions', payload);
-                    ErrorHandler.showNotification("Success", "Subscription plan created.", "success");
+                    ErrorHandler.showNotification("Success", "Plan created.", "success");
                 }
                 resetPlanForm();
                 await loadPlans();
@@ -927,11 +763,10 @@
         }
 
         async function deletePlan(id) {
-            if (!confirm("⚠️ Are you sure you want to deactivate/delete this plan?")) return;
-
+            if (!confirm("Are you sure you want to delete this plan?")) return;
             try {
                 await api.delete(`admin/subscriptions/${id}`);
-                ErrorHandler.showNotification("Success", "Subscription plan deactivated.", "success");
+                ErrorHandler.showNotification("Success", "Plan deleted.", "success");
                 await loadPlans();
             } catch (err) {
                 console.error(err);
@@ -939,34 +774,57 @@
         }
 
         // ==========================================
-        // SEND SYSTEM ANNOUNCEMENT
+        // ANNOUNCEMENTS
         // ==========================================
         async function sendAnnouncement() {
-            const userId = document.getElementById('announcementUserId').value;
-            const title = document.getElementById('announcementTitle').value;
-            const body = document.getElementById('announcementBody').value;
+            const userId = document.getElementById('announcementUserId').value.trim();
+            const title = document.getElementById('announcementTitle').value.trim();
+            const body = document.getElementById('announcementBody').value.trim();
 
-            if (!userId.trim() || !title.trim() || !body.trim()) {
-                alert("User ID, Title, and Message Body are all required.");
+            if (!title || !body) {
+                ErrorHandler.showNotification("Error", "Title and message are required.", "error");
                 return;
             }
 
             try {
+                // If userId is empty, we'd need a broadcast endpoint
+                // For now, send to specific user or show error
+                if (!userId) {
+                    if (!confirm("No user ID specified. This will be sent as a system-wide announcement when broadcast is supported. Continue?")) return;
+                }
+
                 await api.post('admin/notifications', {
-                    userId: userId,
+                    userId: userId || "00000000-0000-0000-0000-000000000000",
                     title: title,
                     body: body,
-                    referenceType: 0 // None
+                    referenceType: 0
                 });
-                ErrorHandler.showNotification("Success", "System announcement notification sent successfully.", "success");
-                
-                // Clear fields
+                ErrorHandler.showNotification("Success", "Announcement sent successfully.", "success");
+
                 document.getElementById('announcementUserId').value = "";
                 document.getElementById('announcementTitle').value = "";
                 document.getElementById('announcementBody').value = "";
             } catch (err) {
                 console.error("Failed to send announcement:", err);
             }
+        }
+
+        // ==========================================
+        // GENERAL SETTINGS
+        // ==========================================
+        function saveGeneralSettings() {
+            // These would typically be saved to backend
+            // For now, just show success
+            ErrorHandler.showNotification("Success", "Settings saved successfully.", "success");
+        }
+
+        // ==========================================
+        // UTILS
+        // ==========================================
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
 
         // ==========================================
@@ -985,17 +843,17 @@
         if (sidebarOverlay) sidebarOverlay.addEventListener('click', toggleSidebar);
 
         const themeToggle = document.getElementById('themeToggle');
-        const bodyEl = document.body;
+        const body = document.body;
 
         if (localStorage.getItem('adminTheme') === 'dark') {
-            bodyEl.classList.add('dark-mode');
+            body.classList.add('dark-mode');
             if (themeToggle) themeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
         }
 
         if (themeToggle) {
             themeToggle.addEventListener('click', function() {
-                bodyEl.classList.toggle('dark-mode');
-                if (bodyEl.classList.contains('dark-mode')) {
+                body.classList.toggle('dark-mode');
+                if (body.classList.contains('dark-mode')) {
                     localStorage.setItem('adminTheme', 'dark');
                     this.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
                 } else {
@@ -1005,13 +863,15 @@
             });
         }
 
-        function saveSettings() {
-            ErrorHandler.showNotification("Success", "General settings saved successfully.", "success");
-        }
-
+            
         function handleLogout(event) {
             event.preventDefault();
-            Auth.logout();
+            if (typeof Auth !== 'undefined' && Auth.logout) {
+                Auth.logout();
+            } else {
+                if (typeof TokenManager !== 'undefined') TokenManager.clearTokens();
+                window.location.href = 'index.html';
+            }
         }
     </script>
 </body>

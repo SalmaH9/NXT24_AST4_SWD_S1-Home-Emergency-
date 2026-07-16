@@ -1,78 +1,84 @@
 // ==========================================
-// THEME TOGGLE (Dark / Light Mode)
+// THEME TOGGLE (Dark / Light Mode) - SAFE VERSION
 // ==========================================
-const themeToggle = document.getElementById('theme-toggle');
-const body = document.body;
+(function() {
+    const themeToggle = document.getElementById('theme-toggle');
+    const body = document.body;
 
-// Check saved theme
-if (localStorage.getItem('theme') === 'dark') {
-    body.classList.add('dark-mode');
-    themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-}
+    if (!themeToggle || !body) return; // Skip if not on a page with theme toggle
 
-themeToggle.addEventListener('click', () => {
-    body.classList.toggle('dark-mode');
-    if (body.classList.contains('dark-mode')) {
-        localStorage.setItem('theme', 'dark');
+    // Check saved theme
+    if (localStorage.getItem('theme') === 'dark') {
+        body.classList.add('dark-mode');
         themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-    } else {
-        localStorage.setItem('theme', 'light');
-        themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
     }
-});
+
+    themeToggle.addEventListener('click', () => {
+        body.classList.toggle('dark-mode');
+        if (body.classList.contains('dark-mode')) {
+            localStorage.setItem('theme', 'dark');
+            themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        } else {
+            localStorage.setItem('theme', 'light');
+            themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+        }
+    });
+})();
 
 // ==========================================
-// HAMBURGER MENU
+// HAMBURGER MENU - SAFE VERSION
 // ==========================================
-const hamburger = document.getElementById('hamburger');
-const navLinks = document.querySelector('.nav-links');
+(function() {
+    const hamburger = document.getElementById('hamburger');
+    const navLinks = document.querySelector('.nav-links');
 
-if (hamburger) {
+    if (!hamburger || !navLinks) return;
+
     hamburger.addEventListener('click', () => {
         navLinks.classList.toggle('open');
     });
-}
 
-// Close menu on link click (mobile)
-document.querySelectorAll('.nav-links a').forEach(link => {
-    link.addEventListener('click', () => {
-        if (navLinks) navLinks.classList.remove('open');
+    // Close menu on link click (mobile)
+    document.querySelectorAll('.nav-links a').forEach(link => {
+        link.addEventListener('click', () => {
+            navLinks.classList.remove('open');
+        });
     });
-});
+})();
 
 // ==========================================
-// SIDEBAR TOGGLE (Mobile)
+// SIDEBAR TOGGLE (Mobile) - SAFE VERSION
 // ==========================================
-const sidebarToggle = document.getElementById('sidebar-toggle');
-const sidebar = document.getElementById('sidebar');
-const sidebarOverlay = document.getElementById('sidebar-overlay');
+(function() {
+    const sidebarToggle = document.getElementById('sidebar-toggle');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebar-overlay');
 
-if (sidebarToggle) {
+    if (!sidebarToggle || !sidebar || !sidebarOverlay) return;
+
     sidebarToggle.addEventListener('click', () => {
         sidebar.classList.toggle('open');
         sidebarOverlay.classList.toggle('show');
     });
-}
 
-if (sidebarOverlay) {
     sidebarOverlay.addEventListener('click', () => {
         sidebar.classList.remove('open');
         sidebarOverlay.classList.remove('show');
     });
-}
 
-// Close sidebar when clicking a link on mobile
-document.querySelectorAll('.sidebar-nav a').forEach(link => {
-    link.addEventListener('click', () => {
-        if (window.innerWidth <= 768) {
-            sidebar.classList.remove('open');
-            sidebarOverlay.classList.remove('show');
-        }
+    // Close sidebar when clicking a link on mobile
+    document.querySelectorAll('.sidebar-nav a').forEach(link => {
+        link.addEventListener('click', () => {
+            if (window.innerWidth <= 768) {
+                sidebar.classList.remove('open');
+                sidebarOverlay.classList.remove('show');
+            }
+        });
     });
-});
+})();
 
 // ==========================================
-// SIDEBAR NAVIGATION - ROLE BASED (UPDATED)
+// SIDEBAR NAVIGATION - ROLE BASED (SAFE VERSION)
 // ==========================================
 function updateSidebarNavigation() {
     const role = localStorage.getItem('userRole');
@@ -124,17 +130,15 @@ function updateSidebarNavigation() {
 // ==========================================
 // LOGOUT FUNCTION - redirects to HOME page
 // ==========================================
-// ⚠️ كان فيه نسختين من منطق تسجيل الخروج (هنا + Auth.logout).
-//    لو حد اتعدّل ونُسي التاني → تسريب بيانات. دلوقتي مصدر واحد بس.
 function handleLogout(event) {
     if (event) event.preventDefault();
 
     if (typeof Auth !== 'undefined' && Auth.logout) {
-        Auth.logout();   // بيمسح كل حاجة عن طريق TokenManager.clearTokens
+        Auth.logout();   // Clears everything via TokenManager.clearTokens
         return;
     }
 
-    // احتياطي فقط لو auth.js مش متحمّل في الصفحة دي
+    // Fallback if auth.js is not loaded on this page
     if (typeof TokenManager !== 'undefined') {
         TokenManager.clearTokens();
     }
@@ -145,7 +149,7 @@ function handleLogout(event) {
 }
 
 // ==========================================
-// INIT
+// INIT - SAFE VERSION
 // ==========================================
 document.addEventListener('DOMContentLoaded', function() {
     // Update sidebar based on role
@@ -156,34 +160,26 @@ document.addEventListener('DOMContentLoaded', function() {
     const role = localStorage.getItem('userRole');
     const currentPage = window.location.pathname.split('/').pop();
 
-    // الصفحات العامة (مش محمية)
+    // Public pages (not protected)
     const publicPages = ['index.html', 'services.html', 'about.html', 'contact.html', 'login.html', 'register.html'];
 
     if (authLink) {
-        // لو في صفحة عامة، خليها Login دايماً
+        // If on public page, always show Login
         if (publicPages.includes(currentPage)) {
             authLink.innerHTML = `<a href="login.html"><i class="fas fa-right-to-bracket"></i> Login</a>`;
         } else if (role) {
-            // لو في صفحة محمية ومسجل دخول → Logout
+            // If on protected page and logged in → Logout
             authLink.innerHTML = `<a href="index.html" onclick="handleLogout(event)"><i class="fas fa-sign-out-alt"></i> Logout</a>`;
         } else {
-            // لو في صفحة محمية ومش مسجل → Login
+            // If on protected page and not logged in → Login
             authLink.innerHTML = `<a href="login.html"><i class="fas fa-right-to-bracket"></i> Login</a>`;
         }
     }
 
     // Protect dashboard pages
-    
-    // ✅ صفحات محمية للـ Customer
     const protectedCustomerPages = ['customer-dashboard.html', 'my-orders.html', 'customer-profile.html', 'post-request.html'];
-    
-    // ✅ صفحات محمية للـ Provider
     const protectedProviderPages = ['provider-dashboard.html', 'orders.html', 'schedule.html', 'profile.html', 'subscription.html'];
-    
-    // ✅ صفحات محمية للـ Admin
     const protectedAdminPages = ['admin-dashboard.html', 'admin-customers.html', 'admin-providers.html', 'admin-orders.html', 'admin-reports.html', 'admin-settings.html'];
-
-    // ✅ صفحات مشتركة (يدخلها الـ Customer والـ Provider)
     const sharedPages = ['examination.html', 'execution.html', 'rating.html', 'order-details.html', 'chat.html'];
 
     // Allow access to index.html and public pages for everyone
@@ -225,12 +221,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // ✅ إذا كانت الصفحة مشتركة، نسمح بالدخول للمستخدمين المسجلين فقط
+    // Shared pages - allow for logged in users only
     if (sharedPages.includes(currentPage)) {
         return;
     }
 
-    // select-technician.html is accessible only when there's a current request
+    // select-technician.html accessible only when there's a current request
     if (currentPage === 'select-technician.html') {
         const currentRequest = localStorage.getItem('currentRequest');
         if (!currentRequest && role !== 'customer') {
@@ -247,20 +243,15 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-
-
 // ==========================================
-// SET ACTIVE LINK IN SIDEBAR (لون ثابت)
+// SET ACTIVE LINK IN SIDEBAR
 // ==========================================
 function setActiveLink() {
     const currentPage = window.location.pathname.split('/').pop();
     const links = document.querySelectorAll('.sidebar-nav ul li a');
-    
+
     links.forEach(link => {
-        // شيل الـ active من كل الروابط
         link.classList.remove('active');
-        
-        // لو الرابط هو الصفحة الحالية، ضيف active
         const href = link.getAttribute('href');
         if (href === currentPage) {
             link.classList.add('active');
@@ -268,25 +259,29 @@ function setActiveLink() {
     });
 }
 
-// تشغيلها عند تحميل الصفحة
+// Run on page load
 document.addEventListener('DOMContentLoaded', function() {
     setActiveLink();
 });
 
 // ==========================================
-// DYNAMIC SIGNALR LOADER & REAL-TIME NOTIFICATIONS
+// DYNAMIC SIGNALR LOADER & REAL-TIME NOTIFICATIONS - SAFE VERSION
 // ==========================================
 var notificationConnection = null;
 
 function initNotificationHub() {
-    if (typeof RealTime === "undefined") return;
+    // Only init if RealTime and signalR are available
+    if (typeof RealTime === "undefined" || typeof signalR === "undefined") {
+        console.log("SignalR not available yet, skipping notification hub init");
+        return;
+    }
 
     notificationConnection = RealTime.createConnection("hubs/notifications");
     if (notificationConnection) {
         notificationConnection.on("ReceiveNotification", function(notificationDto) {
             console.log("Real-time notification received:", notificationDto);
 
-            // 1. Show Toast Alert
+            // Show Toast Alert
             if (typeof ErrorHandler !== "undefined" && ErrorHandler.showNotification) {
                 ErrorHandler.showNotification(
                     notificationDto.title || "Notification",
@@ -295,7 +290,7 @@ function initNotificationHub() {
                 );
             }
 
-            // 2. Dispatch custom event for page-level updates
+            // Dispatch custom event for page-level updates
             const event = new CustomEvent("realtimeNotification", { detail: notificationDto });
             document.dispatchEvent(event);
         });
@@ -338,7 +333,14 @@ function loadSignalRDependencies(callback) {
     }
 }
 
+// Only init SignalR on non-admin pages (admin pages handle their own)
 document.addEventListener('DOMContentLoaded', function() {
+    const currentPage = window.location.pathname.split('/').pop();
+    const adminPages = ['admin-dashboard.html', 'admin-customers.html', 'admin-providers.html', 
+                        'admin-orders.html', 'admin-reports.html', 'admin-settings.html'];
+
+    if (adminPages.includes(currentPage)) return; // Skip for admin pages
+
     const isLoggedInUser = localStorage.getItem('isLoggedIn') === 'true' && !!localStorage.getItem('accessToken');
     if (isLoggedInUser) {
         loadSignalRDependencies(() => {

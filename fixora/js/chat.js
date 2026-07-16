@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             id: localStorage.getItem('userEmail') || 'customer@fixora.com',
             name: localStorage.getItem('userName') || 'Customer',
             role: localStorage.getItem('userRole') || 'customer',
-            phone: localStorage.getItem('userPhone') || '+966 50 123 4567'
+            phone: localStorage.getItem('userPhone') || ''   // ⚠️ كان رقم سعودي مخترع
         };
     }
 
@@ -245,7 +245,7 @@ async function selectChat(chatId) {
     statusEl.className = 'online-status ' + (chat.partner.online ? 'online' : 'offline');
 
     // Call button phone configuration
-    var partnerPhone = chat.partner.phone || '+966 50 123 4567';
+    var partnerPhone = chat.partner.phone || '';   // ⚠️ كان رقم سعودي مخترع
     const callBtn = document.getElementById('callBtn');
     if (callBtn) {
         callBtn.setAttribute('data-phone', partnerPhone);
@@ -599,7 +599,20 @@ async function startNewChat(userId, serviceRequestId) {
 // ===== CALL PARTNER =====
 function callPartner() {
     if (!currentChatPartner) return;
-    var phone = currentChatPartner.phone || '+966 50 123 4567';
+    // 🔴 كان: var phone = currentChatPartner.phone || '+966 50 123 4567';
+    //    الرقم المخترع ده مكانش بيتعرض بس — كان بيتحط في
+    //    window.location.href = 'tel:' + phone، يعني لو الشريك مالوش
+    //    رقم مسجّل، الموقع كان بيتصل فعليًا برقم سعودي عشوائي!
+    var phone = currentChatPartner.phone;
+
+    if (!phone) {
+        ErrorHandler.showNotification(
+            'No phone number',
+            (currentChatPartner.name || 'This user') + ' has not added a phone number. Try messaging instead.',
+            'warning');
+        return;
+    }
+
     var confirmMsg = '📞 Call ' + currentChatPartner.name + '\n\nPhone: ' + phone + '\n\nClick "OK" to call.';
     if (confirm(confirmMsg)) {
         window.location.href = 'tel:' + phone;

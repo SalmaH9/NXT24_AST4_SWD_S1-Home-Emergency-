@@ -6,13 +6,9 @@
     <title>Admin - Reports</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <style>
-        /* ===== نفس استايل admin-dashboard.html مع تعديلات ===== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
             --bg-primary: #f0f4f8;
@@ -47,11 +43,7 @@
             --shadow-hover: 0 30px 80px rgba(0, 0, 0, 0.6);
         }
 
-        /* ===== SIDEBAR ===== */
-        .page-wrapper {
-            display: flex;
-            min-height: 100vh;
-        }
+        .page-wrapper { display: flex; min-height: 100vh; }
 
         .sidebar {
             width: 260px;
@@ -60,9 +52,7 @@
             display: flex;
             flex-direction: column;
             position: fixed;
-            top: 0;
-            left: 0;
-            bottom: 0;
+            top: 0; left: 0; bottom: 0;
             z-index: 1000;
             transition: transform 0.3s ease;
             overflow-y: auto;
@@ -82,10 +72,7 @@
             color: var(--text-primary);
         }
 
-        .sidebar-header .logo i {
-            color: var(--accent);
-            font-size: 1.6rem;
-        }
+        .sidebar-header .logo i { color: var(--accent); font-size: 1.6rem; }
 
         .sidebar-header .logo .logo-highlight {
             background: var(--gradient-primary);
@@ -101,18 +88,9 @@
             display: block;
         }
 
-        .sidebar-nav {
-            flex: 1;
-            padding: 16px 12px;
-        }
-
-        .sidebar-nav ul {
-            list-style: none;
-        }
-
-        .sidebar-nav ul li {
-            margin-bottom: 4px;
-        }
+        .sidebar-nav { flex: 1; padding: 16px 12px; }
+        .sidebar-nav ul { list-style: none; }
+        .sidebar-nav ul li { margin-bottom: 4px; }
 
         .sidebar-nav ul li a {
             display: flex;
@@ -127,10 +105,7 @@
             transition: all 0.3s ease;
         }
 
-        .sidebar-nav ul li a i {
-            width: 20px;
-            font-size: 1.1rem;
-        }
+        .sidebar-nav ul li a i { width: 20px; font-size: 1.1rem; }
 
         .sidebar-nav ul li a:hover {
             background: rgba(102, 126, 234, 0.08);
@@ -176,7 +151,6 @@
             color: var(--accent);
         }
 
-        /* ===== MAIN AREA ===== */
         .main-area {
             flex: 1;
             margin-left: 260px;
@@ -185,17 +159,9 @@
             min-height: 100vh;
         }
 
-        .main-content {
-            flex: 1;
-            padding: 30px 30px 20px;
-        }
+        .main-content { flex: 1; padding: 30px 30px 20px; }
+        .container { max-width: 1100px; margin: 0 auto; }
 
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-        }
-
-        /* ===== PAGE HEADER ===== */
         .page-header {
             display: flex;
             justify-content: space-between;
@@ -214,15 +180,13 @@
             gap: 12px;
         }
 
-        .page-title i {
-            color: var(--accent);
-        }
+        .page-title i { color: var(--accent); }
 
-        /* ===== REPORTS GRID ===== */
+        /* ===== REPORT CARDS ===== */
         .reports-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 24px;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
             margin-bottom: 30px;
         }
 
@@ -235,11 +199,18 @@
             text-align: center;
             transition: var(--transition);
             cursor: pointer;
+            border: 2px solid transparent;
         }
 
         .report-card:hover {
             transform: translateY(-6px);
             box-shadow: var(--shadow-hover);
+            border-color: var(--accent);
+        }
+
+        .report-card.active {
+            border-color: var(--accent);
+            background: rgba(102, 126, 234, 0.03);
         }
 
         .report-card i {
@@ -259,12 +230,110 @@
             font-size: 0.85rem;
         }
 
+        /* ===== REPORT CONTENT ===== */
+        .report-content {
+            background: var(--bg-card);
+            border-radius: var(--radius-sm);
+            padding: 30px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            min-height: 400px;
+        }
+
+        .report-content h2 {
+            color: var(--text-primary);
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .report-content h2 i { color: var(--accent); }
+
+        .report-content h3 {
+            color: var(--text-primary);
+            margin: 24px 0 12px;
+            font-size: 1rem;
+        }
+
+        /* Chart container */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 30px;
+        }
+
+        /* Data table */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+
+        .data-table th {
+            text-align: left;
+            padding: 12px 16px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .data-table td {
+            padding: 12px 16px;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .data-table tr:hover { background: rgba(102, 126, 234, 0.02); }
+
+        .metric-card {
+            background: var(--bg-primary);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        .metric-card h4 {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--accent);
+            margin: 0;
+        }
+
+        .metric-card p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin: 4px 0 0;
+        }
+
+        .metrics-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        /* ===== EMPTY STATE ===== */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-light);
+        }
+
+        .empty-state i { font-size: 3rem; margin-bottom: 16px; }
+        .empty-state h3 { color: var(--text-primary); margin-bottom: 8px; }
+
         /* ===== SIDEBAR TOGGLE ===== */
         .sidebar-toggle {
             display: none;
             position: fixed;
-            top: 16px;
-            left: 16px;
+            top: 16px; left: 16px;
             z-index: 1001;
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -279,96 +348,52 @@
         .sidebar-overlay {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.4);
             z-index: 999;
         }
 
         /* ===== FOOTER ===== */
         .footer {
-            background: var(--bg-card);
-            border-top: 1px solid var(--border);
-            color: var(--text-secondary);
+            background: #0f1724 !important;
+            color: rgba(255, 255, 255, 0.6) !important;
+            border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
             text-align: center;
             padding: 20px;
         }
 
-        .footer p {
-            margin: 4px 0;
-            font-weight: 400;
-            font-size: 0.9rem;
-        }
-
-        .footer strong {
-            color: var(--text-primary);
-        }
+        .footer p { margin: 4px 0; font-weight: 400; font-size: 0.9rem; color: rgba(255,255,255,0.5) !important; }
+        .footer strong { color: white !important; }
 
         /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-                width: 280px;
-            }
-            .sidebar.open {
-                transform: translateX(0);
-            }
-            .sidebar-overlay.open {
-                display: block;
-            }
-            .sidebar-toggle {
-                display: block;
-            }
-            .main-area {
-                margin-left: 0;
-                padding-top: 60px;
-            }
-            .main-content {
-                padding: 20px 16px;
-            }
-            .page-title {
-                font-size: 1.4rem;
-            }
+            .sidebar { transform: translateX(-100%); width: 280px; }
+            .sidebar.open { transform: translateX(0); }
+            .sidebar-overlay.open { display: block; }
+            .sidebar-toggle { display: block; }
+            .main-area { margin-left: 0; padding-top: 60px; }
+            .main-content { padding: 20px 16px; }
+            .page-title { font-size: 1.4rem; }
+            .reports-grid { grid-template-columns: 1fr 1fr; }
+            .chart-container { height: 250px; }
         }
 
         @media (max-width: 480px) {
-            .reports-grid {
-                grid-template-columns: 1fr;
-            }
+            .reports-grid { grid-template-columns: 1fr; }
+            .report-content { padding: 20px 16px; }
         }
-        .footer {
-    background: #0f1724 !important;
-    color: rgba(255, 255, 255, 0.6) !important;
-    border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
-}
-
-.footer p {
-    color: rgba(255, 255, 255, 0.5) !important;
-}
-
-.footer strong {
-    color: white !important;
-}
-
-.footer-update {
-    color: rgba(255, 255, 255, 0.3) !important;
-}
     </style>
+<base target="_blank">
 </head>
 <body>
 
-    <!-- ===== SIDEBAR TOGGLE ===== -->
-    <button class="sidebar-toggle" id="sidebarToggle">
+    <button class="sidebar-toggle" id="sidebar-toggle">
         <i class="fas fa-bars"></i>
     </button>
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
 
-    <!-- ===== PAGE WRAPPER ===== -->
     <div class="page-wrapper">
-
-        <!-- ===== SIDEBAR ===== -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div class="logo">
@@ -394,69 +419,61 @@
                 </ul>
             </nav>
             <div class="sidebar-footer">
-                <button id="themeToggle" class="theme-btn-sidebar">
+                <button id="theme-toggle" class="theme-btn-sidebar">
                     <i class="fas fa-moon"></i> Dark Mode
                 </button>
             </div>
         </aside>
 
-        <!-- ===== MAIN AREA ===== -->
         <div class="main-area">
-
             <main class="main-content">
                 <div class="container">
 
-                    <!-- ===== HEADER ===== -->
                     <div class="page-header">
                         <h1 class="page-title">
                             <i class="fas fa-chart-line"></i> Reports
                         </h1>
                     </div>
 
-                    <!-- ===== REPORTS GRID ===== -->
+                    <!-- Report Cards -->
                     <div class="reports-grid">
-                        <div class="report-card" onclick="generateReport('Revenue')">
+                        <div class="report-card" onclick="generateReport('Revenue')" id="card-Revenue">
                             <i class="fas fa-dollar-sign"></i>
-                            <h3>Revenue Report</h3>
-                            <p>View monthly revenue statistics</p>
+                            <h3>Revenue</h3>
+                            <p>Ads & subscriptions</p>
                         </div>
-
-                        <div class="report-card" onclick="generateReport('Orders')">
+                        <div class="report-card" onclick="generateReport('Orders')" id="card-Orders">
                             <i class="fas fa-clipboard-list"></i>
-                            <h3>Orders Report</h3>
-                            <p>View order statistics and trends</p>
+                            <h3>Orders</h3>
+                            <p>Service demand</p>
                         </div>
-
-                        <div class="report-card" onclick="generateReport('Customers')">
+                        <div class="report-card" onclick="generateReport('Customers')" id="card-Customers">
                             <i class="fas fa-users"></i>
-                            <h3>Customers Report</h3>
-                            <p>View customer growth and activity</p>
+                            <h3>Customers</h3>
+                            <p>User growth</p>
                         </div>
-
-                        <div class="report-card" onclick="generateReport('Providers')">
+                        <div class="report-card" onclick="generateReport('Providers')" id="card-Providers">
                             <i class="fas fa-user-tie"></i>
-                            <h3>Providers Report</h3>
-                            <p>View provider performance metrics</p>
+                            <h3>Providers</h3>
+                            <p>Ratings & performance</p>
                         </div>
                     </div>
 
-                    <!-- ===== REPORT CONTAINER ===== -->
-                    <div class="table-container" id="reportContainer" style="padding: 30px; text-align: left;">
-                        <div style="text-align: center; padding: 20px;">
-                            <i class="fas fa-file-circle-plus" style="font-size: 3rem; color: var(--text-light); margin-bottom: 16px;"></i>
-                            <h3 style="color: var(--text-primary); margin-bottom: 8px;">Select a Report</h3>
-                            <p style="color: var(--text-secondary);">Click on any report card above to generate detailed statistics</p>
+                    <!-- Report Container -->
+                    <div class="report-content" id="reportContainer">
+                        <div class="empty-state">
+                            <i class="fas fa-chart-pie" style="font-size: 3rem; opacity: 0.5;"></i>
+                            <h3>Select a Report</h3>
+                            <p>Click on any report card above to view detailed analytics</p>
                         </div>
                     </div>
 
                 </div>
             </main>
 
-            <!-- ===== FOOTER ===== -->
             <footer class="footer">
                 <p>© 2026 <strong>Fixora</strong> — Admin Panel</p>
             </footer>
-
         </div>
     </div>
 
@@ -467,226 +484,390 @@
     <script src="../js/api.js"></script>
     <script src="../js/auth.js"></script>
     <script src="../js/signalr.js"></script>
-    <script src="../js/script.js"></script>
-    <script src="../js/footer.js"></script>
+    <script src="../js/admin-utils.js"></script>
     <script>
+        let currentChart = null;
+        let currentReportType = null;
+
         // ==========================================
-        // CHECK LOGIN
+        // INIT
         // ==========================================
         document.addEventListener('DOMContentLoaded', function() {
-            Auth.checkAuth(['Admin']);
+            if (!Auth.checkAuth(['Admin'])) return;
         });
 
         // ==========================================
-        // GENERATE REPORTS
+        // GENERATE REPORT
         // ==========================================
         async function generateReport(type) {
-            const container = document.getElementById('reportContainer');
-            if (!container) return;
+            // Update active card
+            document.querySelectorAll('.report-card').forEach(c => c.classList.remove('active'));
+            document.getElementById(`card-${type}`).classList.add('active');
+            currentReportType = type;
 
+            const container = document.getElementById('reportContainer');
             container.innerHTML = `
-                <div style="text-align:center;padding:40px;">
-                    <i class="fas fa-spinner fa-spin" style="font-size:3rem;color:var(--primary);margin-bottom:16px;"></i>
-                    <h3 style="color:var(--text-primary);">Generating ${type} Report...</h3>
+                <div class="empty-state">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <h3>Generating ${type} Report...</h3>
                 </div>
             `;
 
             try {
-                if (type === 'Customers') {
-                    const data = await api.get('admin/analytics/users');
-                    renderUsersReport(container, data);
-                } else if (type === 'Providers') {
-                    const data = await api.get('admin/analytics/ratings');
-                    renderRatingsReport(container, data);
-                } else if (type === 'Orders') {
-                    const data = await api.get('admin/analytics/service-demand');
-                    renderOrdersReport(container, data);
-                } else if (type === 'Revenue') {
-                    const data = await api.get('admin/analytics/advertisements');
-                    renderRevenueReport(container, data);
+                switch(type) {
+                    case 'Customers':
+                        const usersData = await api.get('admin/analytics/users');
+                        renderUsersReport(container, usersData);
+                        break;
+                    case 'Providers':
+                        const ratingsData = await api.get('admin/analytics/ratings');
+                        renderRatingsReport(container, ratingsData);
+                        break;
+                    case 'Orders':
+                        // 🔴 GET /api/admin/analytics/service-demand مش متعمل في الـ Backend.
+                        //    التوقيع: Task<EmptyAnalyticsDto> GetServiceDemandAnalyticsAsync(...)
+                        //    و EmptyAnalyticsDto فيه { Message } بس — مفيش أي بيانات.
+                        //    (هو الوحيد من بين الـ 6 دوال تحليلات اللي بيرجّع EmptyAnalyticsDto،
+                        //     الباقي كلهم DTOs حقيقية — يعني ده placeholder اتساب من غير تنفيذ.)
+                        //    الكود كان بيعامله كمصفوفة: (data || []).reduce(...)
+                        //    → "(data || []).reduce is not a function"
+                        //    الحل: نحسب الطلب الحقيقي من /service-requests + /categories.
+                        const demandData = await buildServiceDemand();
+                        renderOrdersReport(container, demandData);
+                        break;
+                    case 'Revenue':
+                        const adsData = await api.get('admin/analytics/advertisements');
+                        renderRevenueReport(container, adsData);
+                        break;
                 }
             } catch (err) {
                 console.error("Failed to generate report:", err);
                 container.innerHTML = `
-                    <div style="text-align:center;padding:40px;color:#ef4444;">
-                        <i class="fas fa-circle-xmark" style="font-size:3rem;margin-bottom:16px;"></i>
+                    <div class="empty-state">
+                        <i class="fas fa-circle-xmark" style="color: #ef4444;"></i>
                         <h3>Failed to Generate Report</h3>
-                        <p style="margin-top:8px;">${err.message || 'An error occurred while calling analytics services.'}</p>
+                        <p>${err.message || 'An error occurred while fetching analytics data.'}</p>
                     </div>
                 `;
             }
         }
 
+        // ==========================================
+        // USERS REPORT
+        // ==========================================
         function renderUsersReport(container, data) {
-            let html = `
-                <h2 style="color:var(--text-primary);margin-bottom:20px;border-bottom:2px solid var(--border-color);padding-bottom:10px;">
-                    <i class="fas fa-users"></i> Users Growth & Registrations
-                </h2>
-            `;
+            const registrations = data.registrations || [];
+            const roles = data.roles || [];
 
-            // User Registrations
-            html += `<h3 style="color:var(--text-primary);margin-top:20px;margin-bottom:10px;">New Registrations Timeline</h3>`;
-            html += `
-                <table style="width:100%;margin-bottom:30px;">
-                    <thead>
-                        <tr><th>Period / Label</th><th>New Signups</th></tr>
-                    </thead>
-                    <tbody>
-            `;
-            if (data.registrations && data.registrations.length > 0) {
-                data.registrations.forEach(pt => {
-                    html += `<tr><td>${pt.label}</td><td><strong>${pt.value}</strong></td></tr>`;
-                });
-            } else {
-                html += `<tr><td colspan="2" style="text-align:center;color:var(--text-light);">No data available</td></tr>`;
-            }
-            html += `</tbody></table>`;
+            container.innerHTML = `
+                <h2><i class="fas fa-users"></i> Users Growth & Registrations</h2>
 
-            // Roles Distribution
-            html += `<h3 style="color:var(--text-primary);margin-bottom:10px;">Users by Roles</h3>`;
-            html += `
-                <table style="width:100%;margin-bottom:30px;">
-                    <thead>
-                        <tr><th>Role</th><th>Total Users</th></tr>
-                    </thead>
-                    <tbody>
-            `;
-            if (data.roles && data.roles.length > 0) {
-                data.roles.forEach(pt => {
-                    html += `<tr><td>${pt.label}</td><td><strong>${pt.value}</strong></td></tr>`;
-                });
-            } else {
-                html += `<tr><td colspan="2" style="text-align:center;color:var(--text-light);">No data available</td></tr>`;
-            }
-            html += `</tbody></table>`;
+                <div class="metrics-row">
+                    <div class="metric-card">
+                        <h4>${registrations.reduce((a, b) => a + (b.value || 0), 0)}</h4>
+                        <p>Total New Signups</p>
+                    </div>
+                    <div class="metric-card">
+                        <h4>${roles.reduce((a, b) => a + (b.value || 0), 0)}</h4>
+                        <p>Total Users</p>
+                    </div>
+                </div>
 
-            container.innerHTML = html;
-        }
+                <h3>Registration Timeline</h3>
+                <div class="chart-container">
+                    <canvas id="usersChart"></canvas>
+                </div>
 
-        function renderRatingsReport(container, data) {
-            let html = `
-                <h2 style="color:var(--text-primary);margin-bottom:20px;border-bottom:2px solid var(--border-color);padding-bottom:10px;">
-                    <i class="fas fa-user-tie"></i> Providers Performance & Ratings
-                </h2>
-                <div style="background:var(--card-bg);padding:16px;border-radius:8px;margin-bottom:24px;border:1px solid var(--border-color);">
-                    <p style="font-size:1.1rem;color:var(--text-secondary);">Average Platform Rating: <strong style="color:var(--primary);font-size:1.4rem;">${data.averageRating || 'N/A'} ★</strong></p>
+                <h3>Users by Role</h3>
+                <div class="chart-container" style="height: 250px;">
+                    <canvas id="rolesChart"></canvas>
                 </div>
             `;
 
-            // Distribution
-            html += `<h3 style="color:var(--text-primary);margin-bottom:10px;">Stars Distribution</h3>`;
-            html += `
-                <table style="width:100%;margin-bottom:30px;">
-                    <thead>
-                        <tr><th>Stars</th><th>Count</th></tr>
-                    </thead>
-                    <tbody>
-            `;
-            if (data.distribution && data.distribution.length > 0) {
-                data.distribution.forEach(pt => {
-                    html += `<tr><td>${pt.label} Stars</td><td><strong>${pt.value}</strong></td></tr>`;
-                });
-            } else {
-                html += `<tr><td colspan="2" style="text-align:center;color:var(--text-light);">No data available</td></tr>`;
-            }
-            html += `</tbody></table>`;
+            // Line chart for registrations
+            const ctx1 = document.getElementById('usersChart').getContext('2d');
+            if (currentChart) currentChart.destroy();
 
-            // Low rated providers
-            html += `<h3 style="color:var(--text-primary);margin-bottom:10px;">Flagged Providers (Low Ratings)</h3>`;
-            html += `
-                <table style="width:100%;">
-                    <thead>
-                        <tr><th>Provider ID / Name</th><th>Average Rating</th><th>Total Reviews</th></tr>
-                    </thead>
-                    <tbody>
-            `;
-            if (data.lowRatedUsers && data.lowRatedUsers.length > 0) {
-                data.lowRatedUsers.forEach(user => {
-                    html += `<tr><td>${user.fullName || user.userId}</td><td style="color:#ef4444;font-weight:bold;">${user.averageRating} ★</td><td>${user.ratingsCount} reviews</td></tr>`;
-                });
-            } else {
-                html += `<tr><td colspan="3" style="text-align:center;color:var(--text-light);">No flagged low-rated providers.</td></tr>`;
-            }
-            html += `</tbody></table>`;
+            new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: registrations.map(r => r.label),
+                    datasets: [{
+                        label: 'New Signups',
+                        data: registrations.map(r => r.value),
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
 
-            container.innerHTML = html;
-        }
-
-        function renderOrdersReport(container, data) {
-            let html = `
-                <h2 style="color:var(--text-primary);margin-bottom:20px;border-bottom:2px solid var(--border-color);padding-bottom:10px;">
-                    <i class="fas fa-clipboard-list"></i> Service Demand Analytics
-                </h2>
-            `;
-
-            html += `<h3 style="color:var(--text-primary);margin-top:20px;margin-bottom:10px;">Requests by Category / Month</h3>`;
-            html += `
-                <table style="width:100%;">
-                    <thead>
-                        <tr><th>Category Label</th><th>Requests Volume</th></tr>
-                    </thead>
-                    <tbody>
-            `;
-            if (data && data.length > 0) {
-                data.forEach(pt => {
-                    html += `<tr><td>${pt.label}</td><td><strong>${pt.value}</strong></td></tr>`;
-                });
-            } else {
-                html += `<tr><td colspan="2" style="text-align:center;color:var(--text-light);">No demand data available</td></tr>`;
-            }
-            html += `</tbody></table>`;
-
-            container.innerHTML = html;
-        }
-
-        function renderRevenueReport(container, data) {
-            let html = `
-                <h2 style="color:var(--text-primary);margin-bottom:20px;border-bottom:2px solid var(--border-color);padding-bottom:10px;">
-                    <i class="fas fa-dollar-sign"></i> Advertisements & Subscriptions Revenue
-                </h2>
-            `;
-
-            // Status counts
-            html += `<h3 style="color:var(--text-primary);margin-top:20px;margin-bottom:10px;">Advertisement Placements Status</h3>`;
-            html += `
-                <table style="width:100%;margin-bottom:30px;">
-                    <thead>
-                        <tr><th>Status</th><th>Count</th></tr>
-                    </thead>
-                    <tbody>
-            `;
-            if (data.statusCounts && data.statusCounts.length > 0) {
-                data.statusCounts.forEach(pt => {
-                    html += `<tr><td>${pt.label}</td><td><strong>${pt.value}</strong></td></tr>`;
-                });
-            } else {
-                html += `<tr><td colspan="2" style="text-align:center;color:var(--text-light);">No data available</td></tr>`;
-            }
-            html += `</tbody></table>`;
-
-            // Ads by Category
-            html += `<h3 style="color:var(--text-primary);margin-bottom:10px;">Active Ads by Service Category</h3>`;
-            html += `
-                <table style="width:100%;">
-                    <thead>
-                        <tr><th>Category</th><th>Count</th></tr>
-                    </thead>
-                    <tbody>
-            `;
-            if (data.activeAdsByCategory && data.activeAdsByCategory.length > 0) {
-                data.activeAdsByCategory.forEach(pt => {
-                    html += `<tr><td>${pt.label}</td><td><strong>${pt.value}</strong></td></tr>`;
-                });
-            } else {
-                html += `<tr><td colspan="2" style="text-align:center;color:var(--text-light);">No active ads found</td></tr>`;
-            }
-            html += `</tbody></table>`;
-
-            container.innerHTML = html;
+            // Doughnut chart for roles
+            const ctx2 = document.getElementById('rolesChart').getContext('2d');
+            new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: roles.map(r => r.label),
+                    datasets: [{
+                        data: roles.map(r => r.value),
+                        backgroundColor: ['#667eea', '#764ba2', '#48bb78', '#ed8936']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'right' } }
+                }
+            });
         }
 
         // ==========================================
-        // SIDEBAR TOGGLE
+        // RATINGS REPORT
+        // ==========================================
+        function renderRatingsReport(container, data) {
+            const distribution = data.distribution || [];
+            const lowRated = data.lowRatedUsers || [];
+
+            container.innerHTML = `
+                <h2><i class="fas fa-user-tie"></i> Providers Performance & Ratings</h2>
+
+                <div class="metrics-row">
+                    <div class="metric-card">
+                        <h4>${(data.averageRating || 0).toFixed(1)} ★</h4>
+                        <p>Average Platform Rating</p>
+                    </div>
+                    <div class="metric-card">
+                        <h4>${lowRated.length}</h4>
+                        <p>Flagged Providers</p>
+                    </div>
+                </div>
+
+                <h3>Rating Distribution</h3>
+                <div class="chart-container">
+                    <canvas id="ratingsChart"></canvas>
+                </div>
+
+                ${lowRated.length > 0 ? `
+                <h3>Flagged Providers (Low Ratings)</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Provider</th><th>Rating</th><th>Reviews</th></tr>
+                    </thead>
+                    <tbody>
+                        ${lowRated.map(u => `
+                            <tr>
+                                <td>${u.fullName || u.userId}</td>
+                                <td style="color:#ef4444;font-weight:bold;">${u.averageRating} ★</td>
+                                <td>${u.ratingsCount}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+                ` : ''}
+            `;
+
+            const ctx = document.getElementById('ratingsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: distribution.map(d => d.label + ' Stars'),
+                    datasets: [{
+                        label: 'Count',
+                        data: distribution.map(d => d.value),
+                        backgroundColor: ['#ef4444', '#f59e0b', '#eab308', '#84cc16', '#22c55e']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        // ==========================================
+        // ORDERS REPORT
+        // ==========================================
+        // ==========================================
+        // الطلب على الخدمات — محسوب محليًا
+        // ==========================================
+        // بنبني نفس الشكل اللي renderOrdersReport متوقّعه: [{ label, value }]
+        async function buildServiceDemand() {
+            var requests = await api.get('service-requests', { showLoader: false }) || [];
+            var categories = await api.get('categories', { showLoader: false }) || [];
+
+            var names = {};
+            categories.forEach(function (c) { names[c.id] = c.name; });
+
+            var counts = {};
+            requests.forEach(function (r) {
+                var label = names[r.categoryId] || 'Uncategorized';
+                counts[label] = (counts[label] || 0) + 1;
+            });
+
+            return Object.keys(counts)
+                .map(function (label) { return { label: label, value: counts[label] }; })
+                .sort(function (a, b) { return b.value - a.value; });
+        }
+
+        function renderOrdersReport(container, data) {
+            container.innerHTML = `
+                <h2><i class="fas fa-clipboard-list"></i> Service Demand Analytics</h2>
+
+                <div class="metrics-row">
+                    <div class="metric-card">
+                        <h4>${(data || []).reduce((a, b) => a + (b.value || 0), 0)}</h4>
+                        <p>Total Requests</p>
+                    </div>
+                    <div class="metric-card">
+                        <h4>${(data || []).length}</h4>
+                        <p>Categories</p>
+                    </div>
+                </div>
+
+                <h3>Requests by Category</h3>
+                <div class="chart-container">
+                    <canvas id="ordersChart"></canvas>
+                </div>
+
+                <h3>Detailed Breakdown</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Category</th><th>Requests</th><th>Share</th></tr>
+                    </thead>
+                    <tbody>
+                        ${(data || []).map(pt => {
+                            const total = (data || []).reduce((a, b) => a + (b.value || 0), 0) || 1;
+                            const pct = ((pt.value / total) * 100).toFixed(1);
+                            return `<tr>
+                                <td>${pt.label}</td>
+                                <td><strong>${pt.value}</strong></td>
+                                <td>
+                                    <div style="display:flex;align-items:center;gap:8px;">
+                                        <div style="flex:1;background:var(--border);border-radius:4px;height:8px;overflow:hidden;">
+                                            <div style="width:${pct}%;background:var(--accent);height:100%;border-radius:4px;"></div>
+                                        </div>
+                                        <span style="font-size:0.85rem;min-width:40px;">${pct}%</span>
+                                    </div>
+                                </td>
+                            </tr>`;
+                        }).join('')}
+                    </tbody>
+                </table>
+            `;
+
+            const ctx = document.getElementById('ordersChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: (data || []).map(d => d.label),
+                    datasets: [{
+                        label: 'Requests',
+                        data: (data || []).map(d => d.value),
+                        backgroundColor: '#667eea',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        // ==========================================
+        // REVENUE REPORT
+        // ==========================================
+        function renderRevenueReport(container, data) {
+            const statusCounts = data.statusCounts || [];
+            const activeAds = data.activeAdsByCategory || [];
+
+            container.innerHTML = `
+                <h2><i class="fas fa-dollar-sign"></i> Revenue Analytics</h2>
+
+                <div class="metrics-row">
+                    <div class="metric-card">
+                        <h4>${statusCounts.reduce((a, b) => a + (b.value || 0), 0)}</h4>
+                        <p>Total Ads</p>
+                    </div>
+                    <div class="metric-card">
+                        <h4>${activeAds.reduce((a, b) => a + (b.value || 0), 0)}</h4>
+                        <p>Active Ads</p>
+                    </div>
+                </div>
+
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+                    <div>
+                        <h3>Ad Status Distribution</h3>
+                        <div class="chart-container" style="height: 250px;">
+                            <canvas id="statusChart"></canvas>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>Active Ads by Category</h3>
+                        <div class="chart-container" style="height: 250px;">
+                            <canvas id="categoryChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            const ctx1 = document.getElementById('statusChart').getContext('2d');
+            new Chart(ctx1, {
+                type: 'doughnut',
+                data: {
+                    labels: statusCounts.map(s => s.label),
+                    datasets: [{
+                        data: statusCounts.map(s => s.value),
+                        backgroundColor: ['#22c55e', '#f59e0b', '#ef4444', '#667eea']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'right' } }
+                }
+            });
+
+            const ctx2 = document.getElementById('categoryChart').getContext('2d');
+            new Chart(ctx2, {
+                type: 'pie',
+                data: {
+                    labels: activeAds.map(a => a.label),
+                    datasets: [{
+                        data: activeAds.map(a => a.value),
+                        backgroundColor: ['#667eea', '#764ba2', '#48bb78', '#ed8936', '#38b2ac', '#f472b6']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'right' } }
+                }
+            });
+        }
+
+        // ==========================================
+        // SIDEBAR & THEME
         // ==========================================
         const sidebarToggle = document.getElementById('sidebarToggle');
         const sidebar = document.getElementById('sidebar');
@@ -700,9 +881,6 @@
         if (sidebarToggle) sidebarToggle.addEventListener('click', toggleSidebar);
         if (sidebarOverlay) sidebarOverlay.addEventListener('click', toggleSidebar);
 
-        // ==========================================
-        // THEME TOGGLE
-        // ==========================================
         const themeToggle = document.getElementById('themeToggle');
         const body = document.body;
 
@@ -724,9 +902,15 @@
             });
         }
 
+            
         function handleLogout(event) {
             event.preventDefault();
-            Auth.logout();
+            if (typeof Auth !== 'undefined' && Auth.logout) {
+                Auth.logout();
+            } else {
+                if (typeof TokenManager !== 'undefined') TokenManager.clearTokens();
+                window.location.href = 'index.html';
+            }
         }
     </script>
 </body>

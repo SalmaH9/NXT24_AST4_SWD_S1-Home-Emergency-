@@ -139,7 +139,18 @@ const ErrorHandler = {
 
         try {
             if (errorResponse && typeof errorResponse.json === "function") {
-                const errorData = await errorResponse.json().catch(() => null);
+                // ⚠️ لازم clone() الأول!
+                //    api.js بيعمل `throw response` بعد ما ينادي الدالة دي.
+                //    لو قرينا الجسم هنا مباشرة (errorResponse.json())، الجسم
+                //    بيتستهلك — وبعدين register.js لما يحاول err.clone().json()
+                //    بيرمي TypeError: "Response body is already used"،
+                //    فبيقع على الرسالة العامة وسبب الخطأ الحقيقي بيضيع
+                //    (مثلاً "الإيميل مستخدم بالفعل" كان بيتحوّل لـ
+                //     "Registration failed. Please check your details").
+                const source = (typeof errorResponse.clone === "function")
+                    ? errorResponse.clone()
+                    : errorResponse;
+                const errorData = await source.json().catch(() => null);
                 if (errorData) {
                     title = errorData.title || title;
                     

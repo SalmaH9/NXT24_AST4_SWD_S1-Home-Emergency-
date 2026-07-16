@@ -5,8 +5,20 @@
 const RealTime = {
     _connections: {},
 
+    // Safe config access
+    _getConfig() {
+        if (typeof CONFIG === "undefined") {
+            console.warn("CONFIG not loaded yet. SignalR will be disabled until config.js loads.");
+            return null;
+        }
+        return CONFIG;
+    },
+
     // Create a connection to a specific hub
     createConnection(hubPath) {
+        const config = this._getConfig();
+        if (!config) return null;
+
         if (this._connections[hubPath]) {
             return this._connections[hubPath];
         }
@@ -16,11 +28,16 @@ const RealTime = {
             return null;
         }
 
-        const hubUrl = `${CONFIG.SIGNALR_BASE_URL.replace(/\/$/, '')}/${hubPath.replace(/^\//, '')}`;
-        
+        const hubUrl = `${config.SIGNALR_BASE_URL.replace(/\/$/, '')}/${hubPath.replace(/^\//, '')}`;
+
         const connection = new signalR.HubConnectionBuilder()
             .withUrl(hubUrl, {
-                accessTokenFactory: () => TokenManager.getAccessToken()
+                accessTokenFactory: () => {
+                    if (typeof TokenManager !== "undefined") {
+                        return TokenManager.getAccessToken();
+                    }
+                    return null;
+                }
             })
             .withAutomaticReconnect()
             .build();
